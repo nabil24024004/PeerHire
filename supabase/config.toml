@@ -1,0 +1,7 @@
+project_id = "grttsxdylpdpfzficqlk"
+
+[functions.recommend-jobs]
+verify_jwt = true
+
+[functions.job-helper]
+verify_jwt = true

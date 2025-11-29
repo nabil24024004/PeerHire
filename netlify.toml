@@ -1,0 +1,34 @@
+# Netlify Configuration for PeerHire
+
+[build]
+  # Build command
+  command = "npm run build"
+  
+  # Directory with the static content (Vite output)
+  publish = "dist"
+  
+  # Environment variables for build
+  [build.environment]
+    NODE_VERSION = "18"
+
+# Redirects for Single Page Application (SPA)
+# This ensures all routes are handled by index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
