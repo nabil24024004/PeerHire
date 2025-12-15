@@ -33,11 +33,9 @@ interface JobData {
   id: string;
   title: string;
   description: string;
-  subject: string | null;
-  work_type: string;
-  page_count: number;
+  category: string | null;
   budget: number;
-  deadline: string;
+  deadline: string | null;
   status: string;
 }
 
@@ -129,25 +127,38 @@ export default function HirerViewOffers() {
 
       setJob(jobData);
 
-      // Fetch applications with freelancer details
+      // Fetch applications first
       const { data: applicationsData, error: applicationsError } = await supabase
         .from('applications')
-        .select(`
-          *,
-          profiles!applications_freelancer_id_fkey(
-            full_name, 
-            avatar_url, 
-            rating, 
-            total_reviews,
-            skills
-          )
-        `)
+        .select('*')
         .eq('job_id', taskId)
         .order('created_at', { ascending: false });
 
       if (applicationsError) throw applicationsError;
 
-      setApplications(applicationsData || []);
+      // Fetch profiles for each application
+      const applicationsWithProfiles = await Promise.all(
+        (applicationsData || []).map(async (app) => {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url, rating, total_reviews, skills')
+            .eq('id', app.freelancer_id)
+            .single();
+
+          return {
+            ...app,
+            profiles: profileData || {
+              full_name: 'Unknown',
+              avatar_url: null,
+              rating: null,
+              total_reviews: 0,
+              skills: null,
+            },
+          };
+        })
+      );
+
+      setApplications(applicationsWithProfiles);
       setLoading(false);
     } catch (error: any) {
       toast({
@@ -288,19 +299,15 @@ export default function HirerViewOffers() {
           <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-1 sm:gap-2">
               <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-              <span className="truncate">{job.work_type}</span>
+              <span className="truncate">{job.category || 'General'}</span>
             </div>
-            {job.subject && (
-              <span className="truncate">• {job.subject}</span>
-            )}
-            <span>• {job.page_count} pages</span>
             <div className="flex items-center gap-1 sm:gap-2">
               <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success flex-shrink-0" />
               <span className="font-semibold">{job.budget}</span>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-warning flex-shrink-0" />
-              <span>Due: {new Date(job.deadline).toLocaleDateString()}</span>
+              <span>Due: {job.deadline ? new Date(job.deadline).toLocaleDateString() : 'No deadline'}</span>
             </div>
           </div>
         </Card>
@@ -364,16 +371,10 @@ export default function HirerViewOffers() {
                             ) : (
                               <span>New freelancer</span>
                             )}
-                            {application.freelancer_profiles?.total_jobs_completed !== null && (
-                              <>
-                                <span>•</span>
-                                <span>{application.freelancer_profiles.total_jobs_completed} jobs</span>
-                              </>
-                            )}
                           </div>
-                          {application.freelancer_profiles?.skills && application.freelancer_profiles.skills.length > 0 && (
+                          {application.profiles?.skills && application.profiles.skills.length > 0 && (
                             <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                              {application.freelancer_profiles.skills.slice(0, 3).map((skill, idx) => (
+                              {application.profiles.skills.slice(0, 3).map((skill, idx) => (
                                 <Badge key={idx} variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0.5">{skill}</Badge>
                               ))}
                             </div>
