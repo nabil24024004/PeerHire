@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, MessageSquare, FileText, Calendar, DollarSign, User, CheckCircle, XCircle } from "lucide-react";
+import { Eye, MessageSquare, FileText, Calendar, DollarSign, User, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Job {
@@ -124,33 +124,8 @@ export default function FreelancerJobs() {
     }
   };
 
-  const handleAcceptJob = async (jobId: string) => {
-    try {
-      const { error } = await supabase
-        .from("applications")
-        .update({ status: "accepted" })
-        .eq("job_id", jobId)
-        .eq("freelancer_id", user?.id);
 
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Job accepted successfully",
-      });
-
-      // Refresh jobs
-      window.location.reload();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to accept job",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeclineJob = async (jobId: string) => {
+  const handleWithdrawApplication = async (jobId: string) => {
     try {
       const { error } = await supabase
         .from("applications")
@@ -161,8 +136,8 @@ export default function FreelancerJobs() {
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Job declined",
+        title: "Application Withdrawn",
+        description: "Your application has been withdrawn",
       });
 
       // Refresh jobs
@@ -170,7 +145,7 @@ export default function FreelancerJobs() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to decline job",
+        description: "Failed to withdraw application",
         variant: "destructive",
       });
     }
@@ -297,26 +272,15 @@ export default function FreelancerJobs() {
                           Message Hirer
                         </Button>
                         {activeTab === "pending" && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full sm:w-auto border-success/50 text-success hover:bg-success/20"
-                              onClick={() => handleAcceptJob(job.id)}
-                            >
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Accept
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full sm:w-auto border-destructive/50 text-destructive hover:bg-destructive/20"
-                              onClick={() => handleDeclineJob(job.id)}
-                            >
-                              <XCircle className="w-4 h-4 mr-1" />
-                              Decline
-                            </Button>
-                          </>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full sm:w-auto border-destructive/50 text-destructive hover:bg-destructive/20"
+                            onClick={() => handleWithdrawApplication(job.id)}
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Withdraw
+                          </Button>
                         )}
                       </div>
                     </CardContent>
