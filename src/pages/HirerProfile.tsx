@@ -105,7 +105,7 @@ const HirerProfile = () => {
           recent_tasks: recentTasksData?.map(task => ({
             id: task.id,
             title: task.title,
-            category: task.work_type,
+            category: task.category || 'General',
             date: new Date(task.created_at).toLocaleDateString(),
             amount: task.budget,
             status: task.status
@@ -237,7 +237,7 @@ const HirerProfile = () => {
             title="Completed"
             value={profile.completed_tasks}
             icon={CheckCircle}
-            description={`${Math.round((profile.completed_tasks / profile.total_tasks) * 100)}% completion rate`}
+            description={`${profile.total_tasks > 0 ? Math.round((profile.completed_tasks / profile.total_tasks) * 100) : 0}% completion rate`}
           />
           <StatCard
             title="Total Spent"
