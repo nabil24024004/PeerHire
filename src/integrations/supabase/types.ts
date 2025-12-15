@@ -26,6 +26,8 @@ export interface Database {
                     handwriting_sample_url: string | null
                     total_earnings: number
                     total_spent: number
+                    rating: number | null
+                    total_reviews: number
                     created_at: string
                     updated_at: string
                 }
@@ -45,6 +47,8 @@ export interface Database {
                     handwriting_sample_url?: string | null
                     total_earnings?: number
                     total_spent?: number
+                    rating?: number | null
+                    total_reviews?: number
                     created_at?: string
                     updated_at?: string
                 }
@@ -64,9 +68,20 @@ export interface Database {
                     handwriting_sample_url?: string | null
                     total_earnings?: number
                     total_spent?: number
+                    rating?: number | null
+                    total_reviews?: number
                     created_at?: string
                     updated_at?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "profiles_id_fkey"
+                        columns: ["id"]
+                        isOneToOne: true
+                        referencedRelation: "users"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             jobs: {
                 Row: {
@@ -111,6 +126,15 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "jobs_hirer_id_fkey"
+                        columns: ["hirer_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             applications: {
                 Row: {
@@ -146,6 +170,22 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "applications_job_id_fkey"
+                        columns: ["job_id"]
+                        isOneToOne: false
+                        referencedRelation: "jobs"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "applications_freelancer_id_fkey"
+                        columns: ["freelancer_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             reviews: {
                 Row: {
