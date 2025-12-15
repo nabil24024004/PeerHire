@@ -45,12 +45,16 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
   const [title, setTitle] = useState("");
   const [workType, setWorkType] = useState("");
   const [subject, setSubject] = useState("");
+  const [customSubject, setCustomSubject] = useState("");
   const [pageCount, setPageCount] = useState(1);
   const [qualityLevel, setQualityLevel] = useState("standard");
   const [deadline, setDeadline] = useState("");
   const [description, setDescription] = useState("");
 
   const BASE_PRICE_PER_PAGE = 5;
+
+  // Helper to get the effective subject (custom if Others is selected)
+  const getEffectiveSubject = () => subject === "Others" ? customSubject : subject;
 
   const calculatePrice = () => {
     const qualityMultiplier = QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier || 1;
@@ -94,12 +98,13 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
       }
 
       // Create job - only use fields that exist in schema
+      const effectiveSubject = getEffectiveSubject();
       const { error: jobError } = await supabase
         .from('jobs')
         .insert({
           title,
-          description: `${description}\n\nWork Type: ${workType}\nSubject: ${subject}\nPages: ${pageCount}\nQuality: ${qualityLevel}`,
-          category: `${workType} - ${subject}`,
+          description: `${description}\n\nWork Type: ${workType}\nSubject: ${effectiveSubject}\nPages: ${pageCount}\nQuality: ${qualityLevel}`,
+          category: `${workType} - ${effectiveSubject}`,
           deadline: new Date(deadline).toISOString(),
           budget: parseFloat(calculatePrice()),
           hirer_id: session.user.id,
@@ -117,6 +122,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
       setTitle("");
       setWorkType("");
       setSubject("");
+      setCustomSubject("");
       setPageCount(1);
       setQualityLevel("standard");
       setDeadline("");
@@ -165,7 +171,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
             </div>
             <div>
               <Label htmlFor="subject">Subject *</Label>
-              <Select value={subject} onValueChange={setSubject}>
+              <Select value={subject} onValueChange={(val) => { setSubject(val); if (val !== "Others") setCustomSubject(""); }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
@@ -175,6 +181,14 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {subject === "Others" && (
+                <Input
+                  className="mt-2"
+                  placeholder="Enter your subject"
+                  value={customSubject}
+                  onChange={(e) => setCustomSubject(e.target.value)}
+                />
+              )}
             </div>
           </div>
         );
@@ -304,7 +318,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Subject</p>
-                  <p className="font-semibold">{subject}</p>
+                  <p className="font-semibold">{getEffectiveSubject()}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -343,7 +357,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
   const canProceed = () => {
     switch (step) {
       case 1:
-        return title && workType && subject;
+        return title && workType && (subject === "Others" ? customSubject : subject);
       case 2:
         return pageCount > 0 && deadline;
       case 3:
