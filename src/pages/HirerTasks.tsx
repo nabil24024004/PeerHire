@@ -27,12 +27,10 @@ interface Task {
   id: string;
   title: string;
   description: string;
-  subject: string;
-  work_type: string;
-  page_count: number;
+  category: string | null;
   budget: number;
-  deadline: string;
-  status: JobStatus;
+  deadline: string | null;
+  status: string;
   created_at: string;
   applications_count?: number;
   freelancer_id?: string;
@@ -81,19 +79,35 @@ export default function HirerTasks() {
               .eq("job_id", job.id);
 
             let freelancerName = null;
-            if (job.freelancer_id) {
+            // Get accepted application's freelancer for this job
+            const { data: acceptedApp } = await supabase
+              .from("applications")
+              .select("freelancer_id")
+              .eq("job_id", job.id)
+              .eq("status", "accepted")
+              .maybeSingle();
+
+            if (acceptedApp?.freelancer_id) {
               const { data: profileData } = await supabase
                 .from("profiles")
                 .select("full_name")
-                .eq("id", job.freelancer_id)
+                .eq("id", acceptedApp.freelancer_id)
                 .single();
 
               freelancerName = profileData?.full_name || null;
             }
 
             return {
-              ...job,
+              id: job.id,
+              title: job.title,
+              description: job.description,
+              category: job.category,
+              budget: job.budget,
+              deadline: job.deadline,
+              status: job.status,
+              created_at: job.created_at,
               applications_count: count || 0,
+              freelancer_id: acceptedApp?.freelancer_id || undefined,
               freelancer_name: freelancerName,
             };
           })
@@ -128,7 +142,7 @@ export default function HirerTasks() {
       filtered = filtered.filter(
         (task) =>
           task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          task.subject?.toLowerCase().includes(searchQuery.toLowerCase())
+          task.category?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -286,16 +300,12 @@ export default function HirerTasks() {
                           <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                              {task.work_type}
+                              {task.category || 'General'}
                             </span>
-                            {task.subject && (
-                              <span>• {task.subject}</span>
-                            )}
-                            <span>• {task.page_count} pages</span>
                           </div>
                         </div>
-                        <Badge className={`${getStatusColor(task.status)} flex-shrink-0 text-xs`}>
-                          {getStatusLabel(task.status)}
+                        <Badge className={`${getStatusColor(task.status as JobStatus)} flex-shrink-0 text-xs`}>
+                          {getStatusLabel(task.status as JobStatus)}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -311,7 +321,7 @@ export default function HirerTasks() {
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <Calendar className="w-4 h-4" />
-                          <span>Due: {new Date(task.deadline).toLocaleDateString()}</span>
+                          <span>Due: {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline'}</span>
                         </div>
                         {task.status === "open" && task.applications_count !== undefined && (
                           <Badge variant="secondary">
@@ -401,8 +411,8 @@ export default function HirerTasks() {
                     >
                       <Star
                         className={`h-8 w-8 ${star <= rating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-muted-foreground'
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'text-muted-foreground'
                           }`}
                       />
                     </button>
