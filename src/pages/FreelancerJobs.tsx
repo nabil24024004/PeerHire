@@ -266,7 +266,7 @@ export default function FreelancerJobs() {
                           variant="ghost"
                           size="sm"
                           className="w-full sm:w-auto"
-                          onClick={() => navigate("/messages")}
+                          onClick={() => navigate(`/messages?chat=${job.hirer.id}`)}
                         >
                           <MessageSquare className="w-4 h-4 mr-1" />
                           Message Hirer
