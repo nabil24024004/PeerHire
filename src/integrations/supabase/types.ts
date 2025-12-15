@@ -6,7 +6,7 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[]
 
-export interface Database {
+export type Database = {
     public: {
         Tables: {
             profiles: {
@@ -73,15 +73,7 @@ export interface Database {
                     created_at?: string
                     updated_at?: string
                 }
-                Relationships: [
-                    {
-                        foreignKeyName: "profiles_id_fkey"
-                        columns: ["id"]
-                        isOneToOne: true
-                        referencedRelation: "users"
-                        referencedColumns: ["id"]
-                    }
-                ]
+                Relationships: []
             }
             jobs: {
                 Row: {
@@ -89,10 +81,10 @@ export interface Database {
                     hirer_id: string
                     title: string
                     description: string
-                    category: string
+                    category: string | null
                     budget: number
                     deadline: string | null
-                    status: 'open' | 'in_progress' | 'completed' | 'cancelled'
+                    status: string
                     required_skills: string[] | null
                     attachment_urls: string[] | null
                     created_at: string
@@ -103,10 +95,10 @@ export interface Database {
                     hirer_id: string
                     title: string
                     description: string
-                    category: string
+                    category?: string | null
                     budget: number
                     deadline?: string | null
-                    status?: 'open' | 'in_progress' | 'completed' | 'cancelled'
+                    status?: string
                     required_skills?: string[] | null
                     attachment_urls?: string[] | null
                     created_at?: string
@@ -117,34 +109,26 @@ export interface Database {
                     hirer_id?: string
                     title?: string
                     description?: string
-                    category?: string
+                    category?: string | null
                     budget?: number
                     deadline?: string | null
-                    status?: 'open' | 'in_progress' | 'completed' | 'cancelled'
+                    status?: string
                     required_skills?: string[] | null
                     attachment_urls?: string[] | null
                     created_at?: string
                     updated_at?: string
                 }
-                Relationships: [
-                    {
-                        foreignKeyName: "jobs_hirer_id_fkey"
-                        columns: ["hirer_id"]
-                        isOneToOne: false
-                        referencedRelation: "profiles"
-                        referencedColumns: ["id"]
-                    }
-                ]
+                Relationships: []
             }
             applications: {
                 Row: {
                     id: string
                     job_id: string
                     freelancer_id: string
-                    cover_letter: string
-                    proposed_rate: number
+                    cover_letter: string | null
+                    proposed_rate: number | null
                     estimated_duration: string | null
-                    status: 'pending' | 'accepted' | 'rejected'
+                    status: string
                     created_at: string
                     updated_at: string
                 }
@@ -152,10 +136,10 @@ export interface Database {
                     id?: string
                     job_id: string
                     freelancer_id: string
-                    cover_letter: string
-                    proposed_rate: number
+                    cover_letter?: string | null
+                    proposed_rate?: number | null
                     estimated_duration?: string | null
-                    status?: 'pending' | 'accepted' | 'rejected'
+                    status?: string
                     created_at?: string
                     updated_at?: string
                 }
@@ -163,29 +147,14 @@ export interface Database {
                     id?: string
                     job_id?: string
                     freelancer_id?: string
-                    cover_letter?: string
-                    proposed_rate?: number
+                    cover_letter?: string | null
+                    proposed_rate?: number | null
                     estimated_duration?: string | null
-                    status?: 'pending' | 'accepted' | 'rejected'
+                    status?: string
                     created_at?: string
                     updated_at?: string
                 }
-                Relationships: [
-                    {
-                        foreignKeyName: "applications_job_id_fkey"
-                        columns: ["job_id"]
-                        isOneToOne: false
-                        referencedRelation: "jobs"
-                        referencedColumns: ["id"]
-                    },
-                    {
-                        foreignKeyName: "applications_freelancer_id_fkey"
-                        columns: ["freelancer_id"]
-                        isOneToOne: false
-                        referencedRelation: "profiles"
-                        referencedColumns: ["id"]
-                    }
-                ]
+                Relationships: []
             }
             reviews: {
                 Row: {
@@ -215,6 +184,7 @@ export interface Database {
                     comment?: string | null
                     created_at?: string
                 }
+                Relationships: []
             }
             messages: {
                 Row: {
@@ -244,6 +214,7 @@ export interface Database {
                     is_read?: boolean
                     created_at?: string
                 }
+                Relationships: []
             }
             notifications: {
                 Row: {
@@ -276,6 +247,7 @@ export interface Database {
                     action_url?: string | null
                     created_at?: string
                 }
+                Relationships: []
             }
             disputes: {
                 Row: {
@@ -284,7 +256,7 @@ export interface Database {
                     raised_by: string
                     against: string
                     reason: string
-                    status: 'open' | 'resolved' | 'closed'
+                    status: string
                     resolution: string | null
                     created_at: string
                     updated_at: string
@@ -295,7 +267,7 @@ export interface Database {
                     raised_by: string
                     against: string
                     reason: string
-                    status?: 'open' | 'resolved' | 'closed'
+                    status?: string
                     resolution?: string | null
                     created_at?: string
                     updated_at?: string
@@ -306,11 +278,12 @@ export interface Database {
                     raised_by?: string
                     against?: string
                     reason?: string
-                    status?: 'open' | 'resolved' | 'closed'
+                    status?: string
                     resolution?: string | null
                     created_at?: string
                     updated_at?: string
                 }
+                Relationships: []
             }
         }
         Views: {
@@ -322,5 +295,22 @@ export interface Database {
         Enums: {
             [_ in never]: never
         }
+        CompositeTypes: {
+            [_ in never]: never
+        }
     }
 }
+
+// Helper types for convenience
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
+export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+
+// Specific table types
+export type Profile = Tables<'profiles'>
+export type Job = Tables<'jobs'>
+export type Application = Tables<'applications'>
+export type Message = Tables<'messages'>
+export type Review = Tables<'reviews'>
+export type Notification = Tables<'notifications'>
+export type Dispute = Tables<'disputes'>
