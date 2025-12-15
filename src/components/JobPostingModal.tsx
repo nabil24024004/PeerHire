@@ -79,7 +79,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
       for (const file of attachments) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('job-attachments')
           .upload(fileName, file);
@@ -89,21 +89,18 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
         const { data: { publicUrl } } = supabase.storage
           .from('job-attachments')
           .getPublicUrl(fileName);
-        
+
         attachmentUrls.push(publicUrl);
       }
 
-      // Create job
+      // Create job - only use fields that exist in schema
       const { error: jobError } = await supabase
         .from('jobs')
         .insert({
           title,
-          work_type: workType,
-          subject,
-          page_count: pageCount,
-          quality_level: qualityLevel,
+          description: `${description}\n\nWork Type: ${workType}\nSubject: ${subject}\nPages: ${pageCount}\nQuality: ${qualityLevel}`,
+          category: `${workType} - ${subject}`,
           deadline: new Date(deadline).toISOString(),
-          description,
           budget: parseFloat(calculatePrice()),
           hirer_id: session.user.id,
           attachment_urls: attachmentUrls.length > 0 ? attachmentUrls : null
