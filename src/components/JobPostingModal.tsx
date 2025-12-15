@@ -25,8 +25,8 @@ const WORK_TYPES = [
 ];
 
 const SUBJECTS = [
-  "Mathematics", "Physics", "Chemistry", "Computer Science",
-  "Engineering", "English", "History", "Business", "Other"
+  "Math", "Thermodynamics", "Mechanics", "Physics", "Chemistry",
+  "Aerodynamics", "AVE", "Sociology", "Others"
 ];
 
 const QUALITY_LEVELS = [
