@@ -69,12 +69,12 @@ export function JobApplicationModal({
       }
 
       const { error } = await supabase
-        .from('job_applications')
+        .from('applications')
         .insert({
           job_id: job.id,
           freelancer_id: session.user.id,
           cover_letter: values.coverLetter,
-          proposed_price: Number(values.proposedPrice),
+          proposed_rate: Number(values.proposedPrice),
           status: 'pending',
         });
 

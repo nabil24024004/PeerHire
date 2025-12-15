@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ArrowLeft, User, Star, DollarSign, FileText, Calendar, 
+  ArrowLeft, User, Star, DollarSign, FileText, Calendar,
   CheckCircle, XCircle, MessageSquare, ArrowUpDown
 } from "lucide-react";
 
@@ -43,8 +43,8 @@ interface JobData {
 
 interface Application {
   id: string;
-  cover_letter: string;
-  proposed_price: number;
+  cover_letter: string | null;
+  proposed_rate: number | null;
   status: string;
   created_at: string;
   freelancer_id: string;
@@ -52,11 +52,8 @@ interface Application {
     full_name: string;
     avatar_url: string | null;
     rating: number | null;
-    total_reviews: number | null;
-  };
-  freelancer_profiles: {
+    total_reviews: number;
     skills: string[] | null;
-    total_jobs_completed: number | null;
   };
 }
 
@@ -76,9 +73,9 @@ export default function HirerViewOffers() {
     const sorted = [...applications];
     switch (sortBy) {
       case "price_low":
-        return sorted.sort((a, b) => a.proposed_price - b.proposed_price);
+        return sorted.sort((a, b) => (a.proposed_rate || 0) - (b.proposed_rate || 0));
       case "price_high":
-        return sorted.sort((a, b) => b.proposed_price - a.proposed_price);
+        return sorted.sort((a, b) => (b.proposed_rate || 0) - (a.proposed_rate || 0));
       case "rating_high":
         return sorted.sort((a, b) => (b.profiles.rating || 0) - (a.profiles.rating || 0));
       case "newest":
@@ -90,20 +87,15 @@ export default function HirerViewOffers() {
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         navigate("/login");
         return;
       }
 
-      // Check active role from profiles table
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('active_role')
-        .eq('id', session.user.id)
-        .single();
-
-      if (profileData?.active_role !== 'hirer') {
+      // Check active role from localStorage
+      const activeRole = localStorage.getItem('activeRole');
+      if (activeRole !== 'hirer') {
         navigate("/freelancer/dashboard");
         return;
       }
@@ -139,14 +131,15 @@ export default function HirerViewOffers() {
 
       // Fetch applications with freelancer details
       const { data: applicationsData, error: applicationsError } = await supabase
-        .from('job_applications')
+        .from('applications')
         .select(`
           *,
-          profiles!job_applications_freelancer_id_fkey(
+          profiles!applications_freelancer_id_fkey(
             full_name, 
             avatar_url, 
             rating, 
-            total_reviews
+            total_reviews,
+            skills
           )
         `)
         .eq('job_id', taskId)
@@ -154,23 +147,7 @@ export default function HirerViewOffers() {
 
       if (applicationsError) throw applicationsError;
 
-      // Fetch freelancer profiles separately for each application
-      const applicationsWithProfiles = await Promise.all(
-        (applicationsData || []).map(async (app) => {
-          const { data: freelancerProfile } = await supabase
-            .from('freelancer_profiles')
-            .select('skills, total_jobs_completed')
-            .eq('user_id', app.freelancer_id)
-            .single();
-
-          return {
-            ...app,
-            freelancer_profiles: freelancerProfile || { skills: null, total_jobs_completed: null },
-          };
-        })
-      );
-
-      setApplications(applicationsWithProfiles);
+      setApplications(applicationsData || []);
       setLoading(false);
     } catch (error: any) {
       toast({
@@ -198,7 +175,7 @@ export default function HirerViewOffers() {
 
       // Update accepted application status
       const { error: acceptError } = await supabase
-        .from('job_applications')
+        .from('applications')
         .update({ status: 'accepted' })
         .eq('id', application.id);
 
@@ -206,7 +183,7 @@ export default function HirerViewOffers() {
 
       // Reject all other applications
       const { error: rejectError } = await supabase
-        .from('job_applications')
+        .from('applications')
         .update({ status: 'rejected' })
         .eq('job_id', taskId)
         .neq('id', application.id);
@@ -236,7 +213,7 @@ export default function HirerViewOffers() {
     setIsProcessing(true);
     try {
       const { error } = await supabase
-        .from('job_applications')
+        .from('applications')
         .update({ status: 'rejected' })
         .eq('id', application.id);
 
@@ -263,44 +240,8 @@ export default function HirerViewOffers() {
   };
 
   const handleMessageFreelancer = async (freelancerId: string) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      // Check if conversation already exists
-      const { data: existingConversation } = await supabase
-        .from('conversations')
-        .select('id')
-        .eq('hirer_id', session.user.id)
-        .eq('freelancer_id', freelancerId)
-        .eq('job_id', taskId)
-        .maybeSingle();
-
-      if (existingConversation) {
-        navigate(`/messages?conversation=${existingConversation.id}`);
-      } else {
-        // Create new conversation
-        const { data: newConversation, error } = await supabase
-          .from('conversations')
-          .insert({
-            hirer_id: session.user.id,
-            freelancer_id: freelancerId,
-            job_id: taskId,
-          })
-          .select('id')
-          .single();
-
-        if (error) throw error;
-
-        navigate(`/messages?conversation=${newConversation.id}`);
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error starting conversation",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
+    // Navigate directly to messages with chat parameter
+    navigate(`/messages?chat=${freelancerId}`);
   };
 
   const openConfirmDialog = (application: Application, type: "accept" | "reject") => {
@@ -410,7 +351,7 @@ export default function HirerViewOffers() {
                             <h3 className="text-sm sm:text-lg font-bold break-words">{application.profiles.full_name}</h3>
                             <div className="text-right flex-shrink-0 sm:hidden">
                               <p className="text-[10px] text-muted-foreground">Proposed</p>
-                              <p className="text-base font-bold text-success">${application.proposed_price}</p>
+                              <p className="text-base font-bold text-success">${application.proposed_rate || 0}</p>
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
@@ -441,7 +382,7 @@ export default function HirerViewOffers() {
                       </div>
                       <div className="text-right flex-shrink-0 hidden sm:block">
                         <p className="text-xs sm:text-sm text-muted-foreground">Proposed Price</p>
-                        <p className="text-xl sm:text-2xl font-bold text-success">${application.proposed_price}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-success">${application.proposed_rate || 0}</p>
                       </div>
                     </div>
 

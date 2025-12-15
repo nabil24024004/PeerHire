@@ -76,7 +76,7 @@ export default function HirerTasks() {
         const tasksWithCounts = await Promise.all(
           (jobsData || []).map(async (job) => {
             const { count } = await supabase
-              .from("job_applications")
+              .from("applications")
               .select("*", { count: "exact", head: true })
               .eq("job_id", job.id);
 
@@ -87,7 +87,7 @@ export default function HirerTasks() {
                 .select("full_name")
                 .eq("id", job.freelancer_id)
                 .single();
-              
+
               freelancerName = profileData?.full_name || null;
             }
 
@@ -270,8 +270,8 @@ export default function HirerTasks() {
                     {searchQuery
                       ? "No tasks found matching your search"
                       : activeTab === "all"
-                      ? "You haven't posted any tasks yet"
-                      : `No ${activeTab.replace("_", " ")} tasks`}
+                        ? "You haven't posted any tasks yet"
+                        : `No ${activeTab.replace("_", " ")} tasks`}
                   </p>
                 </CardContent>
               </Card>
@@ -303,7 +303,7 @@ export default function HirerTasks() {
                       <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                         {task.description}
                       </p>
-                      
+
                       <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-sm">
                         <div className="flex items-center gap-1 text-primary">
                           <DollarSign className="w-4 h-4" />
@@ -381,7 +381,7 @@ export default function HirerTasks() {
               How was your experience with this freelancer?
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedTask && (
             <div className="space-y-4 py-4">
               <div className="text-sm text-muted-foreground">
@@ -400,11 +400,10 @@ export default function HirerTasks() {
                       className="focus:outline-none transition-colors"
                     >
                       <Star
-                        className={`h-8 w-8 ${
-                          star <= rating
+                        className={`h-8 w-8 ${star <= rating
                             ? 'fill-yellow-400 text-yellow-400'
                             : 'text-muted-foreground'
-                        }`}
+                          }`}
                       />
                     </button>
                   ))}
