@@ -173,12 +173,11 @@ export default function HirerViewOffers() {
   const handleAcceptApplication = async (application: Application) => {
     setIsProcessing(true);
     try {
-      // Update job status and assign freelancer
+      // Update job status (freelancer is tracked via accepted application)
       const { error: jobError } = await supabase
         .from('jobs')
         .update({
-          status: 'assigned',
-          freelancer_id: application.freelancer_id,
+          status: 'in_progress',
         })
         .eq('id', taskId);
 
