@@ -1,14 +1,85 @@
 # PeerHire Changelog
 
-## December 15, 2024 - Schema Migration Fixes
+## December 16, 2024 - Application Flow & Schema Alignment Fixes
 
 ### Overview
-Major cleanup after Supabase schema migration. Fixed all components to use the simplified schema where:
-- All users are dual-roled (both hirer and freelancer)
-- Roles controlled by `is_hirer`/`is_freelancer` booleans in `profiles`
-- Active role stored in localStorage (not database)
+Fixed critical issues preventing freelancers from submitting applications and hirers from accepting/managing them. All components now properly aligned with the database schema.
 
 ---
+
+### Application Submission Fixes
+
+| Component | Issue | Fix |
+|-----------|-------|-----|
+| `JobApplicationModal.tsx` | Using `job_applications` table | Changed to `applications` table |
+| `JobApplicationModal.tsx` | Using `proposed_price` column | Changed to `proposed_rate` |
+
+---
+
+### Hirer Tasks Page Fixes
+
+**File:** `HirerTasks.tsx`
+
+| Issue | Fix |
+|-------|-----|
+| `Task` interface had `subject`, `work_type`, `page_count` | Changed to `category` only |
+| `job.freelancer_id` doesn't exist | Query `applications` for accepted freelancer |
+| Division by zero for completion rate | Added `total_tasks > 0` check |
+
+---
+
+### Hirer View Offers Page Fixes
+
+**File:** `HirerViewOffers.tsx`
+
+| Issue | Fix |
+|-------|-----|
+| Foreign key reference `profiles!applications_freelancer_id_fkey` | Fetch profiles separately |
+| `JobData` interface had old fields | Changed to `category`, nullable `deadline` |
+| `freelancer_profiles` references | Changed to `profiles` |
+| Accept updating `jobs.freelancer_id` | Removed (column doesn't exist) |
+| Job status on accept | Changed `assigned` → `in_progress` |
+
+---
+
+### Freelancer Jobs Page Fixes
+
+**File:** `FreelancerJobs.tsx`
+
+| Issue | Fix |
+|-------|-----|
+| "Accept" button for freelancers | Removed (only hirers accept) |
+| "Decline" button | Renamed to "Withdraw" application |
+| `handleAcceptJob` function | Removed entirely |
+| `handleDeclineJob` function | Renamed to `handleWithdrawApplication` |
+| Message Hirer button | Fixed to navigate with `?chat={hirer_id}` |
+
+---
+
+### Hirer Profile Page Fixes
+
+**File:** `HirerProfile.tsx`
+
+| Issue | Fix |
+|-------|-----|
+| `task.work_type` in recent tasks | Changed to `task.category` |
+| Division by zero for completion % | Added `total_tasks > 0` check |
+
+---
+
+### Job Posting Modal Updates
+
+**File:** `JobPostingModal.tsx`
+
+| Issue | Fix |
+|-------|-----|
+| Updated subjects list | Math, Thermodynamics, Mechanics, Physics, Chemistry, Aerodynamics, AVE, Sociology, Others |
+| Custom subject for "Others" | Added text input when "Others" is selected |
+| Inserting non-existent columns | Changed to use `category` column |
+
+---
+
+## December 15, 2024 - Schema Migration Fixes
 
 ### Critical: RLS Policy Fix
 **File:** `supabase/migrations/013_fix_jobs_rls_recursion.sql`

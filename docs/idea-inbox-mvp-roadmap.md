@@ -1,6 +1,6 @@
 # PeerHire MVP Roadmap
 
-> **Last Updated:** December 15, 2024
+> **Last Updated:** December 16, 2024
 
 ## 🎯 Vision
 
@@ -21,7 +21,7 @@ PeerHire is a peer-to-peer marketplace exclusively for AAUB students, connecting
 
 ### Hirer Features
 - [x] Dashboard with statistics (jobs posted, active, completed)
-- [x] Job posting system
+- [x] Job posting system with custom subjects
 - [x] My Tasks page with job management
 - [x] View applications from freelancers
 - [x] Accept/reject applications
@@ -34,9 +34,10 @@ PeerHire is a peer-to-peer marketplace exclusively for AAUB students, connecting
 ### Freelancer Features
 - [x] Dashboard with earnings statistics
 - [x] Find Work / Browse Jobs page with search/filters
-- [x] Job application with cover letter and proposed price
+- [x] Job application with cover letter and proposed rate
 - [x] Save jobs for later (localStorage)
 - [x] My Jobs page with tabs (Active, Pending, Completed)
+- [x] Withdraw pending applications
 - [x] Earnings/payments tracking (from applications)
 - [x] Profile page with skills
 - [x] Settings page with availability status
@@ -68,7 +69,17 @@ PeerHire is a peer-to-peer marketplace exclusively for AAUB students, connecting
 
 ## 🔧 Recent Fixes (December 2024)
 
-### Schema Migration Cleanup
+### December 16, 2024 - Application Flow Fixes
+| Component | Fix Applied |
+|-----------|-------------|
+| JobApplicationModal | Changed `job_applications` → `applications`, `proposed_price` → `proposed_rate` |
+| HirerTasks | Updated Task interface to use `category`, query applications for freelancer |
+| HirerViewOffers | Fetch profiles separately, removed `freelancer_id` from jobs update |
+| FreelancerJobs | Removed Accept button (hirers accept), renamed Decline to Withdraw |
+| HirerProfile | Use `category` instead of `work_type`, fix division by zero |
+| JobPostingModal | Updated subjects list, added custom subject input for "Others" |
+
+### December 15, 2024 - Schema Migration Cleanup
 | Component | Fix Applied |
 |-----------|-------------|
 | Authentication | Query `profiles` table with `is_hirer`/`is_freelancer` |
