@@ -9,6 +9,15 @@ const AuthCallback = () => {
     useEffect(() => {
         const handleAuthCallback = async () => {
             try {
+                // Check for error in URL query params (OAuth error from Supabase)
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorCode = urlParams.get('error_code');
+                const errorDescription = urlParams.get('error_description');
+
+                if (errorCode || errorDescription) {
+                    throw new Error(`${errorCode}: ${errorDescription}`);
+                }
+
                 // Get the session from the URL hash (OAuth returns tokens here)
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
@@ -58,12 +67,12 @@ const AuthCallback = () => {
 
                     // If still no session, redirect to login
                     setError('Authentication failed. Please try again.');
-                    setTimeout(() => navigate('/login'), 2000);
+                    setTimeout(() => navigate('/login'), 3000);
                 }
             } catch (err: any) {
                 console.error('Auth callback error:', err);
                 setError(err.message || 'Authentication failed');
-                setTimeout(() => navigate('/login'), 2000);
+                setTimeout(() => navigate('/login'), 5000);
             }
         };
 
