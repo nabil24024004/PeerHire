@@ -38,16 +38,27 @@ const HirerDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    let isMounted = true;
+
+    const handleAuth = async (session: any) => {
+      if (!isMounted) return;
 
       if (!session) {
-        navigate("/login");
+        // Only redirect if not an OAuth callback (check for hash tokens)
+        if (!window.location.hash.includes('access_token')) {
+          navigate("/login");
+        }
         return;
       }
 
-      // Check localStorage for active role - redirect if user chose freelancer
-      const activeRole = localStorage.getItem('activeRole');
+      // Set default role if not set
+      let activeRole = localStorage.getItem('activeRole');
+      if (!activeRole) {
+        localStorage.setItem('activeRole', 'hirer');
+        activeRole = 'hirer';
+      }
+
+      // Redirect if user chose freelancer
       if (activeRole === 'freelancer') {
         navigate("/freelancer/dashboard");
         return;
@@ -75,15 +86,24 @@ const HirerDashboard = () => {
       setIsLoading(false);
     };
 
-    checkAuth();
-
+    // Listen for auth state changes (handles OAuth callback)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        handleAuth(session);
+      } else if (event === 'SIGNED_OUT') {
         navigate("/login");
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Also check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleAuth(session);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const fetchDashboardData = async (userId: string) => {
