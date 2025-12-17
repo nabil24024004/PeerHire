@@ -31,9 +31,10 @@ interface Job {
   status: string;
   hirer_id: string;
   created_at: string;
-  profiles: {
+  profiles?: {
     full_name: string;
   };
+  hirer_name?: string;
 }
 
 const FreelancerBrowseJobs = () => {
@@ -80,14 +81,27 @@ const FreelancerBrowseJobs = () => {
       // Fetch all open jobs
       const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          profiles!jobs_hirer_id_fkey(full_name)
-        `)
+        .select('*')
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
       if (jobsError) throw jobsError;
+
+      // Fetch hirer profiles for each job
+      const jobsWithHirerNames = await Promise.all(
+        (jobsData || []).map(async (job) => {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', job.hirer_id)
+            .single();
+
+          return {
+            ...job,
+            hirer_name: profileData?.full_name || 'Unknown',
+          };
+        })
+      );
 
       // Fetch user's applications (correct table name)
       const { data: applicationsData, error: applicationsError } = await supabase
@@ -106,11 +120,11 @@ const FreelancerBrowseJobs = () => {
       setSavedJobIds(savedIds);
 
       // Get saved jobs list
-      const savedJobsList = jobsData?.filter(job => savedIds.has(job.id)) || [];
+      const savedJobsList = jobsWithHirerNames?.filter(job => savedIds.has(job.id)) || [];
       setSavedJobs(savedJobsList);
 
       // Filter out jobs already applied to
-      const availableJobs = jobsData?.filter(job => !appliedIds.has(job.id)) || [];
+      const availableJobs = jobsWithHirerNames?.filter(job => !appliedIds.has(job.id)) || [];
       setJobs(availableJobs);
       setFilteredJobs(availableJobs);
 

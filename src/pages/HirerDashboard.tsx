@@ -16,12 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 interface JobWithApplications {
   id: string;
   title: string;
-  subject: string | null;
-  page_count: number;
-  deadline: string;
+  category: string | null;
+  deadline: string | null;
   budget: number;
   status: string;
-  freelancer_id: string | null;
   applications_count: number;
 }
 
@@ -238,13 +236,11 @@ const HirerDashboard = () => {
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base md:text-lg font-bold mb-1 truncate">{job.title}</h3>
                           <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground">
-                            <span>{job.subject || "General"}</span>
-                            <span className="hidden md:inline">•</span>
-                            <span>{job.page_count} pages</span>
+                            <span>{job.category || "General"}</span>
                             <span className="hidden md:inline">•</span>
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                              Due {new Date(job.deadline).toLocaleDateString()}
+                              Due {job.deadline ? new Date(job.deadline).toLocaleDateString() : 'No deadline'}
                             </span>
                             <span className="hidden md:inline">•</span>
                             <span className="text-primary font-semibold">${job.budget}</span>
