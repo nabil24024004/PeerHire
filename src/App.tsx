@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PageLoader } from "@/components/PageLoader";
 import { SplashScreen } from "@/components/SplashScreen";
+import { SpeedInsights } from "@/components/SpeedInsights";
 
 // Lazy load all pages for better code splitting
 const Landing = lazy(() => import("./pages/Landing"));
@@ -57,6 +58,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <SpeedInsights />
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
