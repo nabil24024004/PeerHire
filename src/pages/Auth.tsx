@@ -72,9 +72,9 @@ const Auth = () => {
     const fullName = formData.get("name") as string;
     const department = formData.get("department") as string;
 
-    // Validate university email domain
-    if (!inputEmail.endsWith("@aaub.edu.bd")) {
-      setError("Please use your AAUB university email (@aaub.edu.bd)");
+    // Validate email format (basic check)
+    if (!inputEmail.includes("@")) {
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
