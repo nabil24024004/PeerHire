@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PageLoader } from "@/components/PageLoader";
 import { SplashScreen } from "@/components/SplashScreen";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Lazy load all pages for better code splitting
 const Landing = lazy(() => import("./pages/Landing"));
@@ -89,6 +90,7 @@ const App = () => {
             </Routes>
           </Suspense>
         </BrowserRouter>
+        <SpeedInsights />
       </TooltipProvider>
     </QueryClientProvider>
   );
