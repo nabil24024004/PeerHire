@@ -32,7 +32,8 @@ All database tables have RLS enabled with appropriate policies.
 
 ### profiles
 ```sql
--- Only authenticated users can view profiles
+-- Only authenticated users can view profiles (no anonymous access)
+-- Migration 014 fixed the security vulnerability
 USING (auth.uid() IS NOT NULL)
 
 -- Users can only insert their own profile
@@ -41,6 +42,10 @@ WITH CHECK (auth.uid() = id)
 -- Users can only update their own profile
 USING (auth.uid() = id)
 ```
+
+> **Security Note (Dec 2024):** While RLS ensures authentication is required,
+> email privacy should be handled at the application level by not selecting
+> the email column when fetching other users' profiles.
 
 ### jobs
 ```sql
