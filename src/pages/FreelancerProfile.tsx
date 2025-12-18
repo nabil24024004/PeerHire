@@ -76,15 +76,20 @@ const FreelancerProfile = () => {
         const { count: completedJobsCount } = await supabase
           .from('jobs')
           .select('id', { count: 'exact', head: true })
-          .eq('freelancer_id', user.id)
-          .eq('status', 'completed');
+          .match({ freelancer_id: user.id, status: 'completed' });
 
         // Fetch current jobs count (assigned or in_progress)
-        const { count: currentJobsCount } = await supabase
+        const { count: assignedCount } = await supabase
           .from('jobs')
           .select('id', { count: 'exact', head: true })
-          .eq('freelancer_id', user.id)
-          .or('status.eq.assigned,status.eq.in_progress');
+          .match({ freelancer_id: user.id, status: 'assigned' });
+
+        const { count: inProgressCount } = await supabase
+          .from('jobs')
+          .select('id', { count: 'exact', head: true })
+          .match({ freelancer_id: user.id, status: 'in_progress' });
+
+        const currentJobsCount = (assignedCount || 0) + (inProgressCount || 0);
 
         // Fetch reviews (simple query to avoid TypeScript issues with joins)
         const { data: reviewsData } = await supabase
