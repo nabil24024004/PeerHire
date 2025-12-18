@@ -62,49 +62,54 @@ export default function FreelancerJobDetails() {
         navigate("/login");
         return;
       }
-      
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('active_role')
-        .eq('id', user.id)
-        .single();
 
-      if (profileData?.active_role === 'hirer') {
+      // Check localStorage for active role
+      const activeRole = localStorage.getItem('activeRole');
+      if (activeRole === 'hirer') {
         navigate("/hirer/dashboard");
         return;
       }
-      
+
       fetchJobDetails();
     };
-    
+
     checkRoleAndFetch();
   }, [jobId, user, navigate]);
 
   const fetchJobDetails = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch job data
+      const { data: jobData, error: jobError } = await supabase
         .from("jobs")
-        .select(
-          `
-          *,
-          profiles!jobs_hirer_id_fkey (
-            id,
-            full_name,
-            email
-          )
-        `
-        )
+        .select("*")
         .eq("id", jobId)
         .single();
 
-      if (error) throw error;
+      if (jobError) throw jobError;
+
+      // Fetch hirer profile separately
+      const { data: hirerData } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .eq("id", jobData.hirer_id)
+        .single();
 
       setJob({
-        ...data,
+        id: jobData.id,
+        title: jobData.title,
+        description: jobData.description || "",
+        subject: jobData.category || "",
+        work_type: jobData.required_skills?.[0] || "General",
+        page_count: 1,
+        budget: jobData.budget,
+        deadline: jobData.deadline || new Date().toISOString(),
+        quality_level: "standard",
+        status: jobData.status,
+        attachment_urls: jobData.attachment_urls,
         hirer: {
-          full_name: data.profiles?.full_name || "Unknown",
-          email: data.profiles?.email || "",
-          id: data.hirer_id,
+          full_name: hirerData?.full_name || "Unknown",
+          email: hirerData?.email || "",
+          id: jobData.hirer_id,
         },
       });
     } catch (error: any) {
@@ -171,9 +176,20 @@ export default function FreelancerJobDetails() {
   const downloadFile = async (url: string) => {
     try {
       const fileName = url.split("/").pop() || "download";
+
+      // Check if it's a full URL or just a path
+      let filePath = url;
+      if (url.includes("supabase.co/storage") || url.includes("/object/public/")) {
+        // Extract the path after 'job-attachments/'
+        const match = url.match(/job-attachments\/(.+)$/);
+        if (match) {
+          filePath = match[1];
+        }
+      }
+
       const { data, error } = await supabase.storage
         .from("job-attachments")
-        .download(url);
+        .download(filePath);
 
       if (error) throw error;
 
@@ -186,9 +202,10 @@ export default function FreelancerJobDetails() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
     } catch (error: any) {
+      console.error("Download error:", error);
       toast({
         title: "Download failed",
-        description: error.message,
+        description: error.message || "Could not download file",
         variant: "destructive",
       });
     }
@@ -361,11 +378,10 @@ export default function FreelancerJobDetails() {
                     chatMessages.map((msg, idx) => (
                       <div
                         key={idx}
-                        className={`p-3 rounded-lg ${
-                          msg.role === "user"
-                            ? "bg-primary text-primary-foreground ml-8"
-                            : "bg-muted mr-8"
-                        }`}
+                        className={`p-3 rounded-lg ${msg.role === "user"
+                          ? "bg-primary text-primary-foreground ml-8"
+                          : "bg-muted mr-8"
+                          }`}
                       >
                         <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                       </div>
