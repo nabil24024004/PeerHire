@@ -80,6 +80,30 @@ export function JobApplicationModal({
 
       if (error) throw error;
 
+      // Create notification for the hirer
+      const { data: jobData } = await supabase
+        .from('jobs')
+        .select('hirer_id')
+        .eq('id', job.id)
+        .single();
+
+      const { data: freelancerProfile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .single();
+
+      if (jobData?.hirer_id) {
+        await supabase.from('notifications').insert({
+          user_id: jobData.hirer_id,
+          title: 'New Application',
+          message: `${freelancerProfile?.full_name || 'A freelancer'} applied to "${job.title}"`,
+          type: 'application',
+          action_url: `/hirer/task/${job.id}/offers`,
+          is_read: false,
+        });
+      }
+
       onSuccess();
       form.reset();
     } catch (error: any) {

@@ -216,6 +216,22 @@ export function MessagingSystem({
 
       if (error) throw error;
 
+      // Create notification for the recipient
+      const senderProfile = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', currentUserId)
+        .single();
+
+      await supabase.from('notifications').insert({
+        user_id: selectedConversationId,
+        title: 'New Message',
+        message: `${senderProfile.data?.full_name || 'Someone'} sent you a message`,
+        type: 'message',
+        action_url: `/messages?chat=${currentUserId}`,
+        is_read: false,
+      });
+
       setNewMessage("");
       await loadMessages(selectedConversationId);
       await loadChatPartners();
