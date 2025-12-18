@@ -11,11 +11,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Edit, 
-  Briefcase, 
-  CheckCircle, 
-  DollarSign, 
+import {
+  Edit,
+  Briefcase,
+  CheckCircle,
+  DollarSign,
   Star,
   Calendar,
   FileText,
@@ -44,30 +44,26 @@ const FreelancerProfile = () => {
         navigate("/login");
         return;
       }
-      
-      if (!authLoading && user) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('active_role')
-          .eq('id', user.id)
-          .single();
 
-        if (profileData?.active_role === 'hirer') {
+      if (!authLoading && user) {
+        // Check localStorage for active role
+        const activeRole = localStorage.getItem('activeRole');
+        if (activeRole === 'hirer') {
           navigate("/hirer/profile");
         }
       }
     };
-    
+
     checkRole();
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
-      
+
       setLoading(true);
       try {
-        // Fetch base profile
+        // Fetch base profile (all freelancer data is in profiles table now)
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -75,17 +71,6 @@ const FreelancerProfile = () => {
           .single();
 
         if (profileError) throw profileError;
-
-        // Fetch freelancer-specific data
-        const { data: freelancerData, error: freelancerError } = await supabase
-          .from('freelancer_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (freelancerError && freelancerError.code !== 'PGRST116') {
-          console.error('Error fetching freelancer data:', freelancerError);
-        }
 
         // Fetch completed jobs count
         const { count: completedJobsCount } = await supabase
@@ -118,16 +103,17 @@ const FreelancerProfile = () => {
           ? reviewsData.reduce((acc, r) => acc + r.rating, 0) / reviewsData.length
           : 0;
 
-        // Format the profile data
+        // Format the profile data (all data comes from profiles table now)
         const formattedProfile = {
           ...profileData,
-          ...freelancerData,
           completed_jobs: completedJobsCount || 0,
           current_jobs: currentJobsCount || 0,
           avg_rating: avgRating,
-          total_earnings: freelancerData?.total_earnings || 0,
+          total_earnings: profileData.total_earnings || 0,
           member_since: new Date(profileData.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-          skills: freelancerData?.skills || [],
+          skills: profileData.skills || [],
+          hourly_rate: profileData.hourly_rate || 0,
+          handwriting_style: profileData.handwriting_sample_url ? 'Uploaded' : 'None',
           handwriting_samples: [handwritingSample1, handwritingSample2], // TODO: Fetch from storage
           portfolio: [], // TODO: Fetch portfolio items
           reviews: reviewsData?.map(r => ({
@@ -171,34 +157,24 @@ const FreelancerProfile = () => {
 
   const handleSaveProfile = async (data: any) => {
     try {
-      // Update base profile
+      // Update profile - all freelancer data is now in profiles table
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
           full_name: data.full_name,
-          department: data.department,
-          year_of_study: data.year_of_study,
+          student_id: data.student_id,
           bio: data.bio,
+          skills: data.skills,
+          hourly_rate: data.hourly_rate,
+          portfolio_url: data.portfolio_url,
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
 
-      // Update freelancer-specific data
-      const { error: freelancerError } = await supabase
-        .from('freelancer_profiles')
-        .upsert({
-          user_id: user.id,
-          skills: data.skills,
-          hourly_rate: data.hourly_rate,
-          handwriting_style: data.handwriting_style,
-        });
-
-      if (freelancerError) throw freelancerError;
-
       // Update local state
       setProfile({ ...profile, ...data });
-      
+
       toast({
         title: "Success",
         description: "Profile updated successfully",
@@ -219,9 +195,8 @@ const FreelancerProfile = () => {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-4 w-4 ${
-              star <= rating ? "fill-yellow-500 text-yellow-500" : "text-muted"
-            }`}
+            className={`h-4 w-4 ${star <= rating ? "fill-yellow-500 text-yellow-500" : "text-muted"
+              }`}
           />
         ))}
       </div>
@@ -234,14 +209,14 @@ const FreelancerProfile = () => {
         {/* Profile Header */}
         <Card className="p-8 border-border bg-card animate-fade-in-up">
           <div className="flex items-start gap-6 flex-col md:flex-row">
-            <AvatarUpload 
+            <AvatarUpload
               userId={user.id}
               currentAvatarUrl={profile.avatar_url}
               fullName={profile.full_name}
               size="xl"
               onAvatarChange={(url) => setProfile({ ...profile, avatar_url: url })}
             />
-            
+
             <div className="flex-1 space-y-4">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
@@ -270,7 +245,7 @@ const FreelancerProfile = () => {
                   Edit Profile
                 </Button>
               </div>
-              
+
               {profile.bio && (
                 <p className="text-muted-foreground leading-relaxed">{profile.bio}</p>
               )}
@@ -429,13 +404,12 @@ const FreelancerProfile = () => {
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
         initialData={{
-          full_name: profile.full_name,
-          department: profile.department,
-          year_of_study: profile.year_of_study,
-          bio: profile.bio,
-          skills: profile.skills,
-          hourly_rate: profile.hourly_rate,
-          handwriting_style: profile.handwriting_style,
+          full_name: profile.full_name || '',
+          bio: profile.bio || '',
+          skills: profile.skills || [],
+          hourly_rate: profile.hourly_rate || 0,
+          portfolio_url: profile.portfolio_url || '',
+          student_id: profile.student_id || '',
         }}
         role="freelancer"
         onSave={handleSaveProfile}
