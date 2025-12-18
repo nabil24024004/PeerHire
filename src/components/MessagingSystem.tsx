@@ -56,14 +56,10 @@ export function MessagingSystem({
   useEffect(() => {
     if (selectedConversationId) {
       loadMessages(selectedConversationId);
-
-      // If partner not in list yet (new chat from LiveBoard), add them
-      const existingPartner = chatPartners.find(p => p.id === selectedConversationId);
-      if (!existingPartner) {
-        loadNewPartner(selectedConversationId);
-      }
+      // Always try to load partner if not in list (handles race condition)
+      loadNewPartner(selectedConversationId);
     }
-  }, [selectedConversationId]);
+  }, [selectedConversationId, chatPartners.length]);
 
   // Load a new partner profile (for starting new conversation)
   const loadNewPartner = async (partnerId: string) => {
