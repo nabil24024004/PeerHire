@@ -4,7 +4,7 @@ A university-exclusive peer-to-peer handwriting service marketplace connecting s
 
 ## 🌟 Overview
 
-PeerHire is a React-based web application built for AAUB (Asian University of Bangladesh) students. It enables:
+PeerHire is a React-based web application built for AAUB (Aviation and Aerospace University Bangladesh) students. It enables:
 - **Hirers**: Students who need handwritten assignments, lab reports, or other academic materials
 - **Freelancers**: Students with good handwriting skills who can complete these tasks for payment
 
