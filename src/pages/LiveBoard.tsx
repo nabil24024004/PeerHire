@@ -27,10 +27,19 @@ const LiveBoard = () => {
   const [freelancers, setFreelancers] = useState<FreelancerProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Get current user ID
+    const getCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+      }
+    };
+    getCurrentUser();
     fetchFreelancers();
 
     // Set up realtime subscription on profiles table
@@ -135,6 +144,11 @@ const LiveBoard = () => {
   };
 
   const filteredFreelancers = freelancers.filter((freelancer) => {
+    // Don't show current user in the list (prevent self-hiring)
+    if (currentUserId && freelancer.id === currentUserId) {
+      return false;
+    }
+
     const name = freelancer.full_name || "";
     const bio = freelancer.bio || "";
     const matchesSearch =

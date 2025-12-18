@@ -78,11 +78,12 @@ const FreelancerBrowseJobs = () => {
 
   const fetchJobs = async (userId: string) => {
     try {
-      // Fetch all open jobs
+      // Fetch all open jobs (excluding jobs posted by current user - prevent self-hiring)
       const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
         .select('*')
         .eq('status', 'open')
+        .neq('hirer_id', userId)  // Don't show your own jobs
         .order('created_at', { ascending: false });
 
       if (jobsError) throw jobsError;
