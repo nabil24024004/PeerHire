@@ -215,8 +215,16 @@ const LiveBoard = () => {
               <Card key={freelancer.id} className="p-4 md:p-6 card-hover">
                 {/* Header */}
                 <div className="flex items-start gap-3 md:gap-4 mb-4">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-lg md:text-2xl font-bold">
-                    {freelancer.full_name?.charAt(0) || "?"}
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-lg md:text-2xl font-bold overflow-hidden">
+                    {freelancer.avatar_url ? (
+                      <img
+                        src={freelancer.avatar_url}
+                        alt={freelancer.full_name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      freelancer.full_name?.charAt(0) || "?"
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base md:text-lg mb-1 truncate">{freelancer.full_name || "Unnamed"}</h3>
