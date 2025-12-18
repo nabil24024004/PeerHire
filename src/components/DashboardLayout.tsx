@@ -37,6 +37,7 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   const location = useLocation();
   const { toast } = useToast();
   const [userName, setUserName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(() => {
     const stored = localStorage.getItem("sidebarPinned");
@@ -68,7 +69,7 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           .eq('user_id', userId)
           .eq('read', false)
       ]);
-      
+
       setUnreadCount(messagesResult.count || 0);
       setNotificationCount(notificationsResult.count || 0);
     } catch (error) {
@@ -83,15 +84,18 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setCurrentUserId(session.user.id);
-        
+
         const { data: profileData } = await supabase
           .from('profiles')
-          .select('full_name')
+          .select('full_name, avatar_url')
           .eq('id', session.user.id)
           .single();
-        
+
         if (profileData?.full_name) {
           setUserName(profileData.full_name);
+        }
+        if (profileData?.avatar_url) {
+          setAvatarUrl(profileData.avatar_url);
         }
 
         // Load initial counts in parallel
@@ -112,6 +116,8 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
               if (payload.new.full_name) {
                 setUserName(payload.new.full_name);
               }
+              // Update avatar in real-time
+              setAvatarUrl(payload.new.avatar_url || null);
             }
           )
           .subscribe();
@@ -158,7 +164,7 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
     };
 
     fetchUserProfile();
-    
+
     return () => {
       cleanupFn?.();
     };
@@ -250,24 +256,23 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
               if (inDrawer) setIsMobileMenuOpen(false);
             }}
             aria-current={isActive ? "page" : undefined}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${
-              isActive
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
           >
             {isActive && !inDrawer && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
             )}
-            
+
             <item.icon className="w-5 h-5 flex-shrink-0" />
-            
+
             {(sidebarExpanded || inDrawer) && (
               <span className="font-semibold flex-1 text-left whitespace-nowrap">
                 {item.label}
               </span>
             )}
-            
+
             {(sidebarExpanded || inDrawer) && item.badge && (
               <Badge className="bg-primary text-primary-foreground ml-auto">
                 {item.badge}
@@ -298,9 +303,8 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         {/* Desktop Sidebar - Hidden on mobile */}
         {!isMobile && (
           <aside
-            className={`bg-card border-r border-border flex-shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out ${
-              sidebarExpanded ? "w-64" : "w-20"
-            }`}
+            className={`bg-card border-r border-border flex-shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out ${sidebarExpanded ? "w-64" : "w-20"
+              }`}
             onMouseEnter={handleSidebarMouseEnter}
             onMouseLeave={handleSidebarMouseLeave}
             style={{ pointerEvents: 'auto' }}
@@ -332,11 +336,10 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                   <TooltipTrigger asChild>
                     <button
                       onClick={togglePin}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                        isPinned
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${isPinned
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        }`}
                     >
                       {isPinned ? (
                         <Pin className="w-5 h-5 flex-shrink-0" />
@@ -381,7 +384,7 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
         {/* Mobile Drawer Overlay */}
         {isMobile && isMobileMenuOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setIsMobileMenuOpen(false)}
           />
@@ -390,9 +393,8 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         {/* Mobile Drawer */}
         {isMobile && (
           <aside
-            className={`fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 transform transition-transform duration-300 ease-in-out ${
-              isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+            className={`fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
           >
             <div className="flex flex-col h-full p-4">
               <div className="mb-8 flex items-center justify-between">
@@ -422,117 +424,125 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           </aside>
         )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen w-full">
-        {/* Top Bar */}
-        <header className="bg-card border-b border-border sticky top-0 z-30">
-          <div className="flex items-center justify-between px-4 md:px-8 py-4 gap-3">
-            {/* Mobile Menu Button */}
-            {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(true)}
-              >
-                <Menu className="w-6 h-6" />
-              </Button>
-            )}
-
-            {/* Logo on mobile */}
-            {isMobile && (
-              <h1 className="flex-1 text-center text-xl font-bold gradient-text">PeerHire</h1>
-            )}
-
-            {/* Search - Hidden on small mobile, shown on larger screens */}
-            {!isMobile && (
-              <div className="flex-1 max-w-xl relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search jobs, students, subjects..."
-                  className="pl-10 bg-background"
-                />
-              </div>
-            )}
-
-            {/* Right Side */}
-            <div className="flex items-center gap-2 md:gap-4">
-              {/* Role Switcher */}
-              <RoleSwitcher />
-              
-              {role === "freelancer" && !isMobile && (
-                <Badge className="bg-success/20 text-success border-success">
-                  <div className="w-2 h-2 rounded-full bg-success mr-2" />
-                  Available
-                </Badge>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-h-screen w-full">
+          {/* Top Bar */}
+          <header className="bg-card border-b border-border sticky top-0 z-30">
+            <div className="flex items-center justify-between px-4 md:px-8 py-4 gap-3">
+              {/* Mobile Menu Button */}
+              {isMobile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMobileMenuOpen(true)}
+                >
+                  <Menu className="w-6 h-6" />
+                </Button>
               )}
 
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="relative"
-                onClick={() => setIsNotificationPanelOpen(true)}
-              >
-                <Bell className="w-5 h-5" />
-                {notificationCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground">
-                    {notificationCount > 99 ? '99+' : notificationCount}
+              {/* Logo on mobile */}
+              {isMobile && (
+                <h1 className="flex-1 text-center text-xl font-bold gradient-text">PeerHire</h1>
+              )}
+
+              {/* Search - Hidden on small mobile, shown on larger screens */}
+              {!isMobile && (
+                <div className="flex-1 max-w-xl relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search jobs, students, subjects..."
+                    className="pl-10 bg-background"
+                  />
+                </div>
+              )}
+
+              {/* Right Side */}
+              <div className="flex items-center gap-2 md:gap-4">
+                {/* Role Switcher */}
+                <RoleSwitcher />
+
+                {role === "freelancer" && !isMobile && (
+                  <Badge className="bg-success/20 text-success border-success">
+                    <div className="w-2 h-2 rounded-full bg-success mr-2" />
+                    Available
                   </Badge>
                 )}
-              </Button>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-xl hover:bg-muted transition-colors cursor-pointer">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                    </div>
-                    {!isMobile && (
-                      <div className="text-left">
-                        <p className="font-semibold text-sm">
-                          {userName || (role === "freelancer" ? "Freelancer" : "Hirer")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {role === "freelancer" ? "Freelancer" : "Hirer"}
-                        </p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  onClick={() => setIsNotificationPanelOpen(true)}
+                >
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground">
+                      {notificationCount > 99 ? '99+' : notificationCount}
+                    </Badge>
+                  )}
+                </Button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-xl hover:bg-muted transition-colors cursor-pointer">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={userName || 'User'}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                        )}
                       </div>
-                    )}
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-popover z-50">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate(`/${role}/profile`)}>
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate(`/${role}/settings`)}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      {!isMobile && (
+                        <div className="text-left">
+                          <p className="font-semibold text-sm">
+                            {userName || (role === "freelancer" ? "Freelancer" : "Hirer")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {role === "freelancer" ? "Freelancer" : "Hirer"}
+                          </p>
+                        </div>
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-popover z-50">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate(`/${role}/profile`)}>
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/${role}/settings`)}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
-          {children}
-        </main>
-      </div>
-      
-      {/* Notification Panel */}
-      <NotificationPanel
-        isOpen={isNotificationPanelOpen}
-        onClose={() => setIsNotificationPanelOpen(false)}
-        userId={currentUserId}
-        role={role}
-      />
+          {/* Page Content */}
+          <main className="flex-1 p-4 md:p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
+
+        {/* Notification Panel */}
+        <NotificationPanel
+          isOpen={isNotificationPanelOpen}
+          onClose={() => setIsNotificationPanelOpen(false)}
+          userId={currentUserId}
+          role={role}
+        />
       </div>
     </TooltipProvider>
   );
