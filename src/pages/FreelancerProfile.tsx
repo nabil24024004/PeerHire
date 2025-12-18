@@ -75,28 +75,50 @@ const FreelancerProfile = () => {
         // Fetch completed jobs count
         const { count: completedJobsCount } = await supabase
           .from('jobs')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('freelancer_id', user.id)
           .eq('status', 'completed');
 
-        // Fetch current jobs count
+        // Fetch current jobs count (assigned or in_progress)
         const { count: currentJobsCount } = await supabase
           .from('jobs')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('freelancer_id', user.id)
-          .in('status', ['assigned', 'in_progress']);
+          .or('status.eq.assigned,status.eq.in_progress');
 
-        // Fetch reviews
+        // Fetch reviews (simple query to avoid TypeScript issues with joins)
         const { data: reviewsData } = await supabase
           .from('reviews')
-          .select(`
-            *,
-            reviewer:profiles!reviews_reviewer_id_fkey(full_name),
-            job:jobs(title)
-          `)
+          .select('id, rating, comment, created_at, reviewer_id, job_id')
           .eq('reviewee_id', user.id)
           .order('created_at', { ascending: false })
           .limit(10);
+
+        // Format reviews with separate lookups for names
+        const formattedReviews = await Promise.all(
+          (reviewsData || []).map(async (r) => {
+            const { data: reviewer } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', r.reviewer_id)
+              .single();
+
+            const { data: job } = await supabase
+              .from('jobs')
+              .select('title')
+              .eq('id', r.job_id)
+              .single();
+
+            return {
+              id: r.id,
+              hirer_name: reviewer?.full_name || 'Anonymous',
+              task_title: job?.title || 'Unknown Task',
+              rating: r.rating,
+              comment: r.comment,
+              date: new Date(r.created_at).toLocaleDateString()
+            };
+          })
+        );
 
         // Calculate average rating
         const avgRating = reviewsData && reviewsData.length > 0
@@ -116,14 +138,7 @@ const FreelancerProfile = () => {
           handwriting_style: profileData.handwriting_sample_url ? 'Uploaded' : 'None',
           handwriting_samples: [handwritingSample1, handwritingSample2], // TODO: Fetch from storage
           portfolio: [], // TODO: Fetch portfolio items
-          reviews: reviewsData?.map(r => ({
-            id: r.id,
-            hirer_name: r.reviewer?.full_name || 'Anonymous',
-            task_title: r.job?.title || 'Unknown Task',
-            rating: r.rating,
-            comment: r.comment,
-            date: new Date(r.created_at).toLocaleDateString()
-          })) || [],
+          reviews: formattedReviews,
           repeat_hirers: 0, // TODO: Calculate from conversations/jobs
         };
 
