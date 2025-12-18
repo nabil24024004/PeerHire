@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -23,7 +23,8 @@ import {
   Users,
   Clock,
   Award,
-  Loader2
+  Loader2,
+  MessageSquare
 } from "lucide-react";
 
 import handwritingSample1 from "@/assets/handwriting-sample-1.jpg";
@@ -31,12 +32,17 @@ import handwritingSample2 from "@/assets/handwriting-sample-2.jpg";
 
 const FreelancerProfile = () => {
   const navigate = useNavigate();
+  const { userId } = useParams<{ userId?: string }>();
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+
+  // Determine if viewing own profile or someone else's
+  const isOwnProfile = !userId || (user && userId === user.id);
+  const profileId = userId || user?.id;
 
   useEffect(() => {
     const checkRole = async () => {
@@ -45,8 +51,8 @@ const FreelancerProfile = () => {
         return;
       }
 
-      if (!authLoading && user) {
-        // Check localStorage for active role
+      // Only redirect to hirer profile if viewing own profile and active role is hirer
+      if (!authLoading && user && isOwnProfile) {
         const activeRole = localStorage.getItem('activeRole');
         if (activeRole === 'hirer') {
           navigate("/hirer/profile");
@@ -55,11 +61,11 @@ const FreelancerProfile = () => {
     };
 
     checkRole();
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, isOwnProfile]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!user) return;
+      if (!profileId) return;
 
       setLoading(true);
       try {
@@ -67,7 +73,7 @@ const FreelancerProfile = () => {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', profileId)
           .single();
 
         if (profileError) throw profileError;
@@ -76,18 +82,18 @@ const FreelancerProfile = () => {
         const { count: completedJobsCount } = await supabase
           .from('jobs')
           .select('id', { count: 'exact', head: true })
-          .match({ freelancer_id: user.id, status: 'completed' });
+          .match({ freelancer_id: profileId, status: 'completed' });
 
         // Fetch current jobs count (assigned or in_progress)
         const { count: assignedCount } = await supabase
           .from('jobs')
           .select('id', { count: 'exact', head: true })
-          .match({ freelancer_id: user.id, status: 'assigned' });
+          .match({ freelancer_id: profileId, status: 'assigned' });
 
         const { count: inProgressCount } = await supabase
           .from('jobs')
           .select('id', { count: 'exact', head: true })
-          .match({ freelancer_id: user.id, status: 'in_progress' });
+          .match({ freelancer_id: profileId, status: 'in_progress' });
 
         const currentJobsCount = (assignedCount || 0) + (inProgressCount || 0);
 
@@ -95,7 +101,7 @@ const FreelancerProfile = () => {
         const { data: reviewsData } = await supabase
           .from('reviews')
           .select('id, rating, comment, created_at, reviewer_id, job_id')
-          .eq('reviewee_id', user.id)
+          .eq('reviewee_id', profileId)
           .order('created_at', { ascending: false })
           .limit(10);
 
@@ -160,10 +166,10 @@ const FreelancerProfile = () => {
       }
     };
 
-    if (user) {
+    if (profileId) {
       fetchProfileData();
     }
-  }, [user, toast]);
+  }, [profileId, toast]);
 
   if (authLoading || loading || !user || !profile) {
     return (
@@ -229,13 +235,23 @@ const FreelancerProfile = () => {
         {/* Profile Header */}
         <Card className="p-8 border-border bg-card animate-fade-in-up">
           <div className="flex items-start gap-6 flex-col md:flex-row">
-            <AvatarUpload
-              userId={user.id}
-              currentAvatarUrl={profile.avatar_url}
-              fullName={profile.full_name}
-              size="xl"
-              onAvatarChange={(url) => setProfile({ ...profile, avatar_url: url })}
-            />
+            {isOwnProfile ? (
+              <AvatarUpload
+                userId={profileId || ''}
+                currentAvatarUrl={profile.avatar_url}
+                fullName={profile.full_name}
+                size="xl"
+                onAvatarChange={(url) => setProfile({ ...profile, avatar_url: url })}
+              />
+            ) : (
+              <div className="h-32 w-32 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-4xl font-bold">{getInitials(profile.full_name || 'U')}</span>
+                )}
+              </div>
+            )}
 
             <div className="flex-1 space-y-4">
               <div className="flex items-start justify-between flex-wrap gap-4">
@@ -260,10 +276,17 @@ const FreelancerProfile = () => {
                     <span className="text-sm text-muted-foreground">({profile.reviews.length} reviews)</span>
                   </div>
                 </div>
-                <Button onClick={() => setEditModalOpen(true)} className="btn-glow">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
+                {isOwnProfile ? (
+                  <Button onClick={() => setEditModalOpen(true)} className="btn-glow">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <Button onClick={() => navigate(`/hirer/messages?chat=${profileId}`)} className="btn-glow">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Message
+                  </Button>
+                )}
               </div>
 
               {profile.bio && (

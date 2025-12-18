@@ -67,6 +67,7 @@ const App = () => {
               <Route path="/signup" element={<Auth />} />
               <Route path="/freelancer/dashboard" element={<FreelancerDashboard />} />
               <Route path="/freelancer/profile" element={<FreelancerProfile />} />
+              <Route path="/freelancer/profile/:userId" element={<FreelancerProfile />} />
               <Route path="/freelancer/browse-jobs" element={<FreelancerBrowseJobs />} />
               <Route path="/freelancer/jobs" element={<FreelancerJobs />} />
               <Route path="/freelancer/job/:jobId" element={<FreelancerJobDetails />} />
