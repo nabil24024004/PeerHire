@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Mail, Lock, User, Eye, EyeOff, BookOpen, GraduationCap } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, BookOpen, GraduationCap, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -119,9 +119,9 @@ const Auth = () => {
       <div className="px-6 pt-8 pb-4 md:hidden">
         <button
           onClick={() => navigate("/")}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
         >
-          ← Back
+          <ArrowLeft className="w-4 h-4" /> Back to Home
         </button>
       </div>
 
@@ -263,8 +263,18 @@ const Auth = () => {
           {/* Desktop Layout - Split Screen */}
           <div className="hidden md:grid md:grid-cols-2 gap-0 overflow-hidden rounded-3xl border border-border bg-card shadow-2xl min-h-[600px]">
             {/* Left Side - Form */}
-            <div className="p-10 flex flex-col justify-center">
-              <div className="mb-8">
+            <div className="p-10 flex flex-col justify-center relative">
+              <div className="absolute top-6 left-6">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/")}
+                  className="gap-2 pl-2 text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back to Home
+                </Button>
+              </div>
+
+              <div className="mb-8 mt-6">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-4">
                   <span className="text-xl font-bold text-primary-foreground">P</span>
                 </div>
@@ -397,29 +407,12 @@ const Auth = () => {
 
             {/* Right Side - Image/Decoration */}
             <div className="relative bg-muted">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 backdrop-blur-3xl" />
-              <div className="absolute inset-0 flex items-center justify-center p-12">
-                <div className="relative w-full aspect-square max-w-[400px]">
-                  {/* Abstract shapes or placeholder for auth image */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-                  <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl animate-pulse delay-1000" />
-
-                  <div className="relative z-10 glass-panel p-8 rounded-2xl border-white/10">
-                    <div className="space-y-4">
-                      <div className="h-2 w-20 bg-primary/20 rounded-full" />
-                      <div className="h-2 w-32 bg-primary/10 rounded-full" />
-                      <div className="h-24 w-full bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl border border-white/5" />
-                      <div className="flex gap-2">
-                        <div className="h-8 w-8 rounded-full bg-primary/20" />
-                        <div className="space-y-1">
-                          <div className="h-2 w-24 bg-primary/10 rounded-full" />
-                          <div className="h-2 w-16 bg-primary/5 rounded-full" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <img
+                src="/auth-illustration.png"
+                alt="Student Collaboration"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
             </div>
           </div>
         </div>
