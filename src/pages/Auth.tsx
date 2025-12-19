@@ -3,8 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { Mail, Lock, User, Eye, EyeOff, BookOpen, GraduationCap, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +26,6 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Set mode based on route
   useEffect(() => {
     setError("");
     if (location.pathname === "/signup") {
@@ -62,50 +60,34 @@ const Auth = () => {
 
   const handleSignupRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate inputs
     if (!fullName || !department || !batch) {
       setError("Please fill in all fields");
       return;
     }
-
-    // Navigate to Contact Developer page with data
     navigate("/auth/contact-developer", {
-      state: {
-        name: fullName,
-        department,
-        batch,
-      }
+      state: { name: fullName, department, batch }
     });
   };
 
   const handlePostAuth = async (userId: string) => {
     try {
-      // Check/Create Profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('is_hirer, is_freelancer')
         .eq('id', userId)
         .single();
 
-      // If no profile, create one
       if (profileError || !profileData) {
         await supabase.from('profiles').upsert({
           id: userId,
-          email: email, // from state
+          email: email,
           full_name: email.split('@')[0],
           is_hirer: true,
           is_freelancer: true
         });
       }
-
-      // Set default role
       localStorage.setItem('activeRole', 'hirer');
-
-      toast({
-        title: "Welcome back!",
-        description: "Redirecting to dashboard...",
-      });
-
+      toast({ title: "Welcome back!", description: "Redirecting to dashboard..." });
       navigate("/hirer/dashboard");
     } catch (error) {
       console.error("Post-auth error:", error);
@@ -114,205 +96,54 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Mobile Header */}
-      <div className="px-6 pt-8 pb-4 md:hidden">
-        <button
-          onClick={() => navigate("/")}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Home
-        </button>
-      </div>
+    <div className="min-h-screen flex bg-[#1a1a1a] text-white overflow-hidden">
+      {/* Left Side - Form Area */}
+      <div className="w-full lg:w-1/2 flex flex-col p-8 lg:p-12 xl:p-20 relative justify-center">
+        {/* Back Button */}
+        <div className="absolute top-8 left-8">
+          <button
+            onClick={() => navigate("/")}
+            className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </button>
+        </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-6 md:p-6">
-        <div className="w-full max-w-md md:max-w-5xl">
-          {/* Mobile Layout */}
-          <div className="md:hidden space-y-6">
-            <div className="text-center space-y-2">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-4">
-                <span className="text-2xl font-bold text-primary-foreground">P</span>
-              </div>
-              <h1 className="text-2xl font-bold">
-                {mode === "login" ? "Welcome Back" : "Join PeerHire"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {mode === "login" ? "Sign in with your university credentials" : "Request access to the platform"}
-              </p>
-            </div>
+        <div className="w-full max-w-md mx-auto space-y-8">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight text-white">
+              {mode === "login" ? "Login" : "Sign up"}
+            </h1>
+            <p className="text-gray-400">
+              {mode === "login" ? "Enter your account details" : "Enter your details to request access"}
+            </p>
+          </div>
 
+          <form onSubmit={mode === "login" ? handleLogin : handleSignupRequest} className="space-y-8">
             {mode === "login" ? (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="email">University Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-400 text-xs uppercase tracking-wider">Username / Email</Label>
                     <Input
                       id="email"
                       type="email"
                       placeholder="you@aaub.edu.bd"
-                      className="pl-10 h-11"
+                      className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
-                </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="pl-10 pr-10 h-11"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {error && <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">{error}</div>}
-
-                <Button type="submit" className="w-full h-11 font-medium btn-glow" disabled={loading}>
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
-            ) : (
-              <form onSubmit={handleSignupRequest} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      placeholder="John Doe"
-                      className="pl-10 h-11"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="department">Department</Label>
-                  <div className="relative">
-                    <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="department"
-                      placeholder="CSE"
-                      className="pl-10 h-11"
-                      required
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="batch">Batch</Label>
-                  <div className="relative">
-                    <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="batch"
-                      placeholder="Summer 24"
-                      className="pl-10 h-11"
-                      required
-                      value={batch}
-                      onChange={(e) => setBatch(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {error && <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">{error}</div>}
-
-                <Button type="submit" className="w-full h-11 font-medium btn-glow">
-                  Request Access
-                </Button>
-              </form>
-            )}
-
-            <div className="text-center pt-2">
-              <p className="text-sm text-muted-foreground">
-                {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  onClick={() => {
-                    const newMode = mode === "login" ? "signup" : "login";
-                    setMode(newMode);
-                    navigate(newMode === "login" ? "/login" : "/signup");
-                  }}
-                  className="text-primary font-medium hover:underline"
-                >
-                  {mode === "login" ? "Sign up" : "Sign in"}
-                </button>
-              </p>
-            </div>
-          </div>
-
-          {/* Desktop Layout - Split Screen */}
-          <div className="hidden md:grid md:grid-cols-2 gap-0 overflow-hidden rounded-3xl border border-border bg-card shadow-2xl min-h-[600px]">
-            {/* Left Side - Form */}
-            <div className="p-10 flex flex-col justify-center relative">
-              <div className="absolute top-6 left-6">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate("/")}
-                  className="gap-2 pl-2 text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back to Home
-                </Button>
-              </div>
-
-              <div className="mb-8 mt-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-4">
-                  <span className="text-xl font-bold text-primary-foreground">P</span>
-                </div>
-                <h1 className="text-3xl font-bold mb-2">
-                  {mode === "login" ? "Welcome Back" : "Join PeerHire"}
-                </h1>
-                <p className="text-muted-foreground">
-                  {mode === "login" ? "Sign in to access your dashboard" : "Join the exclusive community for AAUB students"}
-                </p>
-              </div>
-
-              {mode === "login" ? (
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="desktop-email">University Email</Label>
+                  <div className="space-y-2 relative">
+                    <Label htmlFor="password" classname="text-gray-400 text-xs uppercase tracking-wider">Password</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
-                        id="desktop-email"
-                        type="email"
-                        placeholder="you@aaub.edu.bd"
-                        className="pl-10 h-11"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="desktop-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="desktop-password"
+                        id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10 pr-10 h-11"
+                        className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors pr-8"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -320,100 +151,112 @@ const Auth = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  {error && <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">{error}</div>}
-
-                  <Button type="submit" className="w-full h-11 font-medium btn-glow" disabled={loading}>
-                    {loading ? "Signing in..." : "Sign In"}
-                  </Button>
-                </form>
-              ) : (
-                <form onSubmit={handleSignupRequest} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="desktop-name">Full Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="desktop-name"
-                        placeholder="John Doe"
-                        className="pl-10 h-11"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="desktop-department">Department</Label>
-                    <div className="relative">
-                      <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="desktop-department"
-                        placeholder="CSE"
-                        className="pl-10 h-11"
-                        required
-                        value={department}
-                        onChange={(e) => setDepartment(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="desktop-batch">Batch</Label>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="desktop-batch"
-                        placeholder="Summer 24"
-                        className="pl-10 h-11"
-                        required
-                        value={batch}
-                        onChange={(e) => setBatch(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {error && <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">{error}</div>}
-
-                  <Button type="submit" className="w-full h-11 font-medium btn-glow">
-                    Request Access
-                  </Button>
-                </form>
-              )}
-
-              <div className="text-center pt-6">
-                <p className="text-sm text-muted-foreground">
-                  {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-                  <button
-                    onClick={() => {
-                      const newMode = mode === "login" ? "signup" : "login";
-                      setMode(newMode);
-                      navigate(newMode === "login" ? "/login" : "/signup");
-                    }}
-                    className="text-primary font-medium hover:underline"
-                  >
-                    {mode === "login" ? "Sign up" : "Sign in"}
+                <div className="flex justify-end">
+                  <button type="button" className="text-xs text-gray-500 hover:text-gray-300">
+                    Forgot Password?
                   </button>
-                </p>
-              </div>
-            </div>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-gray-400 text-xs uppercase tracking-wider">Full Name</Label>
+                  <Input
+                    id="name"
+                    placeholder="John Doe"
+                    className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </div>
 
-            {/* Right Side - Image/Decoration */}
-            <div className="relative bg-muted">
-              <img
-                src="/auth-illustration.png"
-                alt="Student Collaboration"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="department" className="text-gray-400 text-xs uppercase tracking-wider">Department</Label>
+                  <Input
+                    id="department"
+                    placeholder="CSE"
+                    className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
+                    required
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Batch</Label>
+                  <Input
+                    id="batch"
+                    placeholder="Summer 24"
+                    className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
+                    required
+                    value={batch}
+                    onChange={(e) => setBatch(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {error && <div className="text-sm text-red-500">{error}</div>}
+
+            <Button type="submit" className="w-full h-12 bg-[#a855f7] hover:bg-[#9333ea] text-white font-medium rounded-lg shadow-lg shadow-purple-900/20" disabled={loading}>
+              {loading ? "Processing..." : (mode === "login" ? "Login" : "Request Access")}
+            </Button>
+          </form>
+
+          <div className="flex items-center justify-between pt-4">
+            <span className="text-gray-500 text-sm">
+              {mode === "login" ? "Don't have an account?" : "Already have an account?"}
+            </span>
+            <Button
+              variant="outline"
+              className="border-gray-700 bg-transparent text-white hover:bg-white/5 hover:text-white"
+              onClick={() => {
+                const newMode = mode === "login" ? "signup" : "login";
+                setMode(newMode);
+                navigate(newMode === "login" ? "/login" : "/signup");
+              }}
+            >
+              {mode === "login" ? "Sign up" : "Login"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Image Area */}
+      <div className="hidden lg:flex w-1/2 bg-[#a855f7] items-center justify-center p-12 relative overflow-hidden">
+        {/* Background blobs/circles for texture matching reference approximately */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-black/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
+        <div className="relative z-10 w-full max-w-lg text-center space-y-12">
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+              Welcome to <br /> student portal
+            </h2>
+            <p className="text-white/80 text-lg">
+              Login to access your account
+            </p>
+          </div>
+
+          <div className="relative">
+            <img
+              src="/auth-illustration-flat.png"
+              alt="Student Portal"
+              className="w-full h-auto drop-shadow-2xl rounded-lg" // Added rounded-lg and maybe subtle shadow if needed, but reference is flat.
+            // Reference image has transparent bg line art. My generated one has purple bg.
+            // If generated image has purple bg, it might clash if shades diff. 
+            // Ideally mix-blend-mode or just simple img if colors match well. 
+            // Let's assume the generated image has #8A2BE2 which is close to #a855f7 (purple-500).
+            />
           </div>
         </div>
       </div>
