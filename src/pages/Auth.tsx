@@ -142,7 +142,7 @@ const Auth = () => {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
+                        placeholder="********"
                         className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors pr-8"
                         required
                         value={password}
@@ -183,7 +183,7 @@ const Auth = () => {
                   <Label htmlFor="department" className="text-gray-400 text-xs uppercase tracking-wider">Department</Label>
                   <Input
                     id="department"
-                    placeholder="CSE"
+                    placeholder="Avionics"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={department}
@@ -195,7 +195,7 @@ const Auth = () => {
                   <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Batch</Label>
                   <Input
                     id="batch"
-                    placeholder="Summer 24"
+                    placeholder="Dept Batch"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={batch}
@@ -240,7 +240,7 @@ const Auth = () => {
         <div className="relative z-10 w-full max-w-lg text-center space-y-12">
           <div className="space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Welcome to <br /> student portal
+              Welcome to <br /> PeerHire portal
             </h2>
             <p className="text-white/80 text-lg">
               Login to access your account
@@ -250,7 +250,7 @@ const Auth = () => {
           <div className="relative">
             <img
               src="/auth-illustration-flat.png"
-              alt="Student Portal"
+              alt="PeerHire Portal"
               className="w-full h-auto drop-shadow-2xl rounded-lg" // Added rounded-lg and maybe subtle shadow if needed, but reference is flat.
             // Reference image has transparent bg line art. My generated one has purple bg.
             // If generated image has purple bg, it might clash if shades diff. 
