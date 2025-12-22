@@ -32,7 +32,7 @@ const ContactDeveloper = () => {
                             <div className="space-y-2">
                                 <h1 className="text-2xl font-bold">Request Access</h1>
                                 <p className="text-muted-foreground">
-                                    To ensure security, please contact the developer on WhatsApp to get your login credentials.
+                                    To ensure security, please contact the developer on WhatsApp (+8801823604026) to get your login credentials.
                                 </p>
                             </div>
 
