@@ -17,7 +17,7 @@ const ContactDeveloper = () => {
 
     const message = `Hello Developer,%0A%0AI would like to request access to PeerHire.%0A%0AName: ${name || "N/A"}%0ADepartment: ${department || "N/A"}%0AID: ${ID || "N/A"}%0AEmail: ${email || "N/A"}`;
 
-    const whatsappUrl = `https://wa.me/88${phoneNumber.replace(/^0+/, '')}?text=${message}`;
+    const whatsappUrl = `https://wa.me/+88${phoneNumber}?text=${message}`;
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
