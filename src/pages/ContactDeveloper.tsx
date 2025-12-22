@@ -15,7 +15,7 @@ const ContactDeveloper = () => {
     // Usually whatsapp links need country code. 01823604026 -> +8801823604026 (assuming BD)
     // Let's assume BD based on @aaub.edu.bd domain (Aviation and Aerospace University Bangladesh)
 
-    const message = `Hello Developer,%0A%0AI would like to request access to PeerHire.%0A%0AName: ${name || "N/A"}%0ADepartment: ${department || "N/A"}%0AID: ${ID || "N/A"}%0AEmail: ${email || "N/A"}`;
+    const message = `Hello Developer,%0A%0AI would like to request access to PeerHire.%0A%0AName: ${name || "N/A"}%0ADepartment: ${department || "N/A"}%0AID: ${ID || "N/A"}`;
 
     const whatsappUrl = `https://wa.me/+88${phoneNumber}?text=${message}`;
 
