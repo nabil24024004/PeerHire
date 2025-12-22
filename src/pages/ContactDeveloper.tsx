@@ -41,7 +41,7 @@ const ContactDeveloper = () => {
                                 <div className="space-y-1 text-muted-foreground">
                                     <p>Name: <span className="text-foreground">{name}</span></p>
                                     <p>Department: <span className="text-foreground">{department}</span></p>
-                                    <p>Batch: <span className="text-foreground">{batch}</span></p>
+                                    <p>Student ID: <span className="text-foreground">{ID}</span></p>
                                 </div>
                             </div>
 
