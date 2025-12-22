@@ -2,8 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, ArrowLeft } from "lucide-react";
-import { DashboardLayout } from "@/components/DashboardLayout"; // Or just use a simple layout? Auth pages usually don't use DashboardLayout.
-// Actually, Auth pages shouldn't use DashboardLayout. I'll just use a centered layout like Auth.tsx.
+import { DashboardLayout } from "@/components/DashboardLayout"; 
 
 const ContactDeveloper = () => {
     const location = useLocation();
@@ -11,9 +10,8 @@ const ContactDeveloper = () => {
     const { name, department, ID, email } = location.state || {};
 
     // Construct WhatsApp message
-    const phoneNumber = "01823604026"; // Added country code for international format if needed, or just 018...
-    // Usually whatsapp links need country code. 01823604026 -> +8801823604026 (assuming BD)
-    // Let's assume BD based on @aaub.edu.bd domain (Aviation and Aerospace University Bangladesh)
+    const phoneNumber = "01823604026";
+
 
     const message = `Hello Developer,%0A%0AI would like to request access to PeerHire.%0A%0AName: ${name || "N/A"}%0ADepartment: ${department || "N/A"}%0AID: ${ID || "N/A"}`;
 
