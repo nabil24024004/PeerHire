@@ -19,7 +19,7 @@ const Auth = () => {
   // Signup Request State
   const [fullName, setFullName] = useState("");
   const [department, setDepartment] = useState("");
-  const [batch, setBatch] = useState("");
+  const [ID, setID] = useState("");
 
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -60,12 +60,12 @@ const Auth = () => {
 
   const handleSignupRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !department || !batch) {
+    if (!fullName || !department || !ID) {
       setError("Please fill in all fields");
       return;
     }
     navigate("/auth/contact-developer", {
-      state: { name: fullName, department, batch }
+      state: { name: fullName, department, ID }
     });
   };
 
@@ -192,10 +192,10 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Batch</Label>
+                  <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Student ID</Label>
                   <Input
-                    id="batch"
-                    placeholder="Dept. Batch"
+                    id="ID"
+                    placeholder="Your student ID"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={batch}
