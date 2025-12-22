@@ -124,7 +124,7 @@ const Auth = () => {
               <>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-400 text-xs uppercase tracking-wider">Username / Email</Label>
+                    <Label htmlFor="email" className="text-gray-400 text-xs uppercase tracking-wider">Email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -171,7 +171,7 @@ const Auth = () => {
                   <Label htmlFor="name" className="text-gray-400 text-xs uppercase tracking-wider">Full Name</Label>
                   <Input
                     id="name"
-                    placeholder="John Doe"
+                    placeholder="Your name"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={fullName}
@@ -183,7 +183,7 @@ const Auth = () => {
                   <Label htmlFor="department" className="text-gray-400 text-xs uppercase tracking-wider">Department</Label>
                   <Input
                     id="department"
-                    placeholder="Avionics"
+                    placeholder="Avionics/Aerospace/Aircraft Maintenance"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={department}
@@ -195,7 +195,7 @@ const Auth = () => {
                   <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Batch</Label>
                   <Input
                     id="batch"
-                    placeholder="Dept Batch"
+                    placeholder="Dept. Batch"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
                     value={batch}
@@ -214,7 +214,7 @@ const Auth = () => {
 
           <div className="flex items-center justify-between pt-4">
             <span className="text-gray-500 text-sm">
-              {mode === "login" ? "Don't have an account?" : "Already have an account?"}
+              {mode === "login" ? "Not a Member?" : "Already a Member?"}
             </span>
             <Button
               variant="outline"
