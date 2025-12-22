@@ -192,14 +192,14 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="batch" className="text-gray-400 text-xs uppercase tracking-wider">Student ID</Label>
+                  <Label htmlFor="ID" className="text-gray-400 text-xs uppercase tracking-wider">Student ID</Label>
                   <Input
                     id="ID"
                     placeholder="Your student ID"
                     className="bg-transparent border-0 border-b border-gray-700 rounded-none px-0 py-2 h-auto text-white placeholder:text-gray-600 focus-visible:ring-0 focus-visible:border-[#a855f7] transition-colors"
                     required
-                    value={batch}
-                    onChange={(e) => setBatch(e.target.value)}
+                    value={ID}
+                    onChange={(e) => setID(e.target.value)}
                   />
                 </div>
               </div>
