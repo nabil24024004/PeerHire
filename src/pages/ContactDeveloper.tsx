@@ -11,7 +11,7 @@ const ContactDeveloper = () => {
     const { name, department, ID, email } = location.state || {};
 
     // Construct WhatsApp message
-    const phoneNumber = "8801823604026"; // Added country code for international format if needed, or just 018...
+    const phoneNumber = "01823604026"; // Added country code for international format if needed, or just 018...
     // Usually whatsapp links need country code. 01823604026 -> +8801823604026 (assuming BD)
     // Let's assume BD based on @aaub.edu.bd domain (Aviation and Aerospace University Bangladesh)
 
@@ -25,7 +25,7 @@ const ContactDeveloper = () => {
                 <div className="w-full max-w-md">
                     <Card className="p-8 border-border bg-card shadow-lg animate-fade-in-up">
                         <div className="text-center space-y-6">
-                            <div className="w-16 h-16 mx-auto rounded-full bg-green-500/10 flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto rounded-full bg-purple-500/10 flex items-center justify-center">
                                 <MessageSquare className="w-8 h-8 text-green-500" />
                             </div>
 
