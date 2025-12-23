@@ -100,7 +100,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               ease: [0.22, 1, 0.36, 1]
             }}
           >
-            <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary via-primary/80 to-primary/40 shadow-[0_0_60px_20px_hsl(var(--primary)/0.3)]" />
+            {/* <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary via-primary/80 to-primary/40 shadow-[0_0_60px_20px_hsl(var(--primary)/0.3)]" /> */}
           </motion.div>
 
           {/* Inner glow ring */}
@@ -128,7 +128,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
             <img
               src="/logo.png"
               alt="PeerHire"
-              className="w-24 h-24 rounded-2xl drop-shadow-2xl"
+              className="w-32 h-32 rounded-3xl drop-shadow-2xl"
             />
           </motion.div>
 
