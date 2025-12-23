@@ -29,6 +29,7 @@ const HirerViewOffers = lazy(() => import("./pages/HirerViewOffers"));
 const EmailConfirm = lazy(() => import("./pages/EmailConfirm"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ContactDeveloper = lazy(() => import("./pages/ContactDeveloper"));
+const ProjectDetails = lazy(() => import("./pages/ProjectDetails"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Optimized QueryClient with caching
@@ -88,6 +89,7 @@ const App = () => {
               <Route path="/auth/confirm" element={<EmailConfirm />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/contact-developer" element={<ContactDeveloper />} />
+              <Route path="/project/:projectId" element={<ProjectDetails />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
