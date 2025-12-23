@@ -320,8 +320,8 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                       PeerHire
                     </h1>
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">P</span>
+                    <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                      <img src="/logo.png" alt="P" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </button>

@@ -67,12 +67,12 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               <motion.div
                 key={i}
                 className="absolute w-1.5 h-1.5 rounded-full bg-primary"
-                initial={{ 
+                initial={{
                   opacity: 0,
                   x: 0,
                   y: 0,
                 }}
-                animate={{ 
+                animate={{
                   opacity: phase === "exit" ? 0 : [0, 1, 1, 0],
                   x: [0, Math.cos((i * Math.PI * 2) / 8) * 120],
                   y: [0, Math.sin((i * Math.PI * 2) / 8) * 120],
@@ -90,14 +90,14 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <motion.div
             className="absolute"
             initial={{ scale: 0, rotate: -90 }}
-            animate={{ 
-              scale: phase === "exit" ? 15 : 1, 
+            animate={{
+              scale: phase === "exit" ? 15 : 1,
               rotate: phase === "exit" ? 180 : 0,
               opacity: phase === "exit" ? 0 : 1,
             }}
-            transition={{ 
-              duration: phase === "exit" ? 0.8 : 0.8, 
-              ease: [0.22, 1, 0.36, 1] 
+            transition={{
+              duration: phase === "exit" ? 0.8 : 0.8,
+              ease: [0.22, 1, 0.36, 1]
             }}
           >
             <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary via-primary/80 to-primary/40 shadow-[0_0_60px_20px_hsl(var(--primary)/0.3)]" />
@@ -107,7 +107,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <motion.div
             className="absolute w-40 h-40 rounded-full border-2 border-primary/40"
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
+            animate={{
               scale: phase === "exit" ? 2 : [0, 1.2, 1],
               opacity: phase === "exit" ? 0 : [0, 0.8, 0.5],
             }}
@@ -118,16 +118,18 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <motion.div
             className="absolute z-10"
             initial={{ opacity: 0, scale: 0.5, y: 10 }}
-            animate={{ 
-              opacity: phase === "exit" ? 0 : 1, 
+            animate={{
+              opacity: phase === "exit" ? 0 : 1,
               scale: phase === "exit" ? 1.5 : 1,
               y: 0,
             }}
             transition={{ duration: 0.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="text-5xl font-black text-primary-foreground drop-shadow-2xl">
-              P
-            </span>
+            <img
+              src="/logo.png"
+              alt="PeerHire"
+              className="w-16 h-16 rounded-xl drop-shadow-2xl"
+            />
           </motion.div>
 
           {/* Brand text */}
@@ -135,8 +137,8 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
             className="absolute flex flex-col items-center"
             style={{ top: "calc(50% + 100px)" }}
             initial={{ opacity: 0, y: 30 }}
-            animate={{ 
-              opacity: phase !== "intro" ? (phase === "exit" ? 0 : 1) : 0, 
+            animate={{
+              opacity: phase !== "intro" ? (phase === "exit" ? 0 : 1) : 0,
               y: phase !== "intro" ? 0 : 30,
             }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -187,11 +189,11 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <motion.div
             className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"
             initial={{ top: "0%", opacity: 0 }}
-            animate={{ 
+            animate={{
               top: ["0%", "100%"],
               opacity: [0, 1, 1, 0],
             }}
-            transition={{ 
+            transition={{
               duration: 2,
               ease: "linear",
               times: [0, 0.1, 0.9, 1],
