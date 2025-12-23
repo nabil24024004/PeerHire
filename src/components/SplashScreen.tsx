@@ -128,7 +128,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
             <img
               src="/logo.png"
               alt="PeerHire"
-              className="w-16 h-16 rounded-xl drop-shadow-2xl"
+              className="w-24 h-24 rounded-2xl drop-shadow-2xl"
             />
           </motion.div>
 
