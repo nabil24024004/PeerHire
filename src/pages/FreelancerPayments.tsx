@@ -207,7 +207,7 @@ export default function FreelancerPayments() {
           <CardContent>
             {payments.length === 0 ? (
               <div className="py-12 text-center">
-                <DollarSign className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <TakaIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-lg text-muted-foreground">No earnings yet</p>
               </div>
             ) : (

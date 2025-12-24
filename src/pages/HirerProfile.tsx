@@ -290,7 +290,7 @@ const HirerProfile = () => {
                         {task.date}
                       </span>
                       <span className="flex items-center gap-1 text-primary font-medium">
-                        <DollarSign className="h-4 w-4" />
+                        <TakaIcon className="h-4 w-4" />
                         ৳{task.amount}
                       </span>
                     </div>
