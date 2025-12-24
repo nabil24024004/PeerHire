@@ -137,7 +137,7 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2 relative">
-                    <Label htmlFor="password" classname="text-gray-400 text-xs uppercase tracking-wider">Password</Label>
+                    <Label htmlFor="password" className="text-gray-400 text-xs uppercase tracking-wider">Password</Label>
                     <div className="relative">
                       <Input
                         id="password"
