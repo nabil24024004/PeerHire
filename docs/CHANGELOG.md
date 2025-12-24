@@ -50,6 +50,18 @@ Major UI overhaul for authentication pages, new 3D branding, and codebase optimi
 
 ---
 
+### Currency Localization
+
+**Changed from USD ($) to Bangladeshi Taka (৳):**
+
+| Change | Details |
+|--------|---------|
+| **Currency Symbol** | Replaced all `$` with `৳` across the app |
+| **Custom Icon** | Created `TakaIcon.tsx` to replace `DollarSign` from lucide-react |
+| **Files Updated** | HirerDashboard, FreelancerDashboard, HirerPayments, FreelancerPayments, HirerProfile, FreelancerProfile, JobApplicationModal, FreelancerJobDetails, HirerViewOffers |
+
+---
+
 ## December 16, 2024 - Application Flow & Schema Alignment Fixes
 
 ### Overview
