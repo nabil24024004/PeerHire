@@ -137,7 +137,7 @@ export function JobApplicationModal({
               </p>
               <p className="text-sm">
                 <span className="text-muted-foreground">Budget:</span>{" "}
-                <span className="font-semibold">${job.budget}</span>
+                <span className="font-semibold">৳{job.budget}</span>
               </p>
             </div>
 

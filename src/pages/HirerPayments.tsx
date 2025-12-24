@@ -129,7 +129,7 @@ export default function HirerPayments() {
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total Spent"
-            value={`$${stats.totalSpent.toFixed(2)}`}
+            value={`৳${stats.totalSpent.toFixed(2)}`}
             icon={DollarSign}
             description="Lifetime spending"
           />
@@ -207,7 +207,7 @@ export default function HirerPayments() {
                         {payment.status.toUpperCase()}
                       </Badge>
                       <p className="text-lg font-bold text-primary">
-                        ${Number(payment.amount).toFixed(2)}
+                        ৳{Number(payment.amount).toFixed(2)}
                       </p>
                     </div>
                   </div>

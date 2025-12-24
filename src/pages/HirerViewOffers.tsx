@@ -357,7 +357,7 @@ export default function HirerViewOffers() {
                             <h3 className="text-sm sm:text-lg font-bold break-words">{application.profiles.full_name}</h3>
                             <div className="text-right flex-shrink-0 sm:hidden">
                               <p className="text-[10px] text-muted-foreground">Proposed</p>
-                              <p className="text-base font-bold text-success">${application.proposed_rate || 0}</p>
+                              <p className="text-base font-bold text-success">৳{application.proposed_rate || 0}</p>
                             </div>
                           </div>
                           <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
@@ -382,7 +382,7 @@ export default function HirerViewOffers() {
                       </div>
                       <div className="text-right flex-shrink-0 hidden sm:block">
                         <p className="text-xs sm:text-sm text-muted-foreground">Proposed Price</p>
-                        <p className="text-xl sm:text-2xl font-bold text-success">${application.proposed_rate || 0}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-success">৳{application.proposed_rate || 0}</p>
                       </div>
                     </div>
 

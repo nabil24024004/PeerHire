@@ -286,7 +286,7 @@ export default function FreelancerJobDetails() {
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-success" />
                     <span className="text-sm font-semibold text-success">
-                      ${job.budget}
+                      ৳{job.budget}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

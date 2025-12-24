@@ -156,7 +156,7 @@ export default function FreelancerPayments() {
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total Earned"
-            value={`$${stats.totalEarned.toFixed(2)}`}
+            value={`৳${stats.totalEarned.toFixed(2)}`}
             icon={DollarSign}
             description="Completed payments"
           />
@@ -234,7 +234,7 @@ export default function FreelancerPayments() {
                         {payment.status.toUpperCase()}
                       </Badge>
                       <p className="text-lg font-bold text-primary">
-                        ${Number(payment.amount).toFixed(2)}
+                        ৳{Number(payment.amount).toFixed(2)}
                       </p>
                     </div>
                   </div>

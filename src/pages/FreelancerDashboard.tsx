@@ -208,7 +208,7 @@ const FreelancerDashboard = () => {
     { icon: Briefcase, label: "Active Jobs", value: stats.activeJobs.toString(), color: "text-primary" },
     { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "text-success" },
     { icon: Star, label: "Rating", value: stats.rating > 0 ? stats.rating.toFixed(1) : "New", color: "text-primary" },
-    { icon: DollarSign, label: "This Month", value: `$${stats.thisMonth.toFixed(0)}`, color: "text-success" },
+    { icon: DollarSign, label: "This Month", value: `৳${stats.thisMonth.toFixed(0)}`, color: "text-success" },
   ];
 
   return (

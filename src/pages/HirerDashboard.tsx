@@ -188,7 +188,7 @@ const HirerDashboard = () => {
   const statsArray = [
     { icon: Briefcase, label: "Open Tasks", value: stats.openTasks.toString(), color: "text-primary" },
     { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "text-success" },
-    { icon: DollarSign, label: "Total Spent", value: `$${stats.totalSpent.toFixed(0)}`, color: "text-muted-foreground" },
+    { icon: DollarSign, label: "Total Spent", value: `৳${stats.totalSpent.toFixed(0)}`, color: "text-muted-foreground" },
     { icon: Star, label: "Avg. Rating", value: stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "N/A", color: "text-primary" },
   ];
 
@@ -263,7 +263,7 @@ const HirerDashboard = () => {
                               Due {job.deadline ? new Date(job.deadline).toLocaleDateString() : 'No deadline'}
                             </span>
                             <span className="hidden md:inline">•</span>
-                            <span className="text-primary font-semibold">${job.budget}</span>
+                            <span className="text-primary font-semibold">৳{job.budget}</span>
                           </div>
                         </div>
                       </div>
