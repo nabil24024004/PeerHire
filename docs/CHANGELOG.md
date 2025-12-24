@@ -1,5 +1,55 @@
 # PeerHire Changelog
 
+## December 23-24, 2024 - Auth Redesign, Branding & Cleanup
+
+### Overview
+Major UI overhaul for authentication pages, new 3D branding, and codebase optimization.
+
+---
+
+### Authentication Redesign
+
+| Change | Details |
+|--------|---------|
+| **New Layout** | Split-screen design with dark form panel + purple illustration panel |
+| **Login Flow** | Changed from OTP to email/password authentication |
+| **Signup Flow** | Manual approval - redirects to "Contact Developer" page |
+| **Input Styling** | Minimalist underlined inputs with focus animation |
+| **Removed** | OTP verification, auto-confirm signup |
+
+---
+
+### Branding Updates
+
+| Asset | Change |
+|-------|--------|
+| **App Logo** | New 3D box effect with "PR" monogram |
+| **Favicon** | Updated to match new logo |
+| **Splash Screen** | Removed background box, increased logo size |
+| **Homepage Hero** | New flat vector illustration matching Auth style |
+
+---
+
+### Codebase Cleanup
+
+**Removed 11 unused UI components (~41KB, 1100 lines):**
+
+| Component | Size |
+|-----------|------|
+| `input-otp.tsx` | 2.2KB |
+| `chart.tsx` | 10KB |
+| `context-menu.tsx` | 7.2KB |
+| `menubar.tsx` | 7.9KB |
+| `hover-card.tsx` | 1.2KB |
+| `resizable.tsx` | 1.7KB |
+| `toggle-group.tsx` | 1.7KB |
+| `breadcrumb.tsx` | 2.7KB |
+| `navigation-menu.tsx` | 5KB |
+| `aspect-ratio.tsx` | 0.15KB |
+| `slider.tsx` | 1KB |
+
+---
+
 ## December 16, 2024 - Application Flow & Schema Alignment Fixes
 
 ### Overview

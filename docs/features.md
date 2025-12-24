@@ -14,14 +14,14 @@ Users can switch between roles using the Role Switcher in the sidebar.
 ## Authentication
 
 ### Sign Up
-- Email/password with @aaub.edu.bd domain restriction
-- Google OAuth (university email recommended)
-- Auto-confirm enabled (no email verification)
+- **Manual Approval Flow**: New users submit their details (name, email, department, batch)
+- Redirected to "Contact Developer" page for account activation
+- Prevents spam and ensures only verified university students join
 
 ### Sign In
-- Email/password
-- Google OAuth
-- Remember me (persistent sessions)
+- Email/password authentication
+- @aaub.edu.bd domain restriction
+- Persistent sessions
 
 ### Account Management
 - Profile editing (name, department, year, bio)
