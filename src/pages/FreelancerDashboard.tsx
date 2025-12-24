@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
-  Briefcase, CheckCircle2, Star, DollarSign,
+  Briefcase, CheckCircle2, Star,
   Clock, MessageSquare, Eye
 } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -208,7 +209,7 @@ const FreelancerDashboard = () => {
     { icon: Briefcase, label: "Active Jobs", value: stats.activeJobs.toString(), color: "text-primary" },
     { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "text-success" },
     { icon: Star, label: "Rating", value: stats.rating > 0 ? stats.rating.toFixed(1) : "New", color: "text-primary" },
-    { icon: DollarSign, label: "This Month", value: `৳${stats.thisMonth.toFixed(0)}`, color: "text-success" },
+    { icon: TakaIcon, label: "This Month", value: `৳${stats.thisMonth.toFixed(0)}`, color: "text-success" },
   ];
 
   return (

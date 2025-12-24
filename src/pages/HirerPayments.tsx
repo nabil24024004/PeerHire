@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, CreditCard, Clock, Info, Calendar } from "lucide-react";
+import { CreditCard, Clock, Info, Calendar } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Payment {
@@ -130,7 +131,7 @@ export default function HirerPayments() {
           <StatCard
             title="Total Spent"
             value={`৳${stats.totalSpent.toFixed(2)}`}
-            icon={DollarSign}
+            icon={TakaIcon}
             description="Lifetime spending"
           />
           <StatCard

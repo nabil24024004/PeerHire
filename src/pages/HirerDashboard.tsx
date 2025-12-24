@@ -2,9 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Briefcase, CheckCircle2, Clock, DollarSign,
+  Briefcase, CheckCircle2, Clock,
   Plus, MessageSquare, Eye, Star, ChevronRight
 } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -188,7 +189,7 @@ const HirerDashboard = () => {
   const statsArray = [
     { icon: Briefcase, label: "Open Tasks", value: stats.openTasks.toString(), color: "text-primary" },
     { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "text-success" },
-    { icon: DollarSign, label: "Total Spent", value: `৳${stats.totalSpent.toFixed(0)}`, color: "text-muted-foreground" },
+    { icon: TakaIcon, label: "Total Spent", value: `৳${stats.totalSpent.toFixed(0)}`, color: "text-muted-foreground" },
     { icon: Star, label: "Avg. Rating", value: stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "N/A", color: "text-primary" },
   ];
 

@@ -14,7 +14,6 @@ import {
   Edit,
   Briefcase,
   CheckCircle,
-  DollarSign,
   Star,
   Calendar,
   FileText,
@@ -22,6 +21,7 @@ import {
   Tag,
   Loader2
 } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 
 const HirerProfile = () => {
   const navigate = useNavigate();
@@ -242,7 +242,7 @@ const HirerProfile = () => {
           <StatCard
             title="Total Spent"
             value={`৳${profile.total_spent.toLocaleString()}`}
-            icon={DollarSign}
+            icon={TakaIcon}
             description="Across all tasks"
           />
           <StatCard

@@ -15,7 +15,6 @@ import {
   Edit,
   Briefcase,
   CheckCircle,
-  DollarSign,
   Star,
   Calendar,
   FileText,
@@ -26,6 +25,7 @@ import {
   Loader2,
   MessageSquare
 } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 
 import handwritingSample1 from "@/assets/handwriting-sample-1.jpg";
 import handwritingSample2 from "@/assets/handwriting-sample-2.jpg";
@@ -332,7 +332,7 @@ const FreelancerProfile = () => {
           <StatCard
             title="Total Earned"
             value={`৳${profile.total_earnings.toLocaleString()}`}
-            icon={DollarSign}
+            icon={TakaIcon}
             description="Lifetime earnings"
           />
           <StatCard
