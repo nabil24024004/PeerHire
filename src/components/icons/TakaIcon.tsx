@@ -5,22 +5,16 @@ export const TakaIcon = (props: SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="currentColor"
         {...props}
     >
         <text
-            x="50%"
-            y="50%"
-            dominantBaseline="central"
+            x="12"
+            y="18"
             textAnchor="middle"
-            fontSize="18"
-            fontWeight="bold"
-            fill="currentColor"
-            stroke="none"
+            fontSize="22"
+            fontWeight="700"
+            fontFamily="Arial, sans-serif"
         >
             ৳
         </text>
