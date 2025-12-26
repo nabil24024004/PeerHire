@@ -3,7 +3,6 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { EditProfileModal } from "@/components/EditProfileModal";
 import { AvatarUpload } from "@/components/AvatarUpload";
-import { HandwritingSamplesManager } from "@/components/HandwritingSamplesManager";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +33,6 @@ const FreelancerProfile = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [handwritingSamples, setHandwritingSamples] = useState<string[]>([]);
 
   // Determine if viewing own profile or someone else's
   const isOwnProfile = !userId || (user && userId === user.id);
@@ -149,27 +147,6 @@ const FreelancerProfile = () => {
         };
 
         setProfile(formattedProfile);
-
-        // Fetch handwriting samples from storage
-        try {
-          const { data: files, error: listError } = await supabase.storage
-            .from("handwriting-samples")
-            .list(profileId, { limit: 20 });
-
-          if (!listError && files && files.length > 0) {
-            const sampleUrls = files
-              .filter(file => file.name !== '.emptyFolderPlaceholder')
-              .map(file => {
-                const { data } = supabase.storage
-                  .from("handwriting-samples")
-                  .getPublicUrl(`${profileId}/${file.name}`);
-                return data.publicUrl;
-              });
-            setHandwritingSamples(sampleUrls);
-          }
-        } catch (storageError) {
-          console.error('Error fetching handwriting samples:', storageError);
-        }
       } catch (error: any) {
         console.error('Error fetching profile:', error);
         toast({
@@ -358,14 +335,6 @@ const FreelancerProfile = () => {
             description="Clients who came back"
           />
         </div>
-
-        {/* Handwriting Samples - Hirers can upload samples to freelancer profiles */}
-        <HandwritingSamplesManager
-          userId={profileId!}
-          samples={handwritingSamples}
-          canEdit={localStorage.getItem('activeRole') === 'hirer'}
-          onSamplesChange={setHandwritingSamples}
-        />
 
         {/* Portfolio / Featured Work */}
         <Card className="p-6 border-border bg-card animate-fade-in-up">

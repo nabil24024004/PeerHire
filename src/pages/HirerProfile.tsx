@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { EditProfileModal } from "@/components/EditProfileModal";
 import { AvatarUpload } from "@/components/AvatarUpload";
+import { HandwritingSamplesManager } from "@/components/HandwritingSamplesManager";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ const HirerProfile = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [handwritingSamples, setHandwritingSamples] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -113,6 +115,27 @@ const HirerProfile = () => {
         };
 
         setProfile(formattedProfile);
+
+        // Fetch handwriting samples from storage
+        try {
+          const { data: files, error: listError } = await supabase.storage
+            .from("handwriting-samples")
+            .list(user.id, { limit: 20 });
+
+          if (!listError && files && files.length > 0) {
+            const sampleUrls = files
+              .filter(file => file.name !== '.emptyFolderPlaceholder')
+              .map(file => {
+                const { data } = supabase.storage
+                  .from("handwriting-samples")
+                  .getPublicUrl(`${user.id}/${file.name}`);
+                return data.publicUrl;
+              });
+            setHandwritingSamples(sampleUrls);
+          }
+        } catch (storageError) {
+          console.error('Error fetching handwriting samples:', storageError);
+        }
       } catch (error: any) {
         console.error('Error fetching profile:', error);
         toast({
@@ -323,6 +346,14 @@ const HirerProfile = () => {
             </div>
           </div>
         </Card>
+
+        {/* Handwriting Samples - Hirers upload preferred handwriting styles */}
+        <HandwritingSamplesManager
+          userId={user.id}
+          samples={handwritingSamples}
+          canEdit={true}
+          onSamplesChange={setHandwritingSamples}
+        />
       </div>
 
       <EditProfileModal
