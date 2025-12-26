@@ -9,14 +9,14 @@ import { Image as ImageIcon, Plus, X, Loader2, Trash2 } from "lucide-react";
 interface HandwritingSamplesManagerProps {
     userId: string;
     samples: string[];
-    isOwnProfile: boolean;
+    canEdit: boolean;
     onSamplesChange: (samples: string[]) => void;
 }
 
 export const HandwritingSamplesManager = ({
     userId,
     samples,
-    isOwnProfile,
+    canEdit,
     onSamplesChange,
 }: HandwritingSamplesManagerProps) => {
     const { toast } = useToast();
@@ -142,7 +142,7 @@ export const HandwritingSamplesManager = ({
                                 alt={`Handwriting sample ${index + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
-                            {isOwnProfile && (
+                            {canEdit && (
                                 <Button
                                     variant="destructive"
                                     size="icon"
@@ -163,8 +163,8 @@ export const HandwritingSamplesManager = ({
                         </div>
                     ))}
 
-                    {/* Add Sample Card - Only for own profile */}
-                    {isOwnProfile && (
+                    {/* Add Sample Card - Only for hirers */}
+                    {canEdit && (
                         <div
                             className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 bg-muted/30 hover:bg-muted/50"
                             onClick={() => fileInputRef.current?.click()}
@@ -180,8 +180,8 @@ export const HandwritingSamplesManager = ({
                         </div>
                     )}
 
-                    {/* Empty state for other users */}
-                    {samples.length === 0 && !isOwnProfile && (
+                    {/* Empty state */}
+                    {samples.length === 0 && !canEdit && (
                         <div className="col-span-full py-8 text-center text-muted-foreground">
                             No handwriting samples uploaded yet
                         </div>

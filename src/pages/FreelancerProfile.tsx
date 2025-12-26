@@ -359,11 +359,11 @@ const FreelancerProfile = () => {
           />
         </div>
 
-        {/* Handwriting Samples */}
+        {/* Handwriting Samples - Hirers can upload samples to freelancer profiles */}
         <HandwritingSamplesManager
           userId={profileId!}
           samples={handwritingSamples}
-          isOwnProfile={isOwnProfile}
+          canEdit={localStorage.getItem('activeRole') === 'hirer'}
           onSamplesChange={setHandwritingSamples}
         />
 
