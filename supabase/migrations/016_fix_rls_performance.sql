@@ -127,11 +127,12 @@ DROP POLICY IF EXISTS "Users can view own disputes" ON disputes;
 DROP POLICY IF EXISTS "Users can create disputes" ON disputes;
 
 -- Recreate with optimized auth.uid() call
+-- Note: Jobs are linked to freelancers via applications table
 CREATE POLICY "disputes_select_own" ON disputes
   FOR SELECT TO authenticated
   USING (
     raised_by = (select auth.uid()) OR
-    job_id IN (SELECT id FROM jobs WHERE hirer_id = (select auth.uid()) OR freelancer_id = (select auth.uid()))
+    job_id IN (SELECT id FROM jobs WHERE hirer_id = (select auth.uid()))
   );
 
 CREATE POLICY "disputes_insert_own" ON disputes
@@ -149,12 +150,13 @@ DROP POLICY IF EXISTS "jobs_update_policy" ON jobs;
 DROP POLICY IF EXISTS "jobs_delete_policy" ON jobs;
 
 -- Recreate with optimized auth.uid() call
+-- Note: Jobs only has hirer_id, freelancers access via applications table
 CREATE POLICY "jobs_select_policy" ON jobs
   FOR SELECT TO authenticated
   USING (
     status = 'open' OR 
-    hirer_id = (select auth.uid()) OR 
-    freelancer_id = (select auth.uid())
+    hirer_id = (select auth.uid()) OR
+    id IN (SELECT job_id FROM applications WHERE freelancer_id = (select auth.uid()))
   );
 
 CREATE POLICY "jobs_insert_policy" ON jobs
@@ -163,10 +165,7 @@ CREATE POLICY "jobs_insert_policy" ON jobs
 
 CREATE POLICY "jobs_update_policy" ON jobs
   FOR UPDATE TO authenticated
-  USING (
-    hirer_id = (select auth.uid()) OR 
-    freelancer_id = (select auth.uid())
-  );
+  USING (hirer_id = (select auth.uid()));
 
 CREATE POLICY "jobs_delete_policy" ON jobs
   FOR DELETE TO authenticated
