@@ -3,10 +3,10 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { EditProfileModal } from "@/components/EditProfileModal";
 import { AvatarUpload } from "@/components/AvatarUpload";
+import { HandwritingSamplesManager } from "@/components/HandwritingSamplesManager";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +18,6 @@ import {
   Star,
   Calendar,
   FileText,
-  Image as ImageIcon,
   Users,
   Clock,
   Award,
@@ -27,18 +26,15 @@ import {
 } from "lucide-react";
 import { TakaIcon } from "@/components/icons/TakaIcon";
 
-import handwritingSample1 from "@/assets/handwriting-sample-1.jpg";
-import handwritingSample2 from "@/assets/handwriting-sample-2.jpg";
-
 const FreelancerProfile = () => {
   const navigate = useNavigate();
   const { userId } = useParams<{ userId?: string }>();
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [handwritingSamples, setHandwritingSamples] = useState<string[]>([]);
 
   // Determine if viewing own profile or someone else's
   const isOwnProfile = !userId || (user && userId === user.id);
@@ -147,13 +143,33 @@ const FreelancerProfile = () => {
           skills: profileData.skills || [],
           hourly_rate: profileData.hourly_rate || 0,
           handwriting_style: profileData.handwriting_sample_url ? 'Uploaded' : 'None',
-          handwriting_samples: [handwritingSample1, handwritingSample2], // TODO: Fetch from storage
           portfolio: [], // TODO: Fetch portfolio items
           reviews: formattedReviews,
           repeat_hirers: 0, // TODO: Calculate from conversations/jobs
         };
 
         setProfile(formattedProfile);
+
+        // Fetch handwriting samples from storage
+        try {
+          const { data: files, error: listError } = await supabase.storage
+            .from("handwriting-samples")
+            .list(profileId, { limit: 20 });
+
+          if (!listError && files && files.length > 0) {
+            const sampleUrls = files
+              .filter(file => file.name !== '.emptyFolderPlaceholder')
+              .map(file => {
+                const { data } = supabase.storage
+                  .from("handwriting-samples")
+                  .getPublicUrl(`${profileId}/${file.name}`);
+                return data.publicUrl;
+              });
+            setHandwritingSamples(sampleUrls);
+          }
+        } catch (storageError) {
+          console.error('Error fetching handwriting samples:', storageError);
+        }
       } catch (error: any) {
         console.error('Error fetching profile:', error);
         toast({
@@ -344,27 +360,12 @@ const FreelancerProfile = () => {
         </div>
 
         {/* Handwriting Samples */}
-        <Card className="p-6 border-border bg-card animate-fade-in-up">
-          <div className="flex items-center gap-2 mb-4">
-            <ImageIcon className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-bold text-foreground">Handwriting Samples</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {profile.handwriting_samples.map((sample, index) => (
-              <div
-                key={index}
-                className="aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary transition-colors cursor-pointer group"
-                onClick={() => setSelectedImage(sample)}
-              >
-                <img
-                  src={sample}
-                  alt={`Handwriting sample ${index + 1}`}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-            ))}
-          </div>
-        </Card>
+        <HandwritingSamplesManager
+          userId={profileId!}
+          samples={handwritingSamples}
+          isOwnProfile={isOwnProfile}
+          onSamplesChange={setHandwritingSamples}
+        />
 
         {/* Portfolio / Featured Work */}
         <Card className="p-6 border-border bg-card animate-fade-in-up">
