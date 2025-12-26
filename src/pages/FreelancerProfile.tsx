@@ -459,16 +459,6 @@ const FreelancerProfile = () => {
         onSave={handleSaveProfile}
       />
 
-      {/* Image Preview Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl bg-card border-border p-2">
-          <img
-            src={selectedImage || ""}
-            alt="Handwriting sample"
-            className="w-full h-auto rounded-lg"
-          />
-        </DialogContent>
-      </Dialog>
     </DashboardLayout>
   );
 };
