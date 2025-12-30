@@ -68,7 +68,7 @@ Primary user table. **All users are dual-roled** (both `is_hirer` and `is_freela
 | full_name | text | Yes | null | Display name |
 | bio | text | Yes | null | User bio |
 | skills | text[] | Yes | null | Skills array |
-| hourly_rate | numeric | Yes | null | Hourly rate |
+| hourly_rate | numeric | Yes | null | Rate per work (displayed as ৳X/work) |
 | availability | text | Yes | 'available' | 'available', 'busy', 'offline' |
 | avatar_url | text | Yes | null | Profile picture URL |
 | student_id | text | Yes | null | Student ID number |

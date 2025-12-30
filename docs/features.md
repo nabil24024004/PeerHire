@@ -47,8 +47,30 @@ Multi-step modal flow:
 
 **Dynamic Pricing Formula:**
 ```
-Price = BASE_PRICE × page_count × quality_multiplier
+Price = ৳10/page × page_count × quality_multiplier × deadline_multiplier
 ```
+
+**Quality Multipliers:**
+| Level | Multiplier |
+|-------|------------|
+| Standard | 1.0x |
+| Premium | 1.5x |
+| Urgent | 2.0x |
+
+**Deadline Multipliers:**
+| Time to Deadline | Multiplier |
+|------------------|------------|
+| 7+ days | 1.0x (no extra) |
+| 3-7 days | +5% |
+| 2-3 days | +15% |
+| 1-2 days | +25% |
+| <24 hours | +50% |
+
+### Handwriting Samples
+- Upload samples on Hirer Profile
+- Freelancers can view when applying to jobs
+- Stored in Supabase Storage bucket
+- Upload, delete, and preview functionality
 
 ### My Tasks (`/app/hirer/tasks`)
 - View all posted jobs

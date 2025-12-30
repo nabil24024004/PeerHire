@@ -1,5 +1,72 @@
 # PeerHire Changelog
 
+## December 26-30, 2024 - Payment System, RLS Fixes & Features
+
+### Overview
+Major payment/pricing system overhaul, database performance optimizations, and new handwriting samples feature.
+
+---
+
+### Payment & Pricing System Updates
+
+| Change | Before | After |
+|--------|--------|-------|
+| **Base Price** | ৳5/page | **৳10/page** |
+| **Rate Label** | "Hourly Rate" | **"Rate Per Work"** |
+| **Rate Display** | `৳X/hr` | **`৳X/work`** |
+| **Proposal Cap** | No limit | **Budget + ৳75 max** |
+
+---
+
+### Deadline-Based Dynamic Pricing
+
+New pricing tiers based on deadline proximity:
+
+| Deadline | Multiplier |
+|----------|------------|
+| 7+ days | 1.0x (no extra) |
+| 3-7 days | +5% |
+| 2-3 days | +15% |
+| 1-2 days | +25% |
+| <24 hours | +50% |
+
+---
+
+### Handwriting Samples Feature
+
+| Component | Details |
+|-----------|---------|
+| **Location** | Hirer Profile page |
+| **Functionality** | Upload, delete, preview samples |
+| **Storage** | Supabase Storage bucket |
+| **Permissions** | Hirers can manage own samples; freelancers view only |
+
+---
+
+### Database & RLS Fixes
+
+**Performance Optimizations (Migration 016):**
+- Wrapped `auth.uid()` in `(select auth.uid())` for 25 policies
+- Removed 5 duplicate permissive policies
+
+**Infinite Recursion Fix (Migration 018):**
+- Fixed circular RLS policy reference between `jobs` and `applications` tables
+- Simplified `jobs_select_policy` to avoid subqueries causing recursion
+
+**Function Security (Migration 017):**
+- Added `SET search_path = ''` to `handle_new_user` function
+
+---
+
+### UI Fixes
+
+| Fix | Details |
+|-----|---------|
+| **Calendar Icon** | Made visible on dark background with `color-scheme: dark` |
+| **Freelancer Profile** | Fixed black screen caused by orphaned Dialog component |
+
+---
+
 ## December 23-24, 2024 - Auth Redesign, Branding & Cleanup
 
 ### Overview
