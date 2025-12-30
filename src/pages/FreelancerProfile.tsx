@@ -301,7 +301,7 @@ const FreelancerProfile = () => {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Rate: </span>
-                  <span className="text-foreground font-medium">৳{profile.hourly_rate}/hr</span>
+                  <span className="text-foreground font-medium">৳{profile.hourly_rate}/work</span>
                 </div>
               </div>
             </div>

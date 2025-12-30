@@ -253,7 +253,7 @@ const LiveBoard = () => {
                 {freelancer.hourly_rate && (
                   <div className="flex items-center gap-4 mb-4 pb-4 border-b border-border">
                     <span className="text-sm text-muted-foreground">
-                      ৳{freelancer.hourly_rate}/hr
+                      ৳{freelancer.hourly_rate}/work
                     </span>
                   </div>
                 )}

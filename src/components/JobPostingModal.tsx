@@ -51,7 +51,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
   const [deadline, setDeadline] = useState("");
   const [description, setDescription] = useState("");
 
-  const BASE_PRICE_PER_PAGE = 5;
+  const BASE_PRICE_PER_PAGE = 10;
 
   // Helper to get the effective subject (custom if Others is selected)
   const getEffectiveSubject = () => subject === "Others" ? customSubject : subject;

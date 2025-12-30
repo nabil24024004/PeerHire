@@ -24,11 +24,15 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const applicationSchema = z.object({
+const createApplicationSchema = (maxPrice: number) => z.object({
   coverLetter: z.string().min(50, "Cover letter must be at least 50 characters"),
-  proposedPrice: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Price must be a valid positive number",
-  }),
+  proposedPrice: z.string()
+    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Price must be a valid positive number",
+    })
+    .refine((val) => Number(val) <= maxPrice, {
+      message: `Price cannot exceed ৳${maxPrice} (hirer's budget + ৳75)`,
+    }),
 });
 
 interface JobApplicationModalProps {
@@ -51,6 +55,9 @@ export function JobApplicationModal({
 }: JobApplicationModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const maxPrice = job.budget + 75;
+  const applicationSchema = createApplicationSchema(maxPrice);
 
   const form = useForm<z.infer<typeof applicationSchema>>({
     resolver: zodResolver(applicationSchema),
@@ -169,17 +176,19 @@ export function JobApplicationModal({
               name="proposedPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Proposed Price ($) *</FormLabel>
+                  <FormLabel>Your Proposed Price (৳) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
+                      step="1"
+                      min="1"
+                      max={maxPrice}
                       placeholder="Enter your price"
                       {...field}
                     />
                   </FormControl>
                   <p className="text-xs text-muted-foreground">
-                    You can propose a different price than the hirer's budget
+                    Maximum allowed: ৳{maxPrice} (hirer's budget + ৳75)
                   </p>
                   <FormMessage />
                 </FormItem>
