@@ -16,7 +16,7 @@ interface JobData {
     attachment_urls: string[] | null;
 }
 
-const SITE_FEE_PERCENTAGE = 0.15; // 15%
+const SITE_FEE_PERCENTAGE = 0.20; // 20%
 
 export default function PaymentMethod() {
     const location = useLocation();
@@ -196,7 +196,7 @@ export default function PaymentMethod() {
                                 </span>
                             </div>
                             <div>
-                                <span className="text-muted-foreground">Site Fee (15%):</span>
+                                <span className="text-muted-foreground">Site Fee (20%):</span>
                                 <span className="ml-2 font-medium text-primary">৳{siteFee}</span>
                             </div>
                         </div>
@@ -228,7 +228,7 @@ export default function PaymentMethod() {
                                     <span>৳{jobData.budget}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Site Fee (15%)</span>
+                                    <span className="text-muted-foreground">Site Fee (20%)</span>
                                     <span>৳{siteFee}</span>
                                 </div>
                                 <div className="border-t border-border pt-3">
@@ -279,7 +279,7 @@ export default function PaymentMethod() {
                         <CardContent>
                             <div className="space-y-3">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Site Fee (15%)</span>
+                                    <span className="text-muted-foreground">Site Fee (20%)</span>
                                     <span>৳{siteFee}</span>
                                 </div>
                                 <div className="flex justify-between text-sm text-muted-foreground">
