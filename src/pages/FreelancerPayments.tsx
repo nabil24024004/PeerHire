@@ -231,7 +231,13 @@ Please process my payment. Thank you!`;
               <div className="p-4 rounded-lg border border-border bg-card space-y-3">
                 <p className="text-sm font-medium">For payment inquiries, contact our developer:</p>
                 <Button
-                  onClick={() => window.open(generateWhatsAppLink(), '_blank')}
+                  onClick={() => {
+                    const link = generateWhatsAppLink();
+                    if (link && link !== "#") {
+                      window.open(link, '_blank');
+                    }
+                  }}
+                  disabled={!userProfile}
                   className="w-full sm:w-auto gap-2"
                   variant="default"
                 >
