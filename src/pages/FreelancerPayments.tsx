@@ -6,24 +6,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Clock, Info, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Briefcase, Clock, Info, Calendar, MessageCircle, AlertCircle } from "lucide-react";
 import { TakaIcon } from "@/components/icons/TakaIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Payment {
-  id: string;
-  amount: number;
-  payment_method: string;
-  status: string;
-  created_at: string;
-  jobs: {
-    title: string;
-  };
-  payer: {
-    full_name: string;
-  };
+interface AcceptedJob {
+  job_id: string;
+  job_title: string;
+  job_budget: number;
+  job_status: string;
+  payment_method: "pay_now" | "pay_later" | null;
+  accepted_at: string;
 }
 
 export default function FreelancerPayments() {
@@ -31,11 +27,13 @@ export default function FreelancerPayments() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [acceptedJobs, setAcceptedJobs] = useState<AcceptedJob[]>([]);
   const [stats, setStats] = useState({
     totalEarned: 0,
     completedJobs: 0,
-    outstandingPayments: 0,
+    payNowJobs: 0,
+    payLaterJobs: 0,
   });
 
   useEffect(() => {
@@ -45,7 +43,6 @@ export default function FreelancerPayments() {
         return;
       }
 
-      // Check localStorage for active role
       if (!authLoading && user) {
         const activeRole = localStorage.getItem('activeRole');
         if (activeRole === 'hirer') {
@@ -58,23 +55,31 @@ export default function FreelancerPayments() {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    const fetchPayments = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
       try {
-        // Get completed jobs via accepted applications
-        const { data: completedApps, error: appsError } = await supabase
+        // Fetch user profile
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, student_id, department, email")
+          .eq("id", user.id)
+          .single();
+
+        setUserProfile(profile);
+
+        // Get accepted applications with job details
+        const { data: applications, error: appsError } = await supabase
           .from("applications")
           .select(`
             job_id,
-            status,
+            created_at,
             jobs!inner (
               id,
               title,
               budget,
               status,
-              hirer_id,
-              updated_at
+              hirer_id
             )
           `)
           .eq("freelancer_id", user.id)
@@ -82,26 +87,51 @@ export default function FreelancerPayments() {
 
         if (appsError) throw appsError;
 
-        // Calculate stats from completed jobs
-        const completedJobs = (completedApps || [])
-          .filter(app => (app.jobs as any)?.status === 'completed');
+        // For each job, get the payment method from payments table
+        const jobsWithPaymentMethod: AcceptedJob[] = [];
 
-        const totalEarned = completedJobs
-          .reduce((sum, app) => sum + Number((app.jobs as any).budget || 0), 0);
+        for (const app of applications || []) {
+          const job = (app.jobs as any);
 
-        const inProgressJobs = (completedApps || [])
-          .filter(app => (app.jobs as any)?.status === 'in_progress');
+          // Find payment record for this job
+          const { data: payment } = await supabase
+            .from("payments")
+            .select("payment_method")
+            .eq("user_id", job.hirer_id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .single();
+
+          jobsWithPaymentMethod.push({
+            job_id: job.id,
+            job_title: job.title,
+            job_budget: job.budget,
+            job_status: job.status,
+            payment_method: payment?.payment_method || null,
+            accepted_at: app.created_at
+          });
+        }
+
+        setAcceptedJobs(jobsWithPaymentMethod);
+
+        // Calculate stats
+        const completed = jobsWithPaymentMethod.filter(j => j.job_status === 'completed');
+        const totalEarned = completed.reduce((sum, j) => sum + Number(j.job_budget), 0);
+        const payNowCount = jobsWithPaymentMethod.filter(j => j.payment_method === 'pay_now').length;
+        const payLaterCount = jobsWithPaymentMethod.filter(j => j.payment_method === 'pay_later').length;
 
         setStats({
           totalEarned,
-          completedJobs: completedJobs.length,
-          outstandingPayments: inProgressJobs.length
+          completedJobs: completed.length,
+          payNowJobs: payNowCount,
+          payLaterJobs: payLaterCount,
         });
-        setPayments([]); // No payments table, show empty
+
       } catch (error: any) {
+        console.error("Error:", error);
         toast({
           title: "Error",
-          description: "Failed to load earnings",
+          description: "Failed to load payment information",
           variant: "destructive",
         });
       } finally {
@@ -109,20 +139,22 @@ export default function FreelancerPayments() {
       }
     };
 
-    fetchPayments();
+    fetchData();
   }, [user, toast]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-success/20 text-success border-success/50";
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "failed":
-        return "bg-destructive/20 text-destructive border-destructive/50";
-      default:
-        return "bg-muted text-muted-foreground border-border";
-    }
+  const generateWhatsAppLink = () => {
+    if (!userProfile) return "#";
+
+    const message = `Hello, I'm a freelancer on PeerHire requesting payment.
+
+Name: ${userProfile.full_name || "N/A"}
+Student ID: ${userProfile.student_id || "N/A"}
+Department: ${userProfile.department || "N/A"}
+Email: ${userProfile.email || "N/A"}
+
+Please process my payment. Thank you!`;
+
+    return `https://wa.me/8801788992953?text=${encodeURIComponent(message)}`;
   };
 
   if (authLoading || loading) {
@@ -140,110 +172,160 @@ export default function FreelancerPayments() {
     );
   }
 
+  const payNowJobs = acceptedJobs.filter(j => j.payment_method === 'pay_now');
+  const payLaterJobs = acceptedJobs.filter(j => j.payment_method === 'pay_later');
+
   return (
     <DashboardLayout role="freelancer">
       <div className="space-y-6 animate-fade-in">
-        <h1 className="text-3xl font-bold gradient-text">Earnings</h1>
-
-        {/* Info Banner */}
-        <Alert className="border-primary/50 bg-primary/10">
-          <Info className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-sm">
-            <strong>bKash transaction integration will be added soon.</strong> Until then, receive payments through the Messenger method. Share your bKash number with hirers via chat.
-          </AlertDescription>
-        </Alert>
+        <h1 className="text-2xl sm:text-3xl font-bold gradient-text">Payments & Earnings</h1>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <StatCard
             title="Total Earned"
-            value={`৳${stats.totalEarned.toFixed(2)}`}
+            value={`৳${stats.totalEarned.toFixed(0)}`}
             icon={TakaIcon}
-            description="Completed payments"
+            description="Completed jobs"
           />
           <StatCard
             title="Completed Jobs"
             value={stats.completedJobs}
             icon={Briefcase}
-            description="Paid jobs"
+            description="Finished work"
           />
           <StatCard
-            title="Outstanding Payments"
-            value={stats.outstandingPayments}
+            title="Pay Now Jobs"
+            value={stats.payNowJobs}
             icon={Clock}
-            description="Pending payments"
+            description="Platform payments"
+          />
+          <StatCard
+            title="Pay Later Jobs"
+            value={stats.payLaterJobs}
+            icon={AlertCircle}
+            description="Direct payments"
           />
         </div>
 
-        {/* Payment Method Info */}
-        <Card className="border-border bg-card/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Info className="w-5 h-5 text-primary" />
-              Payment Method
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Currently, all payments are received through <strong>Messenger chat</strong>. When you complete a job:
-            </p>
-            <ol className="mt-3 space-y-2 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Message the hirer through the chat system</li>
-              <li>Share your bKash number securely</li>
-              <li>Wait for the hirer to complete the payment</li>
-              <li>Confirm receipt in the system</li>
-            </ol>
-            <p className="mt-3 text-sm text-primary">
-              Direct bKash integration is coming soon for instant payments!
-            </p>
-          </CardContent>
-        </Card>
+        {/* Pay Now Instructions */}
+        {payNowJobs.length > 0 && (
+          <Card className="border-primary/50 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5 text-primary" />
+                Platform Payment Jobs (Pay Now)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="border-primary/50">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Payment Processing Time</AlertTitle>
+                <AlertDescription>
+                  Payments will arrive within <strong>2-3 working days</strong> after job completion is verified.
+                </AlertDescription>
+              </Alert>
 
-        {/* Earnings List */}
-        <Card className="border-border">
-          <CardHeader>
-            <CardTitle>Earnings History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {payments.length === 0 ? (
-              <div className="py-12 text-center">
-                <TakaIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-lg text-muted-foreground">No earnings yet</p>
+              <div className="p-4 rounded-lg border border-border bg-card space-y-3">
+                <p className="text-sm font-medium">For payment inquiries, contact our developer:</p>
+                <Button
+                  onClick={() => window.open(generateWhatsAppLink(), '_blank')}
+                  className="w-full sm:w-auto gap-2"
+                  variant="default"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp: +880 1788-992953
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Your profile details will be automatically included in the message.
+                </p>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {payments.map((payment) => (
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">Your Pay Now Jobs:</p>
+                {payNowJobs.map((job) => (
                   <div
-                    key={payment.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                    key={job.job_id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg border border-border bg-card/50"
                   >
-                    <div className="flex-1">
-                      <p className="font-semibold">{payment.jobs?.title || "Unknown Job"}</p>
-                      <p className="text-sm text-muted-foreground">
-                        From: {payment.payer?.full_name || "Unknown"}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{job.job_title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Accepted: {new Date(job.accepted_at).toLocaleDateString()}
                       </p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(payment.created_at).toLocaleDateString()}
-                      </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <Badge variant="outline" className="capitalize">
-                        {payment.payment_method}
+                        {job.job_status}
                       </Badge>
-                      <Badge className={getStatusColor(payment.status)}>
-                        {payment.status.toUpperCase()}
-                      </Badge>
-                      <p className="text-lg font-bold text-primary">
-                        ৳{Number(payment.amount).toFixed(2)}
-                      </p>
+                      <p className="text-sm font-bold text-primary">৳{job.job_budget}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pay Later Instructions */}
+        {payLaterJobs.length > 0 && (
+          <Card className="border-orange-500/50 bg-orange-500/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-orange-500" />
+                Direct Payment Jobs (Pay Later)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="border-orange-500/50 bg-orange-500/10">
+                <AlertCircle className="h-4 w-4 text-orange-500" />
+                <AlertTitle className="text-orange-500">Payment Instructions</AlertTitle>
+                <AlertDescription>
+                  For these jobs, <strong>get your money directly from the hirer</strong>. The platform does not process these payments.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">Your Pay Later Jobs:</p>
+                {payLaterJobs.map((job) => (
+                  <div
+                    key={job.job_id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg border border-orange-500/30 bg-card/50"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{job.job_title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Accepted: {new Date(job.accepted_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-orange-500/20 text-orange-500 border-orange-500/50">
+                        Pay Later
+                      </Badge>
+                      <Badge variant="outline" className="capitalize">
+                        {job.job_status}
+                      </Badge>
+                      <p className="text-sm font-bold text-orange-500">৳{job.job_budget}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* No Jobs Message */}
+        {acceptedJobs.length === 0 && (
+          <Card className="border-border">
+            <CardContent className="py-12 text-center">
+              <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-lg font-medium text-muted-foreground">No accepted jobs yet</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Start browsing and applying to jobs to see your earnings here
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DashboardLayout>
   );
