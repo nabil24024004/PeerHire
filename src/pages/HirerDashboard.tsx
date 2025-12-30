@@ -107,6 +107,53 @@ const HirerDashboard = () => {
     };
   }, [navigate]);
 
+  // Real-time subscriptions for auto-refresh
+  useEffect(() => {
+    const setupRealtimeSubscriptions = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const userId = session.user.id;
+
+      // Subscribe to changes in jobs and applications
+      const channel = supabase
+        .channel('hirer-dashboard-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // INSERT, UPDATE, DELETE
+            schema: 'public',
+            table: 'jobs',
+            filter: `hirer_id=eq.${userId}`,
+          },
+          () => {
+            console.log('Jobs changed, refreshing dashboard...');
+            fetchDashboardData(userId);
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'applications',
+          },
+          (payload: any) => {
+            // Reload on application changes
+            console.log('Application changed:', payload);
+            fetchDashboardData(userId);
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    setupRealtimeSubscriptions();
+  }, []);
+
   const fetchDashboardData = async (userId: string) => {
     try {
       // Fetch jobs first

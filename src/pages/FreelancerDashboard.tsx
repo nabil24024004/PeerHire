@@ -96,6 +96,54 @@ const FreelancerDashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Real-time subscriptions for auto-refresh
+  useEffect(() => {
+    const setupRealtimeSubscriptions = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const userId = session.user.id;
+
+      // Subscribe to changes in jobs and applications
+      const channel = supabase
+        .channel('dashboard-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // INSERT, UPDATE, DELETE
+            schema: 'public',
+            table: 'applications',
+            filter: `freelancer_id=eq.${userId}`,
+          },
+          () => {
+            console.log('Applications changed, refreshing dashboard...');
+            fetchDashboardData(userId);
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'jobs',
+          },
+          (payload: any) => {
+            // Reload if job status changed and affects this user
+            console.log('Job updated:', payload);
+            fetchDashboardData(userId);
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    setupRealtimeSubscriptions();
+  }, []);
+
+
   const fetchDashboardData = async (userId: string, rating?: number) => {
     try {
       // Fetch jobs where freelancer has accepted applications
