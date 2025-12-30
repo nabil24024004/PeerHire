@@ -31,11 +31,21 @@ serve(async (req) => {
 
         // Parse webhook payload
         const payload: WebhookPayload = await req.json()
-        console.log('Webhook received:', payload)
+        console.log('🔔 Webhook received - FULL PAYLOAD:', JSON.stringify(payload, null, 2))
+        console.log('🔔 Payload keys:', Object.keys(payload))
 
         const { transaction_id, status, metadata } = payload
 
+        // Log what we extracted
+        console.log('📝 Extracted values:', {
+            transaction_id,
+            status,
+            metadata_exists: !!metadata
+        })
+
         if (!transaction_id) {
+            console.error('❌ Missing transaction_id in webhook payload')
+            console.error('❌ Available keys:', Object.keys(payload))
             throw new Error('Missing transaction_id in webhook payload')
         }
 
