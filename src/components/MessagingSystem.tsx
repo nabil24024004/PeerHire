@@ -48,9 +48,41 @@ export function MessagingSystem({
   // Load chat partners (people you've messaged)
   useEffect(() => {
     loadChatPartners();
-    const cleanup = subscribeToMessages();
-    return cleanup;
   }, [currentUserId]);
+
+  // Subscribe to real-time message updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('messages-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          // Reload chat partners to update last messages and unread counts
+          loadChatPartners();
+          // If the new message is for the currently open conversation, reload messages
+          if (selectedConversationId) {
+            const newMessage = payload.new as Message;
+            if (
+              newMessage.sender_id === selectedConversationId ||
+              newMessage.receiver_id === selectedConversationId
+            ) {
+              loadMessages(selectedConversationId);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedConversationId]); // Re-subscribe when selected conversation changes
 
   // Load messages for selected partner
   useEffect(() => {
