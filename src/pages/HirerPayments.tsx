@@ -160,9 +160,9 @@ export default function HirerPayments() {
   return (
     <DashboardLayout role="hirer">
       <div className="space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold gradient-text">Payments</h1>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold gradient-text">Payments</h1>
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
             <Shield className="w-4 h-4 text-primary" />
             Secured by RupantorPay
           </div>
@@ -261,13 +261,13 @@ function PaymentList({
       {payments.map((payment) => (
         <div
           key={payment.id}
-          className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-muted/50 transition-colors"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-border bg-card/50 hover:bg-muted/50 transition-colors"
         >
-          <div className="flex-1">
-            <p className="font-semibold">
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold truncate">
               {payment.metadata?.jobData?.title || "Job Payment"}
             </p>
-            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {new Date(payment.created_at).toLocaleDateString()}
@@ -279,10 +279,10 @@ function PaymentList({
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {getMethodBadge(payment.payment_method)}
             {getStatusBadge(payment.status)}
-            <div className="text-right min-w-[80px]">
+            <div className="text-left sm:text-right min-w-[80px]">
               <p className="text-lg font-bold text-primary">
                 ৳{Number(payment.amount).toFixed(0)}
               </p>
