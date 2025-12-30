@@ -235,10 +235,10 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Estimated Price</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    ${BASE_PRICE_PER_PAGE}/page × {pageCount} pages × {QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier}x
+                    ৳{BASE_PRICE_PER_PAGE}/page × {pageCount} pages × {QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier}x
                   </p>
                 </div>
-                <p className="text-3xl font-bold text-primary">${calculatePrice()}</p>
+                <p className="text-3xl font-bold text-primary">৳{calculatePrice()}</p>
               </div>
             </Card>
           </div>
