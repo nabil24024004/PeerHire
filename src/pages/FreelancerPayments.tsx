@@ -94,20 +94,22 @@ export default function FreelancerPayments() {
           const job = (app.jobs as any);
 
           // Find payment record for this job
+          // For backward compatibility: if no payment found, default to "pay_later"
           const { data: payment } = await supabase
             .from("payments")
             .select("payment_method")
             .eq("user_id", job.hirer_id)
             .order("created_at", { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle(); // Use maybeSingle to avoid errors when no record exists
 
           jobsWithPaymentMethod.push({
             job_id: job.id,
             job_title: job.title,
             job_budget: job.budget,
             job_status: job.status,
-            payment_method: payment?.payment_method || null,
+            // Default to "pay_later" for legacy jobs without payment records
+            payment_method: payment?.payment_method || "pay_later",
             accepted_at: app.created_at
           });
         }
