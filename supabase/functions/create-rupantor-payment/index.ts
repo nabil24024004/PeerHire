@@ -26,12 +26,20 @@ serve(async (req) => {
         const rupantorApiKey = Deno.env.get('RUPANTORPAY_API_KEY')!
         const rupantorBaseUrl = Deno.env.get('RUPANTORPAY_BASE_URL') || 'https://payment.rupantorpay.com'
 
+        console.log('🔍 Environment check:', {
+            hasUrl: !!supabaseUrl,
+            hasServiceKey: !!supabaseServiceKey,
+            hasApiKey: !!rupantorApiKey,
+            baseUrl: rupantorBaseUrl
+        })
+
         // Create Supabase client with service role
         const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
         // Get authorization header
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
+            console.error('❌ Missing authorization header')
             throw new Error('Missing authorization header')
         }
 
@@ -41,16 +49,30 @@ serve(async (req) => {
         )
 
         if (authError || !user) {
+            console.error('❌ Auth error:', authError)
             throw new Error('Unauthorized')
         }
 
+        console.log('✅ User authenticated:', user.id)
+
         // Parse request body
         const body: PaymentRequest = await req.json()
+        console.log('📦 INCOMING BODY:', JSON.stringify(body, null, 2))
+
         const { payment_id, amount, purpose, metadata } = body
 
-        if (!payment_id || !amount) {
-            throw new Error('Missing required fields: payment_id, amount')
+        // Validate required fields
+        if (!payment_id) {
+            console.error('❌ Missing payment_id')
+            throw new Error('Missing required field: payment_id')
         }
+
+        if (!amount) {
+            console.error('❌ Missing amount')
+            throw new Error('Missing required field: amount')
+        }
+
+        console.log('✅ Request validation passed')
 
         // Get user profile for name/email
         const { data: profile } = await supabase
@@ -59,11 +81,34 @@ serve(async (req) => {
             .eq('id', user.id)
             .single()
 
+        console.log('👤 Profile data:', {
+            full_name: profile?.full_name || 'none',
+            email: profile?.email || user.email || 'none'
+        })
+
         // Construct success/cancel URLs
         const appUrl = Deno.env.get('APP_URL') || 'https://peerhireaaub.vercel.app'
         const successUrl = `${appUrl}/payment/success?transaction_id={transaction_id}`
         const cancelUrl = `${appUrl}/payment/cancel`
         const webhookUrl = `${supabaseUrl}/functions/v1/rupantor-webhook`
+
+        // Build RupantorPay payload
+        const rupantorPayload = {
+            fullname: profile?.full_name || user.email?.split('@')[0] || 'PeerHire User',
+            email: profile?.email || user.email,
+            amount: String(amount), // Ensure it's a string
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+            webhook_url: webhookUrl,
+            metadata: {
+                payment_id: payment_id,
+                user_id: user.id,
+                purpose: purpose,
+                ...metadata,
+            },
+        }
+
+        console.log('🚀 Calling RupantorPay with payload:', JSON.stringify(rupantorPayload, null, 2))
 
         // Call RupantorPay Checkout API
         const checkoutResponse = await fetch(`${rupantorBaseUrl}/api/payment/checkout`, {
@@ -72,29 +117,20 @@ serve(async (req) => {
                 'X-API-KEY': rupantorApiKey,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                fullname: profile?.full_name || user.email?.split('@')[0] || 'PeerHire User',
-                email: profile?.email || user.email,
-                amount: amount,
-                success_url: successUrl,
-                cancel_url: cancelUrl,
-                webhook_url: webhookUrl,
-                metadata: {
-                    payment_id: payment_id,
-                    user_id: user.id,
-                    purpose: purpose,
-                    ...metadata,
-                },
-            }),
+            body: JSON.stringify(rupantorPayload),
         })
 
+        console.log('📡 RupantorPay STATUS:', checkoutResponse.status)
+
+        const responseText = await checkoutResponse.text()
+        console.log('📡 RupantorPay RESPONSE:', responseText)
+
         if (!checkoutResponse.ok) {
-            const errorText = await checkoutResponse.text()
-            console.error('RupantorPay error:', errorText)
-            throw new Error(`RupantorPay API error: ${checkoutResponse.status}`)
+            console.error('❌ RupantorPay error:', responseText)
+            throw new Error(`RupantorPay API error: ${checkoutResponse.status} - ${responseText}`)
         }
 
-        const checkoutData = await checkoutResponse.json()
+        const checkoutData = JSON.parse(responseText)
 
         // Update payment record with transaction_id and checkout URL
         const { error: updateError } = await supabase
@@ -124,9 +160,16 @@ serve(async (req) => {
         )
 
     } catch (error) {
-        console.error('Error:', error)
+        console.error('💥 Error occurred:', error)
+        console.error('💥 Error name:', error.name)
+        console.error('💥 Error message:', error.message)
+        console.error('💥 Error stack:', error.stack)
+
         return new Response(
-            JSON.stringify({ error: error.message }),
+            JSON.stringify({
+                error: error.message || 'Unknown error',
+                details: error.toString()
+            }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 400,
