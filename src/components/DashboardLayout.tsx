@@ -475,9 +475,9 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                   onClick={() => setIsNotificationPanelOpen(true)}
                 >
                   <Bell className="w-5 h-5" />
-                  {notificationCount > 0 && (
+                  {(notificationCount + unreadCount) > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground">
-                      {notificationCount > 99 ? '99+' : notificationCount}
+                      {(notificationCount + unreadCount) > 99 ? '99+' : (notificationCount + unreadCount)}
                     </Badge>
                   )}
                 </Button>

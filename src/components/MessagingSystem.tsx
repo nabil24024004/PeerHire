@@ -52,6 +52,29 @@ export function MessagingSystem({
 
   // Subscribe to real-time message updates
   useEffect(() => {
+    // Create notification sound using Web Audio API
+    const playNotificationSound = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800; // Frequency in Hz
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+      } catch (error) {
+        console.error('Error playing notification sound:', error);
+      }
+    };
+
     const channel = supabase
       .channel('messages-changes')
       .on(
@@ -63,11 +86,17 @@ export function MessagingSystem({
         },
         (payload) => {
           console.log('New message received:', payload);
+          const newMessage = payload.new as Message;
+
+          // Play sound if message is for current user (not sent by them)
+          if (newMessage.receiver_id === currentUserId) {
+            playNotificationSound();
+          }
+
           // Reload chat partners to update last messages and unread counts
           loadChatPartners();
           // If the new message is for the currently open conversation, reload messages
           if (selectedConversationId) {
-            const newMessage = payload.new as Message;
             if (
               newMessage.sender_id === selectedConversationId ||
               newMessage.receiver_id === selectedConversationId
