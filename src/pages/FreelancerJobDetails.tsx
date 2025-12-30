@@ -13,13 +13,13 @@ import {
   ArrowLeft,
   FileText,
   Calendar,
-  DollarSign,
   Download,
   MessageSquare,
   User,
   Send,
   Loader2,
 } from "lucide-react";
+import { TakaIcon } from "@/components/icons/TakaIcon";
 
 interface JobDetails {
   id: string;
@@ -284,7 +284,7 @@ export default function FreelancerJobDetails() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-success" />
+                    <TakaIcon className="w-4 h-4 text-success" />
                     <span className="text-sm font-semibold text-success">
                       ৳{job.budget}
                     </span>
