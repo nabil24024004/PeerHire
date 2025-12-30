@@ -29,12 +29,31 @@ serve(async (req) => {
         // Create Supabase client with service role
         const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-        // Parse webhook payload
-        const payload: WebhookPayload = await req.json()
-        console.log('🔔 Webhook received - FULL PAYLOAD:', JSON.stringify(payload, null, 2))
+        // RupantorPay sends form data, not JSON!
+        const contentType = req.headers.get('content-type') || ''
+        console.log('📨 Content-Type:', contentType)
+
+        let payload: any = {}
+
+        if (contentType.includes('application/x-www-form-urlencoded')) {
+            // Parse form data
+            const formData = await req.formData()
+            console.log('📋 Form data entries:')
+            for (const [key, value] of formData.entries()) {
+                console.log(`  ${key}: ${value}`)
+                payload[key] = value
+            }
+        } else {
+            // Try JSON as fallback
+            payload = await req.json()
+        }
+
+        console.log('🔔 Webhook FULL PAYLOAD:', JSON.stringify(payload, null, 2))
         console.log('🔔 Payload keys:', Object.keys(payload))
 
-        const { transaction_id, status, metadata } = payload
+        const transaction_id = payload.transaction_id || payload.transactionId || payload.txnid || payload.tx_id
+        const status = payload.status
+        const metadata = payload.metadata
 
         // Log what we extracted
         console.log('📝 Extracted values:', {
