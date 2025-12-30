@@ -132,12 +132,22 @@ serve(async (req) => {
 
         const checkoutData = JSON.parse(responseText)
 
+        console.log('✅ Checkout data:', checkoutData)
+
+        // RupantorPay returns "payment_url", not "checkout_url"
+        const paymentUrl = checkoutData.payment_url || checkoutData.checkout_url || checkoutData.url
+
+        if (!paymentUrl) {
+            console.error('❌ No payment URL in response!')
+            throw new Error('No payment URL returned from RupantorPay')
+        }
+
         // Update payment record with transaction_id and checkout URL
         const { error: updateError } = await supabase
             .from('payments')
             .update({
                 transaction_id: checkoutData.transaction_id,
-                rupantor_checkout_url: checkoutData.checkout_url || checkoutData.url,
+                rupantor_checkout_url: paymentUrl,
                 status: 'processing',
             })
             .eq('id', payment_id)
@@ -146,11 +156,13 @@ serve(async (req) => {
             console.error('Error updating payment:', updateError)
         }
 
+        console.log('✅ Returning payment URL to frontend:', paymentUrl)
+
         // Return checkout URL to frontend
         return new Response(
             JSON.stringify({
                 success: true,
-                checkout_url: checkoutData.checkout_url || checkoutData.url,
+                checkout_url: paymentUrl,
                 transaction_id: checkoutData.transaction_id,
             }),
             {
