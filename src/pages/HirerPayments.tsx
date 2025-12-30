@@ -6,24 +6,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Clock, Info, Calendar } from "lucide-react";
+import {
+  CreditCard,
+  Clock,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  ArrowUpRight,
+  Shield
+} from "lucide-react";
 import { TakaIcon } from "@/components/icons/TakaIcon";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Payment {
   id: string;
   amount: number;
+  site_fee: number;
+  freelancer_amount: number;
   payment_method: string;
   status: string;
+  transaction_id: string | null;
   created_at: string;
-  jobs: {
-    title: string;
-  };
-  payee: {
-    full_name: string;
-  };
+  metadata: {
+    jobData?: {
+      title: string;
+    };
+  } | null;
 }
 
 export default function HirerPayments() {
@@ -34,8 +44,8 @@ export default function HirerPayments() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState({
     totalSpent: 0,
-    tasksPaid: 0,
-    pendingPayments: 0,
+    paidCount: 0,
+    pendingCount: 0,
   });
 
   useEffect(() => {
@@ -49,29 +59,30 @@ export default function HirerPayments() {
       if (!user) return;
 
       try {
-        // We don't have a payments table, so calculate stats from completed jobs
-        const { data: completedJobs, error: jobsError } = await supabase
-          .from("jobs")
-          .select("id, budget, status, updated_at")
-          .eq("hirer_id", user.id)
-          .eq("status", "completed");
+        // Fetch payments from the new payments table
+        const { data: paymentsData, error: paymentsError } = await supabase
+          .from("payments")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
-        if (jobsError) throw jobsError;
+        if (paymentsError) throw paymentsError;
 
-        // Calculate stats from completed jobs
-        const totalSpent = completedJobs?.reduce((sum, j) => sum + Number(j.budget), 0) || 0;
-        const tasksPaid = completedJobs?.length || 0;
+        const paymentsList = paymentsData || [];
+        setPayments(paymentsList);
 
-        // Count pending (in_progress jobs as pending payments)
-        const { count: pendingCount } = await supabase
-          .from("jobs")
-          .select("*", { count: "exact", head: true })
-          .eq("hirer_id", user.id)
-          .eq("status", "in_progress");
+        // Calculate stats
+        const paidPayments = paymentsList.filter(p => p.status === "paid");
+        const pendingPayments = paymentsList.filter(p => p.status === "pending" || p.status === "processing");
 
-        setStats({ totalSpent, tasksPaid, pendingPayments: pendingCount || 0 });
-        setPayments([]); // No payments table, show empty for now
+        setStats({
+          totalSpent: paidPayments.reduce((sum, p) => sum + Number(p.amount), 0),
+          paidCount: paidPayments.length,
+          pendingCount: pendingPayments.length,
+        });
+
       } catch (error: any) {
+        console.error("Fetch error:", error);
         toast({
           title: "Error",
           description: "Failed to load payments",
@@ -85,17 +96,50 @@ export default function HirerPayments() {
     fetchPayments();
   }, [user, toast]);
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case "completed":
-        return "bg-success/20 text-success border-success/50";
+      case "paid":
+        return (
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Paid
+          </Badge>
+        );
       case "pending":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "processing":
+        return (
+          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
+            <Clock className="w-3 h-3 mr-1" />
+            {status === "processing" ? "Processing" : "Pending"}
+          </Badge>
+        );
       case "failed":
-        return "bg-destructive/20 text-destructive border-destructive/50";
+        return (
+          <Badge className="bg-red-500/20 text-red-400 border-red-500/50">
+            <XCircle className="w-3 h-3 mr-1" />
+            Failed
+          </Badge>
+        );
       default:
-        return "bg-muted text-muted-foreground border-border";
+        return <Badge variant="outline">{status}</Badge>;
     }
+  };
+
+  const getMethodBadge = (method: string) => {
+    if (method === "pay_now") {
+      return (
+        <Badge variant="outline" className="border-primary/50 text-primary">
+          <Shield className="w-3 h-3 mr-1" />
+          Pay Now
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="outline" className="border-orange-500/50 text-orange-400">
+        <Clock className="w-3 h-3 mr-1" />
+        Pay Later
+      </Badge>
+    );
   };
 
   if (authLoading || loading) {
@@ -116,108 +160,141 @@ export default function HirerPayments() {
   return (
     <DashboardLayout role="hirer">
       <div className="space-y-6 animate-fade-in">
-        <h1 className="text-3xl font-bold gradient-text">Payments</h1>
-
-        {/* Info Banner */}
-        <Alert className="border-primary/50 bg-primary/10">
-          <Info className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-sm">
-            <strong>bKash transaction integration will be added soon.</strong> Until then, use the Messenger method for payment coordination. Share bKash numbers through the chat system.
-          </AlertDescription>
-        </Alert>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold gradient-text">Payments</h1>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Shield className="w-4 h-4 text-primary" />
+            Secured by RupantorPay
+          </div>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total Spent"
-            value={`৳${stats.totalSpent.toFixed(2)}`}
+            value={`৳${stats.totalSpent.toFixed(0)}`}
             icon={TakaIcon}
             description="Lifetime spending"
           />
           <StatCard
-            title="Tasks Paid"
-            value={stats.tasksPaid}
-            icon={CreditCard}
-            description="Completed payments"
+            title="Successful Payments"
+            value={stats.paidCount}
+            icon={CheckCircle}
+            description="Completed transactions"
           />
           <StatCard
-            title="Pending Payments"
-            value={stats.pendingPayments}
+            title="Pending"
+            value={stats.pendingCount}
             icon={Clock}
             description="Awaiting completion"
           />
         </div>
 
-        {/* Payment Method Info */}
-        <Card className="border-border bg-card/50">
+        {/* Payments List */}
+        <Card className="border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Info className="w-5 h-5 text-primary" />
-              Payment Method
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Transaction History
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Currently, all payments are coordinated through <strong>Messenger chat</strong>. When a freelancer completes your task:
-            </p>
-            <ol className="mt-3 space-y-2 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Message the freelancer through the chat system</li>
-              <li>Exchange bKash numbers securely</li>
-              <li>Complete the payment via bKash</li>
-              <li>Confirm payment in the system</li>
-            </ol>
-            <p className="mt-3 text-sm text-primary">
-              Direct bKash integration is coming soon for seamless transactions!
-            </p>
-          </CardContent>
-        </Card>
+            <Tabs defaultValue="all">
+              <TabsList className="mb-4">
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="paid">Paid</TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+              </TabsList>
 
-        {/* Transactions List */}
-        <Card className="border-border">
-          <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {payments.length === 0 ? (
-              <div className="py-12 text-center">
-                <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-lg text-muted-foreground">No transactions yet</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {payments.map((payment) => (
-                  <div
-                    key={payment.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <p className="font-semibold">{payment.jobs?.title || "Unknown Task"}</p>
-                      <p className="text-sm text-muted-foreground">
-                        To: {payment.payee?.full_name || "Unknown"}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(payment.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge variant="outline" className="capitalize">
-                        {payment.payment_method}
-                      </Badge>
-                      <Badge className={getStatusColor(payment.status)}>
-                        {payment.status.toUpperCase()}
-                      </Badge>
-                      <p className="text-lg font-bold text-primary">
-                        ৳{Number(payment.amount).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+              <TabsContent value="all">
+                <PaymentList
+                  payments={payments}
+                  getStatusBadge={getStatusBadge}
+                  getMethodBadge={getMethodBadge}
+                />
+              </TabsContent>
+              <TabsContent value="paid">
+                <PaymentList
+                  payments={payments.filter(p => p.status === "paid")}
+                  getStatusBadge={getStatusBadge}
+                  getMethodBadge={getMethodBadge}
+                />
+              </TabsContent>
+              <TabsContent value="pending">
+                <PaymentList
+                  payments={payments.filter(p => p.status === "pending" || p.status === "processing")}
+                  getStatusBadge={getStatusBadge}
+                  getMethodBadge={getMethodBadge}
+                />
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
     </DashboardLayout>
+  );
+}
+
+function PaymentList({
+  payments,
+  getStatusBadge,
+  getMethodBadge
+}: {
+  payments: Payment[];
+  getStatusBadge: (status: string) => JSX.Element;
+  getMethodBadge: (method: string) => JSX.Element;
+}) {
+  if (payments.length === 0) {
+    return (
+      <div className="py-12 text-center">
+        <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+        <p className="text-lg text-muted-foreground">No transactions yet</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Payments will appear here when you post jobs
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {payments.map((payment) => (
+        <div
+          key={payment.id}
+          className="flex items-center justify-between p-4 rounded-lg border border-border bg-card/50 hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex-1">
+            <p className="font-semibold">
+              {payment.metadata?.jobData?.title || "Job Payment"}
+            </p>
+            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                {new Date(payment.created_at).toLocaleDateString()}
+              </div>
+              {payment.transaction_id && (
+                <div className="flex items-center gap-1">
+                  <span>ID: {payment.transaction_id.slice(0, 8)}...</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {getMethodBadge(payment.payment_method)}
+            {getStatusBadge(payment.status)}
+            <div className="text-right min-w-[80px]">
+              <p className="text-lg font-bold text-primary">
+                ৳{Number(payment.amount).toFixed(0)}
+              </p>
+              {payment.freelancer_amount > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  +৳{payment.site_fee} fee
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
