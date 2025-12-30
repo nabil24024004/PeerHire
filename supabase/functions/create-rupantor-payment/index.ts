@@ -60,7 +60,7 @@ serve(async (req) => {
             .single()
 
         // Construct success/cancel URLs
-        const appUrl = Deno.env.get('APP_URL') || 'https://peerhire.netlify.app'
+        const appUrl = Deno.env.get('APP_URL') || 'https://peerhireaaub.vercel.app'
         const successUrl = `${appUrl}/payment/success?transaction_id={transaction_id}`
         const cancelUrl = `${appUrl}/payment/cancel`
         const webhookUrl = `${supabaseUrl}/functions/v1/rupantor-webhook`
