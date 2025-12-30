@@ -228,6 +228,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
                 type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
+                className="[color-scheme:dark]"
               />
             </div>
             <Card className="p-4 bg-primary/5 border-primary/20">
