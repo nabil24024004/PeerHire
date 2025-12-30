@@ -16,37 +16,61 @@ export default function PaymentSuccess() {
     useEffect(() => {
         const verifyPayment = async () => {
             try {
-                // Wait a bit for webhook to process
+                if (!transactionId) {
+                    setStatus("error");
+                    setMessage("No transaction ID provided. Please contact support.");
+                    return;
+                }
+
+                // Wait for webhook to process
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                if (transactionId) {
-                    // Check payment status in database
-                    const { data: payment, error } = await supabase
+                // Check payment status in database (webhook should have updated it)
+                const { data: payment, error } = await supabase
+                    .from("payments")
+                    .select("status, job_id")
+                    .eq("transaction_id", transactionId)
+                    .single();
+
+                if (error || !payment) {
+                    // Wait a bit longer for webhook
+                    setMessage("Payment is being processed...");
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
+                    // Try again
+                    const { data: retryPayment } = await supabase
                         .from("payments")
                         .select("status, job_id")
                         .eq("transaction_id", transactionId)
                         .single();
 
-                    if (error || !payment) {
-                        // Payment might still be processing via webhook
-                        setMessage("Payment is being processed...");
-                        await new Promise(resolve => setTimeout(resolve, 3000));
+                    if (!retryPayment) {
+                        setStatus("error");
+                        setMessage("Payment verification failed. Please contact support with transaction ID: " + transactionId);
+                        return;
                     }
 
-                    if (payment?.status === "paid") {
+                    if (retryPayment.status === "paid") {
                         setStatus("success");
                         setMessage("Payment successful! Your job has been posted.");
                         return;
                     }
                 }
 
-                // Fallback: assume success if redirected here
-                setStatus("success");
-                setMessage("Payment successful! Your job has been posted.");
+                if (payment?.status === "paid") {
+                    setStatus("success");
+                    setMessage("Payment successful! Your job has been posted.");
+                } else if (payment?.status === "processing") {
+                    setStatus("processing");
+                    setMessage("Payment is still being processed. Please wait...");
+                } else {
+                    setStatus("error");
+                    setMessage("Payment could not be verified. Status: " + (payment?.status || "unknown"));
+                }
             } catch (error) {
                 console.error("Verification error:", error);
-                setStatus("success"); // Still show success since redirect happened
-                setMessage("Payment completed. Check your dashboard for job status.");
+                setStatus("error");
+                setMessage("Error verifying payment. Please check your payments page or contact support.");
             }
         };
 

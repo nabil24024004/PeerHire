@@ -131,7 +131,15 @@ export default function PaymentMethod() {
 
             // Redirect to RupantorPay checkout
             if (checkoutData?.checkout_url) {
+                console.log("Redirecting to payment gateway:", checkoutData.checkout_url);
                 window.location.href = checkoutData.checkout_url;
+            } else {
+                console.error("No checkout URL received from Edge Function");
+                toast({
+                    title: "Payment Error",
+                    description: "Payment gateway URL not received. Please try again.",
+                    variant: "destructive",
+                });
             }
 
         } catch (error: any) {

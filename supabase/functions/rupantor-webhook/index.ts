@@ -130,11 +130,26 @@ serve(async (req) => {
 
         console.log('✅ Found payment:', payment.id)
 
+        // IDEMPOTENCY: Don't process if already paid
+        if (payment.status === 'paid') {
+            console.log('⚠️ Payment already processed (idempotent - ignoring duplicate webhook)');
+            return new Response(
+                JSON.stringify({ success: true, status: 'paid', message: 'Already processed' }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200,
+                }
+            )
+        }
+
         if (isPaymentSuccessful) {
             // Update payment status to paid
             await supabase
                 .from('payments')
-                .update({ status: 'paid' })
+                .update({
+                    status: 'paid',
+                    transaction_id: transaction_id  // Store transaction_id now
+                })
                 .eq('id', payment.id)
 
             // Create the job from stored metadata
