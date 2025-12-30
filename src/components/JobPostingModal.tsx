@@ -64,21 +64,21 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
     const deadlineDate = new Date(deadline);
     const hoursUntilDeadline = (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    if (hoursUntilDeadline <= 0) return 2; // Past deadline, max urgency
-    if (hoursUntilDeadline <= 24) return 2; // Less than 24 hours
-    if (hoursUntilDeadline <= 48) return 1.5; // 1-2 days
-    if (hoursUntilDeadline <= 72) return 1.25; // 2-3 days
-    if (hoursUntilDeadline <= 168) return 1.08; // 3-7 days (8% extra)
+    if (hoursUntilDeadline <= 0) return 1.5; // Past deadline, max urgency
+    if (hoursUntilDeadline <= 24) return 1.5; // Less than 24 hours (+50%)
+    if (hoursUntilDeadline <= 48) return 1.25; // 1-2 days (+25%)
+    if (hoursUntilDeadline <= 72) return 1.15; // 2-3 days (+15%)
+    if (hoursUntilDeadline <= 168) return 1.05; // 3-7 days (+5%)
     return 1; // 7+ days, no extra charge
   };
 
   const getDeadlineLabel = () => {
     const multiplier = getDeadlineMultiplier();
     if (multiplier === 1) return "7+ days (No extra charge)";
-    if (multiplier === 1.08) return "3-7 days (+8%)";
-    if (multiplier === 1.25) return "2-3 days (+25%)";
-    if (multiplier === 1.5) return "1-2 days (+50%)";
-    return "Urgent <24h (+100%)";
+    if (multiplier === 1.05) return "3-7 days (+5%)";
+    if (multiplier === 1.15) return "2-3 days (+15%)";
+    if (multiplier === 1.25) return "1-2 days (+25%)";
+    return "Urgent <24h (+50%)";
   };
 
   const calculatePrice = () => {
