@@ -29,6 +29,9 @@ const HirerViewOffers = lazy(() => import("./pages/HirerViewOffers"));
 const EmailConfirm = lazy(() => import("./pages/EmailConfirm"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ContactDeveloper = lazy(() => import("./pages/ContactDeveloper"));
+const PaymentMethod = lazy(() => import("./pages/PaymentMethod"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const PaymentCancel = lazy(() => import("./pages/PaymentCancel"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Optimized QueryClient with caching
@@ -88,6 +91,9 @@ const App = () => {
               <Route path="/auth/confirm" element={<EmailConfirm />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/contact-developer" element={<ContactDeveloper />} />
+              <Route path="/payment/method" element={<PaymentMethod />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/cancel" element={<PaymentCancel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

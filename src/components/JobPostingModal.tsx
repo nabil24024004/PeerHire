@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ const QUALITY_LEVELS = [
 ];
 
 export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -104,7 +106,7 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      // Upload attachments
+      // Upload attachments first
       const attachmentUrls: string[] = [];
       for (const file of attachments) {
         const fileExt = file.name.split('.').pop();
@@ -123,26 +125,19 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
         attachmentUrls.push(publicUrl);
       }
 
-      // Create job - only use fields that exist in schema
+      // Build job data
       const effectiveSubject = getEffectiveSubject();
-      const { error: jobError } = await supabase
-        .from('jobs')
-        .insert({
-          title,
-          description: `${description}\n\nWork Type: ${workType}\nSubject: ${effectiveSubject}\nPages: ${pageCount}\nQuality: ${qualityLevel}`,
-          category: `${workType} - ${effectiveSubject}`,
-          deadline: new Date(deadline).toISOString(),
-          budget: parseFloat(calculatePrice()),
-          hirer_id: session.user.id,
-          attachment_urls: attachmentUrls.length > 0 ? attachmentUrls : null
-        });
+      const jobData = {
+        title,
+        description: `${description}\n\nWork Type: ${workType}\nSubject: ${effectiveSubject}\nPages: ${pageCount}\nQuality: ${qualityLevel}`,
+        category: `${workType} - ${effectiveSubject}`,
+        deadline: new Date(deadline).toISOString(),
+        budget: parseFloat(calculatePrice()),
+        attachment_urls: attachmentUrls.length > 0 ? attachmentUrls : null
+      };
 
-      if (jobError) throw jobError;
-
-      toast({
-        title: "Job posted successfully!",
-        description: "Your job is now live. Freelancers can start applying.",
-      });
+      // Close modal and redirect to payment page
+      onOpenChange(false);
 
       // Reset form
       setTitle("");
@@ -155,10 +150,13 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
       setDescription("");
       setAttachments([]);
       setStep(1);
-      onOpenChange(false);
+
+      // Navigate to payment method page with job data
+      navigate("/payment/method", { state: { jobData } });
+
     } catch (error: any) {
       toast({
-        title: "Error posting job",
+        title: "Error preparing job",
         description: error.message,
         variant: "destructive",
       });
