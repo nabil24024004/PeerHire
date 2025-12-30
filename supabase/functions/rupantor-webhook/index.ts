@@ -84,24 +84,51 @@ serve(async (req) => {
         }
 
         const verifyData = await verifyResponse.json()
-        console.log('Verification result:', verifyData)
+        console.log('✅ Verification result:', verifyData)
+
+        // Parse metadata (RupantorPay returns it as a JSON string)
+        let parsedMetadata: any = {}
+        if (verifyData.metadata) {
+            try {
+                parsedMetadata = typeof verifyData.metadata === 'string'
+                    ? JSON.parse(verifyData.metadata)
+                    : verifyData.metadata
+                console.log('📦 Parsed metadata:', parsedMetadata)
+            } catch (e) {
+                console.error('Failed to parse metadata:', e)
+            }
+        }
 
         // Determine payment status from verification
         const isPaymentSuccessful = verifyData.status === 'success' ||
             verifyData.status === 'paid' ||
-            verifyData.status === 'completed'
+            verifyData.status === 'completed' ||
+            verifyData.status === 'COMPLETED'
 
-        // Get payment record
+        console.log('💰 Payment successful?', isPaymentSuccessful)
+
+        // Get payment record using payment_id from metadata
+        const paymentId = parsedMetadata.payment_id
+
+        if (!paymentId) {
+            console.error('❌ No payment_id in metadata!')
+            throw new Error('Payment ID not found in metadata')
+        }
+
+        console.log('🔍 Looking for payment with ID:', paymentId)
+
         const { data: payment, error: paymentError } = await supabase
             .from('payments')
             .select('*')
-            .eq('transaction_id', transaction_id)
+            .eq('id', paymentId)
             .single()
 
         if (paymentError || !payment) {
-            console.error('Payment not found:', paymentError)
+            console.error('❌ Payment not found:', paymentError)
             throw new Error('Payment record not found')
         }
+
+        console.log('✅ Found payment:', payment.id)
 
         if (isPaymentSuccessful) {
             // Update payment status to paid
