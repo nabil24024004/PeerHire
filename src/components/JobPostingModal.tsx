@@ -56,9 +56,35 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
   // Helper to get the effective subject (custom if Others is selected)
   const getEffectiveSubject = () => subject === "Others" ? customSubject : subject;
 
+  // Calculate deadline multiplier based on time until deadline
+  const getDeadlineMultiplier = () => {
+    if (!deadline) return 1;
+
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const hoursUntilDeadline = (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursUntilDeadline <= 0) return 2; // Past deadline, max urgency
+    if (hoursUntilDeadline <= 24) return 2; // Less than 24 hours
+    if (hoursUntilDeadline <= 48) return 1.5; // 1-2 days
+    if (hoursUntilDeadline <= 72) return 1.25; // 2-3 days
+    if (hoursUntilDeadline <= 168) return 1.08; // 3-7 days (8% extra)
+    return 1; // 7+ days, no extra charge
+  };
+
+  const getDeadlineLabel = () => {
+    const multiplier = getDeadlineMultiplier();
+    if (multiplier === 1) return "7+ days (No extra charge)";
+    if (multiplier === 1.08) return "3-7 days (+8%)";
+    if (multiplier === 1.25) return "2-3 days (+25%)";
+    if (multiplier === 1.5) return "1-2 days (+50%)";
+    return "Urgent <24h (+100%)";
+  };
+
   const calculatePrice = () => {
     const qualityMultiplier = QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier || 1;
-    return (BASE_PRICE_PER_PAGE * pageCount * qualityMultiplier).toFixed(2);
+    const deadlineMultiplier = getDeadlineMultiplier();
+    return (BASE_PRICE_PER_PAGE * pageCount * qualityMultiplier * deadlineMultiplier).toFixed(2);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,8 +262,13 @@ export function JobPostingModal({ open, onOpenChange }: JobPostingModalProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Estimated Price</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    ৳{BASE_PRICE_PER_PAGE}/page × {pageCount} pages × {QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier}x
+                    ৳{BASE_PRICE_PER_PAGE}/page × {pageCount} pages × {QUALITY_LEVELS.find(q => q.value === qualityLevel)?.multiplier}x quality
                   </p>
+                  {deadline && (
+                    <p className="text-xs text-primary mt-1">
+                      Deadline: {getDeadlineLabel()}
+                    </p>
+                  )}
                 </div>
                 <p className="text-3xl font-bold text-primary">৳{calculatePrice()}</p>
               </div>
