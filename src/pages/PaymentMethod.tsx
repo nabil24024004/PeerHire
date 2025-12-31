@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CreditCard, Clock, CheckCircle, ArrowLeft, Loader2, Shield } from "lucide-react";
+import { CreditCard, Clock, ArrowLeft, Loader2, Shield } from "lucide-react";
 
 interface JobData {
     title: string;

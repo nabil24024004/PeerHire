@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { JobApplicationModal } from "@/components/JobApplicationModal";
 import {
-  Search, Filter, Briefcase, Clock, DollarSign, FileText, User, MessageSquare, Bookmark, BookmarkCheck, Sparkles, CheckCircle2
+  Search, Filter, Briefcase, Clock, DollarSign, User, MessageSquare, Bookmark, BookmarkCheck, Sparkles, CheckCircle2
 } from "lucide-react";
 import {
   Select,
