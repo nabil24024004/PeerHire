@@ -108,14 +108,19 @@ export default function PaymentMethod() {
                         budget: jobData.budget,
                         hirer_id: session.user.id,
                         attachment_urls: jobData.attachment_urls,
-                    });
+                    })
+                    .select()
+                    .single();
 
                 if (jobError) throw jobError;
 
-                // Update payment to paid (simulated)
+                // Update payment to paid (simulated) and link job
                 await supabase
                     .from("payments")
-                    .update({ status: "paid" })
+                    .update({
+                        status: "paid",
+                        job_id: job.id
+                    })
                     .eq("id", payment.id);
 
                 toast({

@@ -166,6 +166,19 @@ serve(async (req) => {
                         hirer_id: payment.user_id,
                         attachment_urls: jobData.attachment_urls,
                     })
+                    .select()
+                    .single()
+
+                if (jobError) {
+                    console.error('Error creating job:', jobError)
+                } else if (job) {
+                    console.log('Job created successfully:', job.id)
+                    // Link job_id to payment
+                    await supabase
+                        .from('payments')
+                        .update({ job_id: job.id })
+                        .eq('id', payment.id)
+                }
 
                 if (jobError) {
                     console.error('Error creating job:', jobError)

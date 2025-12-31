@@ -125,9 +125,28 @@ const FreelancerBrowseJobs = () => {
       setSavedJobs(savedJobsList);
 
       // Filter out jobs already applied to
-      const availableJobs = jobsWithHirerNames?.filter(job => !appliedIds.has(job.id)) || [];
-      setJobs(availableJobs);
-      setFilteredJobs(availableJobs);
+      // Fetch payment info for these jobs
+      const jobIds = availableJobs.map(j => j.id);
+      const { data: paymentsData } = await supabase
+        .from('payments')
+        .select('job_id, payment_method, status')
+        .in('job_id', jobIds)
+        .eq('status', 'paid');
+
+      // Create map of job_id -> payment_info
+      const paymentMap = new Map();
+      paymentsData?.forEach(p => {
+        paymentMap.set(p.job_id, p);
+      });
+
+      // Attach payment info to jobs
+      const jobsWithPayment = availableJobs.map(job => ({
+        ...job,
+        payment_info: paymentMap.get(job.id)
+      }));
+
+      setJobs(jobsWithPayment);
+      setFilteredJobs(jobsWithPayment);
 
       // Fetch recommendations (may fail silently)
       await fetchRecommendations(userId);
@@ -216,7 +235,7 @@ const FreelancerBrowseJobs = () => {
     setIsModalOpen(true);
   };
 
-  const renderJobCard = (job: Job, isRecommended = false) => (
+  const renderJobCard = (job: Job & { payment_info?: any }, isRecommended = false) => (
     <Card key={job.id} className={`p-4 md:p-6 card-hover ${isRecommended ? 'border-primary/30' : ''}`}>
       <div className="space-y-3 md:space-y-4">
         {/* Job Header */}
@@ -246,6 +265,25 @@ const FreelancerBrowseJobs = () => {
               )}
               {job.category && (
                 <Badge variant="outline" className="text-xs">{job.category}</Badge>
+              )}
+
+              {/* Payment Status Tag */}
+              {job.payment_info ? (
+                job.payment_info.payment_method === 'pay_now' ? (
+                  <Badge className="bg-green-500/10 text-green-600 border-green-200 text-xs">
+                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                    Payment Secured
+                  </Badge>
+                ) : (
+                  <Badge className="bg-blue-500/10 text-blue-600 border-blue-200 text-xs">
+                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                    Payment Verified
+                  </Badge>
+                )
+              ) : (
+                <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                  Payment Pending
+                </Badge>
               )}
             </div>
           </div>
