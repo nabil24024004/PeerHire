@@ -62,7 +62,7 @@ export default function PaymentMethod() {
 
             // Create payment record first
             const { data: payment, error: paymentError } = await supabase
-                .from("payments")
+                .from("payments" as any)
                 .insert({
                     user_id: session.user.id,
                     amount,
