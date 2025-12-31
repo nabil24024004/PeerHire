@@ -676,16 +676,16 @@ const Landing = () => {
 
           </p>
           <div className="gap-8 text-sm text-muted-foreground flex items-center justify-center">
-            <a className="hover:text-foreground transition-colors" href="https://neuralabsaaub.vercel.app/#about">About</a>
-            <a className="hover:text-foreground transition-colors" href="https://neuralabsaaub.vercel.app/#connect">Contact</a>
-            <a className="hover:text-foreground transition-colors" href="https://neuralabsaaub.vercel.app/privacy">Terms</a>
-            <a className="hover:text-foreground transition-colors" href="https://neuralabsaaub.vercel.app/privacy">Privacy</a>
+            <a className="hover:text-foreground transition-colors" href="https://neuralabsagency.vercel.app/#about">About</a>
+            <a className="hover:text-foreground transition-colors" href="https://neuralabsagency.vercel.app/#connect">Contact</a>
+            <a className="hover:text-foreground transition-colors" href="https://neuralabsagency.vercel.app/privacy">Terms</a>
+            <a className="hover:text-foreground transition-colors" href="https://neuralabsagency.vercel.app/privacy">Privacy</a>
           </div>
 
           <div className="mt-8 pt-8 border-t border-border/50">
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()}{" "}
-              <a target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-medium" href="https://neuralabsaaub.vercel.app/">
+              <a target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-medium" href="https://neuralabsagency.vercel.app/">
                 Neura Labs
               </a>
               {" "}all rights reserved.
