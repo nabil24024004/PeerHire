@@ -125,6 +125,8 @@ const FreelancerBrowseJobs = () => {
       setSavedJobs(savedJobsList);
 
       // Filter out jobs already applied to
+      const availableJobs = jobsWithHirerNames?.filter(job => !appliedIds.has(job.id)) || [];
+
       // Fetch payment info for these jobs
       const jobIds = availableJobs.map(j => j.id);
       const { data: paymentsData } = await supabase
@@ -235,121 +237,182 @@ const FreelancerBrowseJobs = () => {
     setIsModalOpen(true);
   };
 
-  const renderJobCard = (job: Job & { payment_info?: any }, isRecommended = false) => (
-    <Card key={job.id} className={`p-4 md:p-6 card-hover ${isRecommended ? 'border-primary/30' : ''}`}>
-      <div className="space-y-3 md:space-y-4">
-        {/* Job Header */}
-        <div className="flex flex-col gap-3 md:gap-4">
-          <div className="flex-1">
-            <div className="flex items-start gap-2 md:gap-3 mb-2">
-              <h3 className="text-base md:text-xl font-bold flex-1 break-words">{job.title}</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleSaveJob(job.id)}
-                className={`flex-shrink-0 ${savedJobIds.has(job.id) ? "text-primary" : ""}`}
-              >
-                {savedJobIds.has(job.id) ? (
-                  <BookmarkCheck className="w-5 h-5" />
-                ) : (
-                  <Bookmark className="w-5 h-5" />
+  // Helper to extract metadata from description if present
+  const parseJobMetadata = (description: string) => {
+    // Regex to match the appended metadata format: "Work Type: ... Subject: ... Pages: ... Quality: ..."
+    // We use a non-greedy match for the content until the next keyword or end of string
+    const workTypeMatch = description.match(/Work Type:\s*([^:]+?)(?=\s*Subject:|$)/i);
+    const subjectMatch = description.match(/Subject:\s*([^:]+?)(?=\s*Pages:|$)/i);
+    const pagesMatch = description.match(/Pages:\s*(\d+)/i);
+    const qualityMatch = description.match(/Quality:\s*([^:]+?)$/i);
+
+    let cleanDescription = description;
+    let metadata = null;
+
+    if (workTypeMatch || subjectMatch || pagesMatch || qualityMatch) {
+      // Remove the metadata part from description for cleaner display
+      // We assume metadata is at the end or at least we strip the matched parts
+      // A simple way is to strip from "Work Type:" onwards if it exists
+      const splitIndex = description.search(/Work Type:/i);
+      if (splitIndex !== -1) {
+        cleanDescription = description.substring(0, splitIndex).trim();
+      }
+
+      metadata = {
+        workType: workTypeMatch?.[1]?.trim(),
+        subject: subjectMatch?.[1]?.trim(),
+        pages: pagesMatch?.[1]?.trim(),
+        quality: qualityMatch?.[1]?.trim(),
+      };
+    }
+
+    return { cleanDescription, metadata };
+  };
+
+  const renderJobCard = (job: Job & { payment_info?: any }, isRecommended = false) => {
+    const { cleanDescription, metadata } = parseJobMetadata(job.description);
+
+    return (
+      <Card key={job.id} className={`p-4 md:p-6 card-hover ${isRecommended ? 'border-primary/30' : ''}`}>
+        <div className="space-y-3 md:space-y-4">
+          {/* Job Header */}
+          <div className="flex flex-col gap-3 md:gap-4">
+            <div className="flex-1">
+              <div className="flex items-start gap-2 md:gap-3 mb-2">
+                <h3 className="text-base md:text-xl font-bold flex-1 break-words">{job.title}</h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleSaveJob(job.id)}
+                  className={`flex-shrink-0 ${savedJobIds.has(job.id) ? "text-primary" : ""}`}
+                >
+                  {savedJobIds.has(job.id) ? (
+                    <BookmarkCheck className="w-5 h-5" />
+                  ) : (
+                    <Bookmark className="w-5 h-5" />
+                  )}
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                {isRecommended && (
+                  <Badge className="bg-primary text-primary-foreground text-xs">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Recommended
+                  </Badge>
                 )}
+                {job.category && (
+                  <Badge variant="outline" className="text-xs">{job.category}</Badge>
+                )}
+
+                {/* Payment Status Tag */}
+                {job.payment_info ? (
+                  job.payment_info.payment_method === 'pay_now' ? (
+                    <Badge className="bg-green-500/10 text-green-600 border-green-200 text-xs">
+                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                      Payment Secured
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-blue-500/10 text-blue-600 border-blue-200 text-xs">
+                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                      Payment Verified
+                    </Badge>
+                  )
+                ) : (
+                  <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                    Payment Pending
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={() => handleMessageHirer(job)}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Message
+              </Button>
+              <Button
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={() => handleApplyClick(job)}
+              >
+                Apply Now
               </Button>
             </div>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              {isRecommended && (
-                <Badge className="bg-primary text-primary-foreground text-xs">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Recommended
-                </Badge>
-              )}
-              {job.category && (
-                <Badge variant="outline" className="text-xs">{job.category}</Badge>
-              )}
+          </div>
 
-              {/* Payment Status Tag */}
-              {job.payment_info ? (
-                job.payment_info.payment_method === 'pay_now' ? (
-                  <Badge className="bg-green-500/10 text-green-600 border-green-200 text-xs">
-                    <CheckCircle2 className="w-3 h-3 mr-1" />
-                    Payment Secured
-                  </Badge>
-                ) : (
-                  <Badge className="bg-blue-500/10 text-blue-600 border-blue-200 text-xs">
-                    <CheckCircle2 className="w-3 h-3 mr-1" />
-                    Payment Verified
-                  </Badge>
-                )
-              ) : (
-                <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
-                  Payment Pending
-                </Badge>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full sm:w-auto"
-              onClick={() => handleMessageHirer(job)}
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Message
-            </Button>
-            <Button
-              size="sm"
-              className="w-full sm:w-auto"
-              onClick={() => handleApplyClick(job)}
-            >
-              Apply Now
-            </Button>
-          </div>
-        </div>
+          {/* Job Description & Metadata */}
+          <div>
+            <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 md:line-clamp-3 mb-3">
+              {cleanDescription || job.description}
+            </p>
 
-        {/* Job Description */}
-        <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
-          {job.description}
-        </p>
+            {/* Parsed Metadata Grid */}
+            {metadata && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-3 bg-muted/30 rounded-lg border border-border/50 text-xs">
+                {metadata.subject && (
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground font-medium">Subject</span>
+                    <span className="font-semibold truncate">{metadata.subject}</span>
+                  </div>
+                )}
+                {metadata.pages && (
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground font-medium">Pages</span>
+                    <span className="font-semibold">{metadata.pages}</span>
+                  </div>
+                )}
+                {metadata.workType && (
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground font-medium">Work Type</span>
+                    <span className="font-semibold truncate">{metadata.workType}</span>
+                  </div>
+                )}
+                {metadata.quality && (
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground font-medium">Quality</span>
+                    <span className="font-semibold truncate">{metadata.quality}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
-        {/* Job Details */}
-        <div className="grid grid-cols-2 gap-3 md:gap-4 pt-3 md:pt-4 border-t border-border">
-          <div className="flex items-center gap-2 text-xs md:text-sm">
-            <DollarSign className="w-4 h-4 text-success flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-muted-foreground">Budget</p>
-              <p className="font-semibold truncate">{job.budget}</p>
+          {/* Job Footer Details */}
+          <div className="grid grid-cols-2 gap-3 md:gap-4 pt-3 md:pt-4 border-t border-border">
+            <div className="flex items-center gap-2 text-xs md:text-sm">
+              <DollarSign className="w-4 h-4 text-success flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Budget</p>
+                <p className="font-semibold truncate">৳{job.budget}</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm">
-            <FileText className="w-4 h-4 text-primary flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-muted-foreground">Category</p>
-              <p className="font-semibold">{job.category || 'General'}</p>
+            <div className="flex items-center gap-2 text-xs md:text-sm">
+              <Clock className="w-4 h-4 text-warning flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Deadline</p>
+                <p className="font-semibold truncate">
+                  {new Date(job.deadline).toLocaleDateString()}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm">
-            <Clock className="w-4 h-4 text-warning flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-muted-foreground">Deadline</p>
-              <p className="font-semibold truncate">
-                {new Date(job.deadline).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm">
-            <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-muted-foreground">Posted by</p>
-              <p className="font-semibold truncate">
-                {job.profiles?.full_name || "Unknown"}
-              </p>
+            <div className="flex items-center gap-2 text-xs md:text-sm">
+              <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Posted by</p>
+                <p className="font-semibold truncate">
+                  {job.profiles?.full_name || "Unknown"}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </Card>
-  );
+      </Card>
+    );
+  }
 
   const handleApplicationSuccess = (jobId: string) => {
     setAppliedJobIds(prev => new Set([...prev, jobId]));
