@@ -14,6 +14,9 @@ import avatarMisbah from "@/assets/avatar-misbah.png";
 import avatarSadmanKarim from "@/assets/avatar-sadman-karim.png";
 import avatarSadmanSadaf from "@/assets/avatar-sadman-sadaf.png";
 import avatarDibbendu from "@/assets/avatar-dibbendu.png";
+import avatarRezwan from "@/assets/avatar-rezwan.jpg";
+import avatarJim from "@/assets/avatar-jim.png";
+import avatarMehedi from "@/assets/avatar-mehedi.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -835,23 +838,29 @@ const Landing = () => {
                     </div>
                     {/* Mehedi */}
                     <div className="text-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
-                        AM
-                      </div>
+                      <img
+                        src={avatarMehedi}
+                        alt="Ahmed Mehedi"
+                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
+                      />
                       <p className="text-xs font-semibold truncate">Mehedi</p>
                     </div>
                     {/* Jim */}
                     <div className="text-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
-                        JJ
-                      </div>
+                      <img
+                        src={avatarJim}
+                        alt="Jamil Jim"
+                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
+                      />
                       <p className="text-xs font-semibold truncate">Jim</p>
                     </div>
                     {/* Rezwan */}
                     <div className="text-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
-                        RS
-                      </div>
+                      <img
+                        src={avatarRezwan}
+                        alt="Rezwan Shajib"
+                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
+                      />
                       <p className="text-xs font-semibold truncate">Rezwan</p>
                     </div>
                   </div>
