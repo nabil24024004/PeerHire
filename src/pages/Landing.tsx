@@ -598,15 +598,8 @@ const Landing = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Header with live indicator */}
+          {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              <span className="text-green-400 text-sm font-medium">8 peers online right now</span>
-            </div>
             <h2 className="text-4xl md:text-5xl font-black mb-4">
               Meet Your{" "}
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
@@ -875,24 +868,63 @@ const Landing = () => {
       </div>
     </section>
 
-    {/* FAQ */}
-    <section className="py-24 bg-card/30">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked</h2>
+    {/* FAQ - Modern Design */}
+    <section className="py-20 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 right-1/3 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              Got Questions?
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black mb-4">
+              Frequently{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                Asked
+              </span>
+            </h2>
           </div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, idx) => <Card key={idx} className="overflow-hidden">
-              <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <span className="font-bold text-lg">{faq.q}</span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
-              </button>
-              {openFaq === idx && <div className="px-6 pb-6 text-muted-foreground">
-                {faq.a}
-              </div>}
-            </Card>)}
+          {/* FAQ Grid */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {faqs.map((faq, idx) => (
+              <Card
+                key={idx}
+                className="p-0 bg-card/60 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-5 text-left flex items-start gap-4 hover:bg-white/5 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-primary font-bold text-sm">{idx + 1}</span>
+                  </div>
+                  <div className="flex-1">
+                    <span className="font-bold text-sm leading-snug">{faq.q}</span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform flex-shrink-0 mt-1 ${openFaq === idx ? "rotate-180" : ""}`} />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-5 pb-5 pl-[4.25rem] text-sm text-muted-foreground leading-relaxed">
+                    {faq.a}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+
+          {/* Contact CTA */}
+          <div className="text-center mt-10">
+            <p className="text-muted-foreground mb-4">Still have questions?</p>
+            <Button variant="outline" size="sm" className="border-white/10" onClick={() => window.open('https://neuralabsagency.vercel.app/#connect', '_blank')}>
+              Contact Support
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
           </div>
         </div>
       </div>
