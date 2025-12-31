@@ -233,115 +233,145 @@ const HirerDashboard = () => {
     );
   }
 
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
   const statsArray = [
-    { icon: Briefcase, label: "Open Tasks", value: stats.openTasks.toString(), color: "text-primary" },
-    { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "text-success" },
-    { icon: TakaIcon, label: "Total Spent", value: `৳${stats.totalSpent.toFixed(0)}`, color: "text-muted-foreground" },
-    { icon: Star, label: "Avg. Rating", value: stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "N/A", color: "text-primary" },
+    { icon: Briefcase, label: "Open Tasks", value: stats.openTasks.toString(), color: "from-purple-500 to-primary", featured: true },
+    { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "from-green-500 to-emerald-400" },
+    { icon: TakaIcon, label: "Total Spent", value: `৳${stats.totalSpent.toFixed(0)}`, color: "from-blue-500 to-cyan-400" },
+    { icon: Star, label: "Avg. Rating", value: stats.avgRating > 0 ? stats.avgRating.toFixed(1) : "N/A", color: "from-yellow-500 to-orange-400" },
   ];
 
   return (
     <DashboardLayout role="hirer">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4">
+      <div className="space-y-6">
+        {/* Header - Premium Style */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-900/30 to-card/80 backdrop-blur border border-white/10">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome back, {userName}!</h1>
-            <p className="text-sm md:text-base text-muted-foreground">Manage your tasks and hire talented peers</p>
+            <p className="text-sm text-primary font-medium mb-1">{getGreeting()}</p>
+            <h1 className="text-2xl md:text-3xl font-black">
+              Welcome back,{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                {userName}
+              </span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage your tasks and hire talented peers</p>
           </div>
-          <Button size="lg" className="btn-glow w-full md:w-auto" onClick={() => setShowJobModal(true)}>
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-primary hover:from-purple-700 hover:to-primary/90 shadow-lg shadow-primary/25 border-0 font-bold"
+            onClick={() => setShowJobModal(true)}
+          >
             <Plus className="w-5 h-5 mr-2" />
             Post New Job
           </Button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        {/* Bento Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {statsArray.map((stat, idx) => (
-            <Card key={idx} className="p-4 md:p-6 card-hover">
-              <div className="flex items-start justify-between mb-2 md:mb-4">
-                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center ${stat.color}`}>
-                  <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
+            <Card
+              key={idx}
+              className={`p-5 bg-card/60 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 ${stat.featured ? "md:col-span-2 lg:col-span-1" : ""
+                }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  <p className="text-2xl font-black">{stat.value}</p>
                 </div>
               </div>
-              <p className="text-xs md:text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className="text-xl md:text-3xl font-bold">{stat.value}</p>
             </Card>
           ))}
         </div>
 
         {/* Your Tasks */}
         <div>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <h2 className="text-xl md:text-2xl font-bold">Your Tasks</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/hirer/tasks")}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Your Tasks</h2>
+            <Button variant="ghost" size="sm" className="text-primary" onClick={() => navigate("/hirer/tasks")}>
               View All
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
+
           {recentJobs.length === 0 ? (
-            <Card className="p-12 text-center">
-              <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <Card className="p-10 text-center bg-card/60 backdrop-blur border-white/5">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="w-8 h-8 text-primary" />
+              </div>
               <h3 className="text-lg font-bold mb-2">No tasks yet</h3>
-              <p className="text-muted-foreground mb-6">
-                Click "Post New Job" to create your first task and connect with freelancers
+              <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                Post your first job and connect with talented peers
               </p>
-              <Button onClick={() => setShowJobModal(true)}>
+              <Button
+                className="bg-gradient-to-r from-purple-600 to-primary"
+                onClick={() => setShowJobModal(true)}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Post Your First Job
               </Button>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentJobs.map((job) => (
-                <Card key={job.id} className="p-4 md:p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-3 md:gap-4 mb-3">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Briefcase className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base md:text-lg font-bold mb-1 truncate">{job.title}</h3>
-                          <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground">
-                            <span>{job.category || "General"}</span>
-                            <span className="hidden md:inline">•</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                              Due {job.deadline ? new Date(job.deadline).toLocaleDateString() : 'No deadline'}
-                            </span>
-                            <span className="hidden md:inline">•</span>
-                            <span className="text-primary font-semibold">৳{job.budget}</span>
-                          </div>
+                <Card
+                  key={job.id}
+                  className="p-4 bg-card/60 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 group"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-primary/20 flex items-center justify-center flex-shrink-0">
+                        <Briefcase className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold truncate group-hover:text-primary transition-colors">{job.title}</h3>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                          <span>{job.category || "General"}</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {job.deadline ? new Date(job.deadline).toLocaleDateString() : 'No deadline'}
+                          </span>
+                          <span className="text-primary font-semibold">৳{job.budget}</span>
                         </div>
                       </div>
+                    </div>
 
+                    <div className="flex items-center gap-3">
                       <Badge
                         className={
                           job.status === "open"
-                            ? "bg-primary/20 text-primary border-primary"
+                            ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
                             : job.status === "in_progress"
-                              ? "bg-yellow-500/20 text-yellow-500 border-yellow-500"
-                              : "bg-success/20 text-success border-success"
+                              ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                              : "bg-green-500/20 text-green-400 border-green-500/30"
                         }
                       >
                         {job.status === "open" && `${job.applications_count} ${job.applications_count === 1 ? 'Offer' : 'Offers'}`}
                         {job.status === "in_progress" && "In Progress"}
                         {job.status === "completed" && "Completed"}
                       </Badge>
-                    </div>
 
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      {job.status === "in_progress" && (
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => navigate("/messages")}>
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Message
+                      <div className="flex gap-2">
+                        {job.status === "in_progress" && (
+                          <Button variant="outline" size="sm" className="border-white/10" onClick={() => navigate("/messages")}>
+                            <MessageSquare className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <Button size="sm" onClick={() => navigate(`/hirer/tasks`)}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
                         </Button>
-                      )}
-                      <Button size="sm" className="w-full sm:w-auto" onClick={() => navigate(`/hirer/tasks`)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -350,18 +380,20 @@ const HirerDashboard = () => {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <Card className="p-6 md:p-8 bg-gradient-to-br from-primary/10 to-primary/5">
-          <div className="text-center">
-            <h3 className="text-xl md:text-2xl font-bold mb-3">Need help with another assignment?</h3>
-            <p className="text-sm md:text-base text-muted-foreground mb-6">
-              Post a new job and get matched with qualified freelancers in minutes
-            </p>
-            <Button size="lg" className="btn-glow w-full md:w-auto" onClick={() => setShowJobModal(true)}>
-              <Plus className="w-5 h-5 mr-2" />
-              Create New Job
-            </Button>
-          </div>
+        {/* Quick Action CTA */}
+        <Card className="p-6 bg-gradient-to-br from-purple-900/40 to-card/80 backdrop-blur border-white/10 text-center">
+          <h3 className="text-xl font-bold mb-2">Need help with another assignment?</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Get matched with qualified freelancers in minutes
+          </p>
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-primary shadow-lg shadow-primary/25"
+            onClick={() => setShowJobModal(true)}
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Create New Job
+          </Button>
         </Card>
       </div>
 
