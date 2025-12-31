@@ -820,21 +820,40 @@ const Landing = () => {
                   </div>
                 </div>
 
-                {/* Team Avatars */}
+                {/* The Founding Team */}
                 <div className="p-4 rounded-xl bg-background/50 border border-white/10">
-                  <p className="text-sm text-muted-foreground mb-3">The Team</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex -space-x-3">
-                      {[avatarYearid, avatarAzwad, avatarShahrier, avatarMisbah].map((avatar, i) => (
-                        <img
-                          key={i}
-                          src={avatar}
-                          alt="Team member"
-                          className="w-10 h-10 rounded-full border-2 border-background object-cover"
-                        />
-                      ))}
+                  <p className="text-sm font-semibold mb-4">Four Minds. One Vision.</p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {/* Azwad */}
+                    <div className="text-center">
+                      <img
+                        src={avatarAzwad}
+                        alt="Azwad Abrar"
+                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
+                      />
+                      <p className="text-xs font-semibold truncate">Azwad</p>
                     </div>
-                    <span className="text-sm text-muted-foreground">+3 more</span>
+                    {/* Mehedi */}
+                    <div className="text-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
+                        AM
+                      </div>
+                      <p className="text-xs font-semibold truncate">Mehedi</p>
+                    </div>
+                    {/* Jim */}
+                    <div className="text-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
+                        JJ
+                      </div>
+                      <p className="text-xs font-semibold truncate">Jim</p>
+                    </div>
+                    {/* Rezwan */}
+                    <div className="text-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center mx-auto mb-1 text-white font-bold text-sm">
+                        RS
+                      </div>
+                      <p className="text-xs font-semibold truncate">Rezwan</p>
+                    </div>
                   </div>
                 </div>
               </div>
