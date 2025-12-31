@@ -83,7 +83,10 @@ export default function FreelancerJobs() {
           .eq("freelancer_id", user.id)
           .order("created_at", { ascending: false });
 
+
         if (applicationsError) throw applicationsError;
+
+        console.log('Raw applications data:', applicationsData);
 
         const formattedJobs = (applicationsData || [])
           .filter((app: any) => app.jobs)
@@ -95,6 +98,9 @@ export default function FreelancerJobs() {
               id: app.jobs.hirer_id,
             },
           }));
+
+        console.log('Formatted jobs:', formattedJobs);
+        console.log('Jobs with accepted status:', formattedJobs.filter((j: any) => j.application_status === 'accepted'));
 
         setJobs(formattedJobs);
       } catch (error: any) {
