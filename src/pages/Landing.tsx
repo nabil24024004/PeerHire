@@ -240,10 +240,10 @@ const Landing = () => {
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
       }} />
 
-      <div className="container mx-auto px-6 py-20 relative z-10">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Role Toggle */}
-          <div className="flex justify-center mb-12 animate-fade-in-up">
+          <div className="flex justify-center mb-8 animate-fade-in-up">
             <div className="relative inline-flex items-center gap-1 bg-card/50 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl">
               <button
                 onClick={() => setSelectedRole("hirer")}
@@ -279,9 +279,9 @@ const Landing = () => {
           </div>
 
           {/* Hero Content Grid */}
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Text Content */}
-            <div className="text-center lg:text-left space-y-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+            <div className="text-center lg:text-left space-y-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
               {/* Eyebrow */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
                 <Zap className="w-4 h-4" />
@@ -308,7 +308,7 @@ const Landing = () => {
               </p>
 
               {/* Stats Row */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-8 pt-4">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-2">
                 <div className="text-center lg:text-left">
                   <p className="text-3xl font-black text-foreground">500+</p>
                   <p className="text-sm text-muted-foreground">Jobs completed</p>
@@ -324,7 +324,7 @@ const Landing = () => {
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
                 <Button
                   size="lg"
                   className="text-lg px-10 py-7 bg-gradient-to-r from-purple-600 to-primary hover:from-purple-700 hover:to-primary/90 shadow-xl shadow-primary/25 border-0"
