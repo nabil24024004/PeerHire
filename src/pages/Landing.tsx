@@ -17,6 +17,7 @@ import avatarDibbendu from "@/assets/avatar-dibbendu.png";
 import avatarRezwan from "@/assets/avatar-rezwan.jpg";
 import avatarJim from "@/assets/avatar-jim.png";
 import avatarMehedi from "@/assets/avatar-mehedi.jpg";
+import neuraLabsLogo from "@/assets/neura-labs-logo.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -760,9 +761,11 @@ const Landing = () => {
               {/* Left: Agency Info */}
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center shadow-lg shadow-primary/25">
-                    <span className="text-2xl font-black text-white">N</span>
-                  </div>
+                  <img
+                    src={neuraLabsLogo}
+                    alt="Neura Labs"
+                    className="w-16 h-16 rounded-2xl object-cover shadow-lg"
+                  />
                   <div>
                     <h3 className="text-2xl font-black">Neura Labs</h3>
                     <p className="text-muted-foreground">Software Agency</p>
