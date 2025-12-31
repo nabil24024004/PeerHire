@@ -493,22 +493,99 @@ const Landing = () => {
       </div>
     </section>
 
-    {/* Services */}
-    <section className="py-24">
-      <div className="container mx-auto px-6">
+    {/* Services - Premium Bento Grid */}
+    <section className="py-20 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 left-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">What We Offer</h2>
-            <p className="text-xl text-muted-foreground">Campus expertise on demand</p>
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              Our Services
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black mb-4">
+              What We{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                Offer
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              Campus expertise on demand — quality work by verified peers
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {services.map((service, idx) => <Card key={idx} className="p-8 card-hover relative overflow-hidden group">
-              {service.tag && <Badge className="absolute top-4 right-4 bg-primary">{service.tag}</Badge>}
-              <service.icon className="w-12 h-12 text-primary mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-xl font-bold mb-2">{service.title}</h3>
-              <p className="text-muted-foreground">{service.desc}</p>
-            </Card>)}
+          {/* Bento Grid */}
+          <div className="grid md:grid-cols-3 gap-4">
+            {/* Featured: Assignment Writing */}
+            <Card className="md:col-span-2 p-6 md:p-8 bg-gradient-to-br from-purple-900/30 to-card/80 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-500 group relative overflow-hidden">
+              <Badge className="absolute top-4 right-4 bg-primary/90 text-white border-0">Popular</Badge>
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/25 group-hover:scale-110 transition-transform duration-300">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black mb-2">Assignment Writing</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Essays, research papers, reports, and academic writing. Get professionally crafted content with proper citations.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary" className="text-xs">Essays</Badge>
+                    <Badge variant="secondary" className="text-xs">Research Papers</Badge>
+                    <Badge variant="secondary" className="text-xs">Reports</Badge>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Lab Reports */}
+            <Card className="p-6 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1">
+              <Badge className="absolute top-4 right-4 bg-green-500/20 text-green-400 border-green-500/30">Fast</Badge>
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Beaker className="w-6 h-6 text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Lab Reports</h3>
+              <p className="text-sm text-muted-foreground">
+                Data analysis & documentation with precise methodology
+              </p>
+            </Card>
+
+            {/* Project Documentation */}
+            <Card className="p-6 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <FileCheck className="w-6 h-6 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Project Documentation</h3>
+              <p className="text-sm text-muted-foreground">
+                Technical & academic project write-ups
+              </p>
+            </Card>
+
+            {/* Presentations */}
+            <Card className="p-6 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Presentation className="w-6 h-6 text-orange-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Presentations</h3>
+              <p className="text-sm text-muted-foreground">
+                Slides, visual design, content
+              </p>
+            </Card>
+
+            {/* Proofreading */}
+            <Card className="p-6 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Edit3 className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Proofreading</h3>
+              <p className="text-sm text-muted-foreground">
+                Grammar, structure, citations
+              </p>
+            </Card>
           </div>
         </div>
       </div>
