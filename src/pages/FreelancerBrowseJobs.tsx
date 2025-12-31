@@ -127,26 +127,30 @@ const FreelancerBrowseJobs = () => {
       // Filter out jobs already applied to
       const availableJobs = jobsWithHirerNames?.filter(job => !appliedIds.has(job.id)) || [];
 
-      // Fetch payment info for these jobs
-      const jobIds = availableJobs.map(j => j.id);
+      // Fetch payment info for these jobs by matching hirer_id (payments.user_id = jobs.hirer_id)
+      // Since job_id in payments table is NULL, we match via user_id and metadata
+      const hirerIds = [...new Set(availableJobs.map(j => j.hirer_id))];
 
-      // Using 'any' cast to bypass missing type definition for 'payments' table
       const { data: paymentsData } = await supabase
         .from('payments' as any)
-        .select('job_id, payment_method, status')
-        .in('job_id', jobIds)
+        .select('user_id, payment_method, status, metadata')
+        .in('user_id', hirerIds)
         .eq('status', 'paid');
 
-      // Create map of job_id -> payment_info
-      const paymentMap = new Map();
+      // Create map of hirer_id + job_title -> payment_info
+      const paymentMap = new Map<string, any>();
       (paymentsData as any[])?.forEach(p => {
-        paymentMap.set(p.job_id, p);
+        const jobTitle = p.metadata?.jobData?.title;
+        if (jobTitle) {
+          // Use combination of user_id and job title as key
+          paymentMap.set(`${p.user_id}:${jobTitle}`, p);
+        }
       });
 
       // Attach payment info to jobs
       const jobsWithPayment = availableJobs.map(job => ({
         ...job,
-        payment_info: paymentMap.get(job.id)
+        payment_info: paymentMap.get(`${job.hirer_id}:${job.title}`)
       }));
 
       setJobs(jobsWithPayment);
