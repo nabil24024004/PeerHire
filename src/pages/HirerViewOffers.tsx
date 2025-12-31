@@ -141,7 +141,7 @@ export default function HirerViewOffers() {
         (applicationsData || []).map(async (app) => {
           const { data: profileData, error: profileError } = await supabase
             .from('profiles')
-            .select('full_name, avatar_url, rating, total_reviews, skills, email')
+            .select('full_name, avatar_url, skills, email')
             .eq('id', app.freelancer_id)
             .single();
 
@@ -158,8 +158,8 @@ export default function HirerViewOffers() {
             profiles: {
               full_name: displayName,
               avatar_url: profileData?.avatar_url || null,
-              rating: profileData?.rating || null,
-              total_reviews: profileData?.total_reviews || 0,
+              rating: null, // Rating comes from reviews, not profiles table
+              total_reviews: 0,
               skills: profileData?.skills || null,
             },
           };
