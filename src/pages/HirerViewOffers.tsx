@@ -139,20 +139,28 @@ export default function HirerViewOffers() {
       // Fetch profiles for each application
       const applicationsWithProfiles = await Promise.all(
         (applicationsData || []).map(async (app) => {
-          const { data: profileData } = await supabase
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
-            .select('full_name, avatar_url, rating, total_reviews, skills')
+            .select('full_name, avatar_url, rating, total_reviews, skills, email')
             .eq('id', app.freelancer_id)
             .single();
 
+          // Debug logging
+          console.log('Fetching profile for freelancer_id:', app.freelancer_id);
+          console.log('Profile data:', profileData);
+          if (profileError) console.log('Profile error:', profileError);
+
+          // Use email as fallback if full_name is missing
+          const displayName = profileData?.full_name || profileData?.email?.split('@')[0] || 'Unknown';
+
           return {
             ...app,
-            profiles: profileData || {
-              full_name: 'Unknown',
-              avatar_url: null,
-              rating: null,
-              total_reviews: 0,
-              skills: null,
+            profiles: {
+              full_name: displayName,
+              avatar_url: profileData?.avatar_url || null,
+              rating: profileData?.rating || null,
+              total_reviews: profileData?.total_reviews || 0,
+              skills: profileData?.skills || null,
             },
           };
         })
