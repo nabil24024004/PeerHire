@@ -142,20 +142,45 @@ export default function HirerPayments() {
     );
   };
 
-  if (authLoading || loading) {
-    return (
-      <DashboardLayout role="hirer">
-        <div className="space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const handleRetryPayment = async (payment: Payment) => {
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      // Call RupantorPay API via Edge Function
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        "create-rupantor-payment",
+        {
+          body: {
+            payment_id: payment.id,
+            amount: payment.amount,
+            purpose: payment.payment_method === "pay_now" ? "Job Payment (Full)" : "Job Posting Fee",
+            metadata: {
+              job_title: payment.metadata?.jobData?.title || "Job Posting",
+              payment_method: payment.payment_method,
+            },
+          },
+        }
+      );
+
+      if (checkoutError) throw checkoutError;
+
+      if (checkoutData?.checkout_url) {
+        window.location.href = checkoutData.checkout_url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error: any) {
+      console.error("Retry error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to retry payment: " + error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <DashboardLayout role="hirer">
@@ -211,6 +236,8 @@ export default function HirerPayments() {
                   payments={payments}
                   getStatusBadge={getStatusBadge}
                   getMethodBadge={getMethodBadge}
+                  onRetry={handleRetryPayment}
+                  loading={loading}
                 />
               </TabsContent>
               <TabsContent value="paid">
@@ -218,13 +245,17 @@ export default function HirerPayments() {
                   payments={payments.filter(p => p.status === "paid")}
                   getStatusBadge={getStatusBadge}
                   getMethodBadge={getMethodBadge}
+                  onRetry={handleRetryPayment}
+                  loading={loading}
                 />
               </TabsContent>
               <TabsContent value="pending">
                 <PaymentList
-                  payments={payments.filter(p => p.status === "pending" || p.status === "processing")}
+                  payments={payments.filter(p => p.status === "pending" || p.status === "processing" || p.status === "failed" || p.status === "canceled")}
                   getStatusBadge={getStatusBadge}
                   getMethodBadge={getMethodBadge}
+                  onRetry={handleRetryPayment}
+                  loading={loading}
                 />
               </TabsContent>
             </Tabs>
@@ -238,11 +269,15 @@ export default function HirerPayments() {
 function PaymentList({
   payments,
   getStatusBadge,
-  getMethodBadge
+  getMethodBadge,
+  onRetry,
+  loading
 }: {
   payments: Payment[];
   getStatusBadge: (status: string) => JSX.Element;
   getMethodBadge: (method: string) => JSX.Element;
+  onRetry: (payment: Payment) => void;
+  loading: boolean;
 }) {
   if (payments.length === 0) {
     return (
@@ -282,6 +317,7 @@ function PaymentList({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {getMethodBadge(payment.payment_method)}
             {getStatusBadge(payment.status)}
+
             <div className="text-left sm:text-right min-w-[80px]">
               <p className="text-lg font-bold text-primary">
                 ৳{Number(payment.amount).toFixed(0)}
@@ -292,6 +328,19 @@ function PaymentList({
                 </p>
               )}
             </div>
+
+            {/* Resume/Retry Button for non-paid statuses */}
+            {(payment.status === "pending" || payment.status === "processing" || payment.status === "failed" || payment.status === "canceled") && (
+              <Button
+                size="sm"
+                onClick={() => onRetry(payment)}
+                disabled={loading}
+                className="h-8 gap-2 ml-2"
+              >
+                <CreditCard className="w-3 h-3" />
+                Pay Now
+              </Button>
+            )}
           </div>
         </div>
       ))}
