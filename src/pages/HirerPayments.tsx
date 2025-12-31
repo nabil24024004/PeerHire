@@ -185,10 +185,18 @@ export default function HirerPayments() {
 
   return (
     <DashboardLayout role="hirer">
-      <div className="space-y-6 animate-fade-in">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold gradient-text">Payments</h1>
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-900/30 to-card/80 backdrop-blur border border-white/10">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black">
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                Payments
+              </span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">Track your payment history</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground bg-card/50 px-3 py-1.5 rounded-lg border border-white/10">
             <Shield className="w-4 h-4 text-primary" />
             Secured by RupantorPay
           </div>
@@ -217,19 +225,21 @@ export default function HirerPayments() {
         </div>
 
         {/* Payments List */}
-        <Card className="border-border">
+        <Card className="bg-card/60 backdrop-blur border-white/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <CreditCard className="w-4 h-4 text-primary" />
+              </div>
               Transaction History
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
-              <TabsList className="mb-4">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="paid">Paid</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsList className="mb-4 bg-card/60 border border-white/5">
+                <TabsTrigger value="all" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">All</TabsTrigger>
+                <TabsTrigger value="paid" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">Paid</TabsTrigger>
+                <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-500/20 data-[state=active]:text-yellow-400">Pending</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all">

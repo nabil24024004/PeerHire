@@ -218,14 +218,24 @@ export default function FreelancerSettings() {
 
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-6 animate-fade-in max-w-4xl">
-        <h1 className="text-3xl font-bold gradient-text">Settings</h1>
+      <div className="space-y-6 max-w-4xl">
+        {/* Header */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-green-900/30 to-card/80 backdrop-blur border border-white/10">
+          <h1 className="text-2xl md:text-3xl font-black">
+            <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+              Settings
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage your account preferences</p>
+        </div>
 
         {/* Account Settings */}
-        <Card className="border-border">
+        <Card className="bg-card/60 backdrop-blur border-white/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                <User className="w-4 h-4 text-green-400" />
+              </div>
               Account Settings
             </CardTitle>
             <CardDescription>Manage your account information</CardDescription>
@@ -238,11 +248,12 @@ export default function FreelancerSettings() {
                   id="full_name"
                   value={profileData.full_name}
                   onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
+                  className="bg-card/60 border-white/10"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email (Read-only)</Label>
-                <Input id="email" value={profileData.email} disabled />
+                <Input id="email" value={profileData.email} disabled className="bg-card/60 border-white/10" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
@@ -251,6 +262,7 @@ export default function FreelancerSettings() {
                   value={profileData.bio}
                   onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                   placeholder="Tell us about yourself..."
+                  className="bg-card/60 border-white/10"
                 />
               </div>
               <div className="space-y-2">
@@ -260,10 +272,11 @@ export default function FreelancerSettings() {
                   value={profileData.student_id}
                   onChange={(e) => setProfileData({ ...profileData, student_id: e.target.value })}
                   placeholder="e.g., 24024004"
+                  className="bg-card/60 border-white/10"
                 />
               </div>
             </div>
-            <Button onClick={handleSaveProfile} disabled={saving}>
+            <Button onClick={handleSaveProfile} disabled={saving} className="bg-gradient-to-r from-green-500 to-emerald-500">
               <Save className="w-4 h-4 mr-2" />
               Save Changes
             </Button>
@@ -271,10 +284,12 @@ export default function FreelancerSettings() {
         </Card>
 
         {/* Freelancer Preferences */}
-        <Card className="border-border">
+        <Card className="bg-card/60 backdrop-blur border-white/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Briefcase className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <Briefcase className="w-4 h-4 text-blue-400" />
+              </div>
               Freelancer Preferences
             </CardTitle>
             <CardDescription>Manage your availability and work preferences</CardDescription>
@@ -288,7 +303,7 @@ export default function FreelancerSettings() {
                   setFreelancerPrefs({ ...freelancerPrefs, status: value })
                 }
               >
-                <SelectTrigger id="status">
+                <SelectTrigger id="status" className="bg-card/60 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -297,11 +312,11 @@ export default function FreelancerSettings() {
                   <SelectItem value="offline">Offline</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Your status will be visible to hirers looking for freelancers
               </p>
             </div>
-            <Button onClick={handleSaveFreelancerPrefs} disabled={saving}>
+            <Button onClick={handleSaveFreelancerPrefs} disabled={saving} variant="outline" className="border-white/10">
               <Save className="w-4 h-4 mr-2" />
               Save Preferences
             </Button>
@@ -309,37 +324,38 @@ export default function FreelancerSettings() {
         </Card>
 
         {/* Notifications */}
-        <Card className="border-border">
+        <Card className="bg-card/60 backdrop-blur border-white/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                <Bell className="w-4 h-4 text-yellow-400" />
+              </div>
               Notifications
             </CardTitle>
             <CardDescription>Manage your notification preferences</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-card/40 border border-white/5">
               <div className="space-y-0.5">
                 <Label>New Messages</Label>
-                <p className="text-sm text-muted-foreground">Get notified when you receive a new message</p>
+                <p className="text-xs text-muted-foreground">Get notified when you receive a new message</p>
               </div>
               <Switch
                 checked={notificationPrefs.new_messages}
                 onCheckedChange={(checked) => setNotificationPrefs({ ...notificationPrefs, new_messages: checked })}
               />
             </div>
-            <Separator />
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-card/40 border border-white/5">
               <div className="space-y-0.5">
                 <Label>New Job Offers</Label>
-                <p className="text-sm text-muted-foreground">Get notified when hirers invite you to jobs</p>
+                <p className="text-xs text-muted-foreground">Get notified when hirers invite you to jobs</p>
               </div>
               <Switch
                 checked={notificationPrefs.new_offers}
                 onCheckedChange={(checked) => setNotificationPrefs({ ...notificationPrefs, new_offers: checked })}
               />
             </div>
-            <Button onClick={handleSaveNotifications} disabled={saving}>
+            <Button onClick={handleSaveNotifications} disabled={saving} variant="outline" className="border-white/10">
               <Save className="w-4 h-4 mr-2" />
               Save Preferences
             </Button>
@@ -347,7 +363,7 @@ export default function FreelancerSettings() {
         </Card>
 
         {/* Danger Zone */}
-        <Card className="border-destructive">
+        <Card className="bg-card/60 backdrop-blur border-red-500/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <Trash2 className="w-5 h-5" />

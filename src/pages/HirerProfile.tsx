@@ -205,9 +205,9 @@ const HirerProfile = () => {
 
   return (
     <DashboardLayout role="hirer">
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Profile Header */}
-        <Card className="p-8 border-border bg-card animate-fade-in-up">
+        <Card className="p-6 bg-gradient-to-br from-purple-900/30 to-card/80 backdrop-blur border border-white/10">
           <div className="flex items-start gap-6 flex-col md:flex-row">
             <AvatarUpload
               userId={user.id}
@@ -220,9 +220,13 @@ const HirerProfile = () => {
             <div className="flex-1 space-y-4">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-2">{profile.full_name || "Unnamed"}</h1>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Badge className="bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">
+                  <h1 className="text-3xl md:text-4xl font-black mb-2">
+                    <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                      {profile.full_name || "Unnamed"}
+                    </span>
+                  </h1>
+                  <div className="flex items-center gap-3 flex-wrap text-sm">
+                    <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                       Hirer
                     </Badge>
                     {profile.student_id && (
@@ -230,19 +234,19 @@ const HirerProfile = () => {
                     )}
                     <span className="text-muted-foreground">•</span>
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="h-3 w-3" />
                       Member since {profile.member_since}
                     </span>
                   </div>
                 </div>
-                <Button onClick={() => setEditModalOpen(true)} className="btn-glow">
+                <Button onClick={() => setEditModalOpen(true)} className="bg-gradient-to-r from-purple-600 to-primary">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Profile
                 </Button>
               </div>
 
               {profile.bio && (
-                <p className="text-muted-foreground leading-relaxed">{profile.bio}</p>
+                <p className="text-muted-foreground leading-relaxed text-sm">{profile.bio}</p>
               )}
             </div>
           </div>

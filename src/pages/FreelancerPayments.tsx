@@ -179,8 +179,16 @@ Please process my payment. Thank you!`;
 
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-6 animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl font-bold gradient-text">Payments & Earnings</h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-green-900/30 to-card/80 backdrop-blur border border-white/10">
+          <h1 className="text-2xl md:text-3xl font-black">
+            <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+              Payments & Earnings
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Track your earnings and payment status</p>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-4">

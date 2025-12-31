@@ -224,9 +224,9 @@ const FreelancerProfile = () => {
 
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Profile Header */}
-        <Card className="p-8 border-border bg-card animate-fade-in-up">
+        <Card className="p-6 bg-gradient-to-br from-green-900/30 to-card/80 backdrop-blur border border-white/10">
           <div className="flex items-start gap-6 flex-col md:flex-row">
             {isOwnProfile ? (
               <AvatarUpload
@@ -237,11 +237,11 @@ const FreelancerProfile = () => {
                 onAvatarChange={(url) => setProfile({ ...profile, avatar_url: url })}
               />
             ) : (
-              <div className="h-32 w-32 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+              <div className="h-32 w-32 rounded-full bg-green-500/20 flex items-center justify-center overflow-hidden border-2 border-green-500/30">
                 {profile.avatar_url ? (
                   <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl font-bold">{getInitials(profile.full_name || 'U')}</span>
+                  <span className="text-4xl font-bold text-green-400">{getInitials(profile.full_name || 'U')}</span>
                 )}
               </div>
             )}
@@ -249,9 +249,13 @@ const FreelancerProfile = () => {
             <div className="flex-1 space-y-4">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-2">{profile.full_name}</h1>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Badge className="bg-success/20 text-success border-success/30 hover:bg-success/30">
+                  <h1 className="text-3xl md:text-4xl font-black mb-2">
+                    <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                      {profile.full_name}
+                    </span>
+                  </h1>
+                  <div className="flex items-center gap-3 flex-wrap text-sm">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                       Freelancer
                     </Badge>
                     <span className="text-muted-foreground">{profile.department}</span>
@@ -259,7 +263,7 @@ const FreelancerProfile = () => {
                     <span className="text-muted-foreground">Year {profile.year_of_study}</span>
                     <span className="text-muted-foreground">•</span>
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="h-3 w-3" />
                       Member since {profile.member_since}
                     </span>
                   </div>
