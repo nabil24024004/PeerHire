@@ -21,11 +21,17 @@ const Messages = () => {
     // Check if there's a conversation or chat ID in URL params
     const conversationId = searchParams.get('conversation');
     const chatId = searchParams.get('chat');
+    const userId = searchParams.get('user');
+
     if (conversationId) {
       setSelectedConversationId(conversationId);
     } else if (chatId) {
       // 'chat' param from LiveBoard - set as selected partner
       setSelectedConversationId(chatId);
+    } else if (userId) {
+      // 'user' param - set the user ID as conversation target
+      // MessagingSystem will handle finding/creating the conversation
+      setSelectedConversationId(userId);
     }
   }, [searchParams]);
 

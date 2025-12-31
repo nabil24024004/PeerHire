@@ -362,11 +362,11 @@ export default function HirerTasks() {
                               Done
                             </Button>
                           )}
-                          {task.status === "in_progress" && (
+                          {task.status === "in_progress" && task.freelancer_id && (
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => navigate("/messages")}
+                              onClick={() => navigate(`/messages?user=${task.freelancer_id}`)}
                               className="border-white/10"
                             >
                               <MessageSquare className="w-4 h-4" />
