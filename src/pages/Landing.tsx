@@ -226,129 +226,210 @@ const Landing = () => {
     </Dialog>
 
     {/* Hero Section */}
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden dot-pattern">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-purple-950/10 to-background" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-background">
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-[150px]" />
+      </div>
+
+      {/* Noise Texture Overlay */}
+      <div className="absolute inset-0 opacity-[0.015]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
+      }} />
 
       <div className="container mx-auto px-6 py-20 relative z-10">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Role Toggle */}
-          <div className="flex justify-center mb-8 animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 bg-card p-1.5 rounded-full border border-border">
-              <button onClick={() => setSelectedRole("hirer")} className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${selectedRole === "hirer" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}>
-                I'm a Hirer
+          <div className="flex justify-center mb-12 animate-fade-in-up">
+            <div className="relative inline-flex items-center gap-1 bg-card/50 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl">
+              <button
+                onClick={() => setSelectedRole("hirer")}
+                className={`relative px-8 py-3 rounded-full text-sm font-bold transition-all duration-500 ${selectedRole === "hirer"
+                  ? "text-white"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                {selectedRole === "hirer" && (
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary rounded-full shadow-lg shadow-primary/25" />
+                )}
+                <span className="relative flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  I need work done
+                </span>
               </button>
-              <button onClick={() => setSelectedRole("freelancer")} className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${selectedRole === "freelancer" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}>
-                I'm a Freelancer
+              <button
+                onClick={() => setSelectedRole("freelancer")}
+                className={`relative px-8 py-3 rounded-full text-sm font-bold transition-all duration-500 ${selectedRole === "freelancer"
+                  ? "text-white"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                {selectedRole === "freelancer" && (
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary rounded-full shadow-lg shadow-primary/25" />
+                )}
+                <span className="relative flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4" />
+                  I want to earn
+                </span>
               </button>
             </div>
           </div>
 
-          {/* Hero Content */}
-          <div className="text-center mb-12 space-y-6 animate-fade-in-up" style={{
-            animationDelay: "0.1s"
-          }}>
-            <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
-              Hire your peers for
-              <span className="block gradient-text">varsity work.</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              PeerHire connects students on the same campus for assignments, lab reports, and academic tasks with transparent pricing, live availability, and verified ratings.
-            </p>
+          {/* Hero Content Grid */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: Text Content */}
+            <div className="text-center lg:text-left space-y-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+              {/* Eyebrow */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+                <Zap className="w-4 h-4" />
+                <span>AAUB Students Only</span>
+              </div>
 
-            {/* Trust Badges */}
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
-                <Shield className="w-4 h-4 mr-2" />
-                Campus-Only
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
-                <CheckCircle2 className="w-4 h-4 mr-2" />
-                Verified Students
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
-                <Zap className="w-4 h-4 mr-2" />
-                Instant Matching
-              </Badge>
-            </div>
+              {/* Main Heading */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1]">
+                <span className="text-foreground">Get your</span>
+                <br />
+                <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                  varsity work
+                </span>
+                <br />
+                <span className="text-foreground">done.</span>
+              </h1>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <Button size="lg" className="text-lg px-8 py-6 btn-glow" onClick={() => navigate("/signup", {
-                state: {
-                  role: selectedRole
+              {/* Description */}
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                {selectedRole === "hirer"
+                  ? "Post assignments, lab reports, or presentations. Get matched with skilled peers who deliver quality work on time."
+                  : "Pick up academic tasks from fellow students. Set your rates, build your reputation, and earn while you learn."
                 }
-              })}>
-                {selectedRole === "hirer" ? "Get Started as Hirer" : "Become a Freelancer"}
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2" onClick={() => navigate("/login")}>
-                Sign In
-              </Button>
-            </div>
-          </div>
+              </p>
 
-          {/* Hero Image */}
-          <div className="relative mt-8 md:mt-16 animate-fade-in-up" style={{
-            animationDelay: "0.2s"
-          }}>
-            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-border">
-              <img src="/hero-illustration-flat.png" alt="Students collaborating" className="w-full h-auto" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+              {/* Stats Row */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-8 pt-4">
+                <div className="text-center lg:text-left">
+                  <p className="text-3xl font-black text-foreground">500+</p>
+                  <p className="text-sm text-muted-foreground">Jobs completed</p>
+                </div>
+                <div className="text-center lg:text-left">
+                  <p className="text-3xl font-black text-foreground">4.9</p>
+                  <p className="text-sm text-muted-foreground">Avg. rating</p>
+                </div>
+                <div className="text-center lg:text-left">
+                  <p className="text-3xl font-black text-foreground">24h</p>
+                  <p className="text-sm text-muted-foreground">Avg. delivery</p>
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                <Button
+                  size="lg"
+                  className="text-lg px-10 py-7 bg-gradient-to-r from-purple-600 to-primary hover:from-purple-700 hover:to-primary/90 shadow-xl shadow-primary/25 border-0"
+                  onClick={() => navigate("/signup", { state: { role: selectedRole } })}
+                >
+                  {selectedRole === "hirer" ? "Post a Task" : "Start Earning"}
+                  <ChevronRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-10 py-7 border-2 border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10"
+                  onClick={() => navigate("/login")}
+                >
+                  Sign In
+                </Button>
+              </div>
             </div>
 
-            {/* Floating Cards - Mobile: stacked below, Desktop: absolute positioned */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-4 md:hidden">
-              <Card className="flex-1 p-3 card-hover bg-card/95 backdrop-blur border-primary/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-4 h-4 text-success" />
+            {/* Right: Bento Grid Showcase */}
+            <div className="relative animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              <div className="grid grid-cols-2 gap-4">
+                {/* Main Feature Card */}
+                <Card className="col-span-2 p-6 bg-gradient-to-br from-purple-900/40 to-card/80 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/25">
+                      <CheckCircle2 className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-lg mb-1">Lab Report Completed</p>
+                      <p className="text-sm text-muted-foreground mb-3">Physics - Thermodynamics</p>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                        <span className="text-sm text-muted-foreground ml-2">5.0</span>
+                      </div>
+                    </div>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Delivered</Badge>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">Lab Report Completed</p>
-                    <div className="flex items-center gap-0.5 mt-0.5">
-                      {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-primary text-primary" />)}
+                </Card>
+
+                {/* Task Card */}
+                <Card className="p-5 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex flex-col h-full">
+                    <div className="w-11 h-11 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4">
+                      <FileText className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <p className="font-bold mb-1">Assignment</p>
+                    <p className="text-sm text-muted-foreground mb-3">5 pages • Due in 2 days</p>
+                    <div className="mt-auto">
+                      <p className="text-2xl font-black text-primary">৳250</p>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
 
-              <Card className="flex-1 p-3 card-hover bg-card/95 backdrop-blur border-primary/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-4 h-4 text-primary" />
+                {/* Availability Card */}
+                <Card className="p-5 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex flex-col h-full">
+                    <div className="w-11 h-11 rounded-xl bg-green-500/20 flex items-center justify-center mb-4">
+                      <Users className="w-5 h-5 text-green-400" />
+                    </div>
+                    <p className="font-bold mb-1">Peers Online</p>
+                    <p className="text-sm text-muted-foreground mb-3">Ready to help</p>
+                    <div className="mt-auto flex -space-x-2">
+                      {[avatarYearid, avatarMisbah, avatarSamin].map((avatar, i) => (
+                        <img
+                          key={i}
+                          src={avatar}
+                          alt="Peer"
+                          className="w-8 h-8 rounded-full border-2 border-background"
+                        />
+                      ))}
+                      <div className="w-8 h-8 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-xs font-bold text-primary">
+                        +12
+                      </div>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm truncate">Assignment - 5 pages</p>
-                    <p className="text-xs text-muted-foreground">Due in 2 days</p>
+                </Card>
+
+                {/* Live Status Card */}
+                <Card className="col-span-2 p-5 bg-card/60 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                        <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75" />
+                      </div>
+                      <div>
+                        <p className="font-bold">Live Matching</p>
+                        <p className="text-sm text-muted-foreground">Average response: 15 min</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <TrendingUp className="w-4 h-4 text-green-400" />
+                      <span className="text-green-400 font-semibold">12 active jobs</span>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
+
+              {/* Decorative Elements */}
+              <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-2xl" />
+              <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-purple-500/30 to-transparent rounded-full blur-2xl" />
             </div>
-
-            {/* Desktop Floating Cards */}
-            <Card className="hidden md:block absolute -bottom-6 left-8 p-4 max-w-xs card-hover animate-float bg-card/95 backdrop-blur">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold">Assignment - 5 pages</p>
-                  <p className="text-sm text-muted-foreground">Due in 2 days</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="hidden md:block absolute -top-6 right-8 p-4 card-hover bg-card/95 backdrop-blur" style={{
-              animationDelay: "1s"
-            }}>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-success" />
-                <span className="font-semibold">Lab Report Completed</span>
-              </div>
-              <div className="flex items-center gap-1 mt-2">
-                {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-4 h-4 fill-primary text-primary" />)}
-              </div>
-            </Card>
           </div>
         </div>
       </div>
@@ -640,6 +721,125 @@ const Landing = () => {
               </div>}
             </Card>)}
           </div>
+        </div>
+      </div>
+    </section>
+
+    {/* About Us / Built By Section */}
+    <section className="py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px]" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              About the Creators
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black mb-4">
+              Built by{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                Neura Labs
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              A student-led software agency crafting intelligent solutions for real-world problems
+            </p>
+          </div>
+
+          {/* Agency Card */}
+          <Card className="p-8 md:p-12 bg-gradient-to-br from-card/80 to-purple-900/20 backdrop-blur-xl border-white/10 hover:border-primary/30 transition-all duration-500">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+              {/* Left: Agency Info */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-primary flex items-center justify-center shadow-lg shadow-primary/25">
+                    <span className="text-2xl font-black text-white">N</span>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black">Neura Labs</h3>
+                    <p className="text-muted-foreground">Software Agency</p>
+                  </div>
+                </div>
+
+                <p className="text-muted-foreground leading-relaxed">
+                  We're a team of passionate AAUB students building innovative software solutions.
+                  PeerHire is our flagship product designed to help fellow students collaborate
+                  on academic work efficiently and transparently.
+                </p>
+
+                <div className="flex flex-wrap gap-3">
+                  <Badge variant="secondary" className="px-3 py-1.5">
+                    <Zap className="w-3 h-3 mr-1" />
+                    Web Development
+                  </Badge>
+                  <Badge variant="secondary" className="px-3 py-1.5">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    AI Solutions
+                  </Badge>
+                  <Badge variant="secondary" className="px-3 py-1.5">
+                    <Shield className="w-3 h-3 mr-1" />
+                    Product Design
+                  </Badge>
+                </div>
+
+                <a
+                  href="https://neuralabsagency.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors"
+                >
+                  Visit Neura Labs
+                  <ChevronRight className="w-4 h-4" />
+                </a>
+              </div>
+
+              {/* Right: Stats & Mini Team */}
+              <div className="space-y-6">
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
+                    <p className="text-3xl font-black text-primary">5+</p>
+                    <p className="text-sm text-muted-foreground">Projects Built</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
+                    <p className="text-3xl font-black text-primary">500+</p>
+                    <p className="text-sm text-muted-foreground">Users Served</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
+                    <p className="text-3xl font-black text-primary">4.9★</p>
+                    <p className="text-sm text-muted-foreground">User Rating</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
+                    <p className="text-3xl font-black text-primary">24/7</p>
+                    <p className="text-sm text-muted-foreground">Support</p>
+                  </div>
+                </div>
+
+                {/* Team Avatars */}
+                <div className="p-4 rounded-xl bg-background/50 border border-white/10">
+                  <p className="text-sm text-muted-foreground mb-3">The Team</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-3">
+                      {[avatarYearid, avatarAzwad, avatarShahrier, avatarMisbah].map((avatar, i) => (
+                        <img
+                          key={i}
+                          src={avatar}
+                          alt="Team member"
+                          className="w-10 h-10 rounded-full border-2 border-background object-cover"
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground">+3 more</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </section>
