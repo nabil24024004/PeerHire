@@ -11,26 +11,32 @@ export default function PaymentSuccess() {
     const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
     const [message, setMessage] = useState("Verifying your payment...");
 
+    // We now prefer payment_id, but keep transaction_id as fallback support
+    const paymentId = searchParams.get("payment_id");
     const transactionId = searchParams.get("transaction_id");
 
     useEffect(() => {
         const verifyPayment = async () => {
             try {
-                if (!transactionId) {
+                if (!paymentId && !transactionId) {
                     setStatus("error");
-                    setMessage("No transaction ID provided. Please contact support.");
+                    setMessage("No payment credential provided. Please contact support.");
                     return;
                 }
 
                 // Wait for webhook to process
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // Check payment status in database (webhook should have updated it)
-                const { data: payment, error } = await supabase
-                    .from("payments")
-                    .select("status, job_id")
-                    .eq("transaction_id", transactionId)
-                    .single();
+                let query = (supabase.from("payments") as any).select("status, job_id, transaction_id");
+
+                if (paymentId) {
+                    query = query.eq("id", paymentId);
+                } else if (transactionId) {
+                    query = query.eq("transaction_id", transactionId);
+                }
+
+                // Check payment status in database
+                const { data: payment, error } = await query.single();
 
                 if (error || !payment) {
                     // Wait a bit longer for webhook
@@ -38,15 +44,13 @@ export default function PaymentSuccess() {
                     await new Promise(resolve => setTimeout(resolve, 3000));
 
                     // Try again
-                    const { data: retryPayment } = await supabase
-                        .from("payments")
-                        .select("status, job_id")
-                        .eq("transaction_id", transactionId)
-                        .single();
+                    const { data: retryPayment } = await query.single();
 
                     if (!retryPayment) {
                         setStatus("error");
-                        setMessage("Payment verification failed. Please contact support with transaction ID: " + transactionId);
+                        // Don't show confusing placeholder if transactionId is missing or literal placeholder
+                        const idToShow = paymentId || (transactionId !== "{transaction_id}" ? transactionId : "N/A");
+                        setMessage(`Payment verification failed. Please contact support with ID: ${idToShow}`);
                         return;
                     }
 
@@ -65,6 +69,7 @@ export default function PaymentSuccess() {
                     setMessage("Payment is still being processed. Please wait...");
                 } else {
                     setStatus("error");
+                    // Filter out invalid/technical statuses if needed to show user-friendly message
                     setMessage("Payment could not be verified. Status: " + (payment?.status || "unknown"));
                 }
             } catch (error) {
@@ -75,7 +80,7 @@ export default function PaymentSuccess() {
         };
 
         verifyPayment();
-    }, [transactionId]);
+    }, [paymentId, transactionId]);
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -87,7 +92,7 @@ export default function PaymentSuccess() {
                             <h1 className="text-2xl font-bold mb-2">Processing Payment</h1>
                             <p className="text-muted-foreground mb-6">{message}</p>
                         </>
-                    ) : (
+                    ) : status === "success" ? (
                         <>
                             <div className="h-16 w-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <CheckCircle className="h-10 w-10 text-green-500" />
@@ -110,6 +115,31 @@ export default function PaymentSuccess() {
                                 >
                                     <Briefcase className="mr-2 h-4 w-4" />
                                     View My Jobs
+                                </Button>
+                            </div>
+                        </>
+                    ) : (
+                        // Error State
+                        <>
+                            <div className="h-16 w-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <span className="text-2xl">❌</span>
+                            </div>
+                            <h1 className="text-2xl font-bold mb-2 text-red-500">Payment Failed</h1>
+                            <p className="text-muted-foreground mb-8">{message}</p>
+
+                            <div className="space-y-3">
+                                <Button
+                                    className="w-full"
+                                    variant="outline"
+                                    onClick={() => navigate("/hirer/dashboard")}
+                                >
+                                    Go to Dashboard
+                                </Button>
+                                <Button
+                                    className="w-full"
+                                    onClick={() => window.location.reload()}
+                                >
+                                    Try Verifying Again
                                 </Button>
                             </div>
                         </>

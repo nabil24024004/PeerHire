@@ -88,7 +88,7 @@ serve(async (req) => {
 
         // Construct success/cancel URLs
         const appUrl = Deno.env.get('APP_URL') || 'https://peerhireaaub.vercel.app'
-        const successUrl = `${appUrl}/payment/success?transaction_id={transaction_id}`
+        const successUrl = `${appUrl}/payment/success?payment_id=${payment_id}`
         const cancelUrl = `${appUrl}/payment/cancel`
         const webhookUrl = `${supabaseUrl}/functions/v1/rupantor-webhook`
 
