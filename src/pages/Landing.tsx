@@ -591,168 +591,260 @@ const Landing = () => {
       </div>
     </section>
 
-    {/* Live Preview Section */}
-    <section className="py-24 bg-card/30 overflow-hidden">
-      <div className="container mx-auto px-6">
+    {/* Live Campus Talent - Authentic Showcase */}
+    <section className="py-20 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-card/50 via-transparent to-card/50" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Live Campus Talent</h2>
-            <p className="text-xl text-muted-foreground">See who's available right now when you log in</p>
+          {/* Header with live indicator */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-green-400 text-sm font-medium">8 peers online right now</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black mb-4">
+              Meet Your{" "}
+              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                Campus Peers
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              Real students, real skills, ready to help with your work
+            </p>
           </div>
 
-          {/* Scrolling Freelancer Cards - Infinite Carousel with pause on hover */}
-          <div className="relative overflow-hidden group/carousel space-y-6">
-            {/* First row - scrolling left */}
-            <div className="flex gap-6 animate-infinite-scroll group-hover/carousel:[animation-play-state:paused]">
-              {/* First set of cards */}
-              {[{
-                name: "Samin Yasir Mridul",
-                department: "Computer Science",
-                avatar: avatarSamin
-              }, {
-                name: "Sheikh Azwad Abrar",
-                department: "Avionics Engineering",
-                avatar: avatarAzwad
-              }, {
-                name: "Shahrier Ehsan",
-                department: "Electrical Engineering",
-                avatar: avatarShahrier
-              }, {
-                name: "Yearid Hasan Jim",
-                department: "Mechanical Engineering",
-                avatar: avatarYearid
-              }].map((freelancer, idx) => (
-                <Card key={`first-${idx}`} className="flex-shrink-0 w-80 p-6 bg-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)] hover:z-10">
+          {/* Scrolling Carousel - More organic cards */}
+          <div className="relative overflow-hidden group/carousel space-y-5">
+            {/* First row */}
+            <div className="flex gap-5 animate-infinite-scroll group-hover/carousel:[animation-play-state:paused]">
+              {[
+                {
+                  name: "Samin Mridul",
+                  dept: "CSE '24",
+                  avatar: avatarSamin,
+                  skill: "Python, Web Dev",
+                  specialty: "Lab Reports",
+                  rating: 4.9,
+                  reviews: 31,
+                  status: "online"
+                },
+                {
+                  name: "Azwad Abrar",
+                  dept: "AVE '25",
+                  avatar: avatarAzwad,
+                  skill: "UI/UX, Research",
+                  specialty: "Assignments",
+                  rating: 5.0,
+                  reviews: 47,
+                  status: "online"
+                },
+                {
+                  name: "Shahrier Ehsan",
+                  dept: "EEE '24",
+                  avatar: avatarShahrier,
+                  skill: "Circuit Design, Docs",
+                  specialty: "Project Work",
+                  rating: 4.8,
+                  reviews: 28,
+                  status: "busy"
+                },
+                {
+                  name: "Yearid Jim",
+                  dept: "ME '25",
+                  avatar: avatarYearid,
+                  skill: "AutoCAD, Technical",
+                  specialty: "Documentation",
+                  rating: 4.7,
+                  reviews: 19,
+                  status: "online"
+                }
+              ].concat([
+                {
+                  name: "Samin Mridul",
+                  dept: "CSE '24",
+                  avatar: avatarSamin,
+                  skill: "Python, Web Dev",
+                  specialty: "Lab Reports",
+                  rating: 4.9,
+                  reviews: 31,
+                  status: "online"
+                },
+                {
+                  name: "Azwad Abrar",
+                  dept: "AVE '25",
+                  avatar: avatarAzwad,
+                  skill: "UI/UX, Research",
+                  specialty: "Assignments",
+                  rating: 5.0,
+                  reviews: 47,
+                  status: "online"
+                },
+                {
+                  name: "Shahrier Ehsan",
+                  dept: "EEE '24",
+                  avatar: avatarShahrier,
+                  skill: "Circuit Design, Docs",
+                  specialty: "Project Work",
+                  rating: 4.8,
+                  reviews: 28,
+                  status: "busy"
+                },
+                {
+                  name: "Yearid Jim",
+                  dept: "ME '25",
+                  avatar: avatarYearid,
+                  skill: "AutoCAD, Technical",
+                  specialty: "Documentation",
+                  rating: 4.7,
+                  reviews: 19,
+                  status: "online"
+                }
+              ]).map((person, idx) => (
+                <Card key={`row1-${idx}`} className="flex-shrink-0 w-72 p-5 bg-card/80 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-start gap-4">
-                    <img src={freelancer.avatar} alt={freelancer.name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-1">{freelancer.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{freelancer.department}</p>
-                      <Badge className="bg-success/20 text-success border-success">
-                        <div className="w-2 h-2 rounded-full bg-success mr-2" />
-                        Available
-                      </Badge>
-                      <div className="flex items-center gap-1 mt-3">
-                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-primary text-primary" />)}
-                        <span className="text-sm text-muted-foreground ml-2">{24 + idx} jobs</span>
+                    <div className="relative">
+                      <img src={person.avatar} alt={person.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-white/10" />
+                      <span className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-card ${person.status === "online" ? "bg-green-500" : "bg-yellow-500"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-sm truncate">{person.name}</h4>
+                      <p className="text-xs text-muted-foreground">{person.dept}</p>
+                      <div className="flex items-center gap-1 mt-1.5">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-semibold">{person.rating}</span>
+                        <span className="text-xs text-muted-foreground">({person.reviews})</span>
                       </div>
                     </div>
                   </div>
-                </Card>
-              ))}
-              {/* Duplicate set for seamless loop */}
-              {[{
-                name: "Samin Yasir Mridul",
-                department: "Computer Science",
-                avatar: avatarSamin
-              }, {
-                name: "Sheikh Azwad Abrar",
-                department: "Avionics Engineering",
-                avatar: avatarAzwad
-              }, {
-                name: "Shahrier Ehsan",
-                department: "Electrical Engineering",
-                avatar: avatarShahrier
-              }, {
-                name: "Yearid Hasan Jim",
-                department: "Mechanical Engineering",
-                avatar: avatarYearid
-              }].map((freelancer, idx) => (
-                <Card key={`second-${idx}`} className="flex-shrink-0 w-80 p-6 bg-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)] hover:z-10">
-                  <div className="flex items-start gap-4">
-                    <img src={freelancer.avatar} alt={freelancer.name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-1">{freelancer.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{freelancer.department}</p>
-                      <Badge className="bg-success/20 text-success border-success">
-                        <div className="w-2 h-2 rounded-full bg-success mr-2" />
-                        Available
-                      </Badge>
-                      <div className="flex items-center gap-1 mt-3">
-                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-primary text-primary" />)}
-                        <span className="text-sm text-muted-foreground ml-2">{24 + idx} jobs</span>
-                      </div>
-                    </div>
+                  <div className="mt-4 pt-4 border-t border-white/5">
+                    <p className="text-xs text-muted-foreground mb-2">{person.skill}</p>
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5">{person.specialty}</Badge>
                   </div>
                 </Card>
               ))}
             </div>
 
-            {/* Second row - scrolling right (opposite direction) */}
-            <div className="flex gap-6 animate-infinite-scroll-reverse group-hover/carousel:[animation-play-state:paused]">
-              {/* First set of cards */}
-              {[{
-                name: "Misbah Ul Haque",
-                department: "Business Administration",
-                avatar: avatarMisbah
-              }, {
-                name: "Sadman Karim",
-                department: "Civil Engineering",
-                avatar: avatarSadmanKarim
-              }, {
-                name: "Sadman Sadaf",
-                department: "Architecture",
-                avatar: avatarSadmanSadaf
-              }, {
-                name: "Dibbendu Barua",
-                department: "Electronics Engineering",
-                avatar: avatarDibbendu
-              }].map((freelancer, idx) => (
-                <Card key={`row2-first-${idx}`} className="flex-shrink-0 w-80 p-6 bg-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)] hover:z-10">
+            {/* Second row - reverse direction */}
+            <div className="flex gap-5 animate-infinite-scroll-reverse group-hover/carousel:[animation-play-state:paused]">
+              {[
+                {
+                  name: "Misbah Haque",
+                  dept: "BBA '24",
+                  avatar: avatarMisbah,
+                  skill: "Business Writing",
+                  specialty: "Case Studies",
+                  rating: 4.9,
+                  reviews: 23,
+                  status: "online"
+                },
+                {
+                  name: "Sadman Karim",
+                  dept: "CE '25",
+                  avatar: avatarSadmanKarim,
+                  skill: "Structural, Math",
+                  specialty: "Calculations",
+                  rating: 4.6,
+                  reviews: 15,
+                  status: "online"
+                },
+                {
+                  name: "Sadman Sadaf",
+                  dept: "ARCH '24",
+                  avatar: avatarSadmanSadaf,
+                  skill: "Design, Visuals",
+                  specialty: "Presentations",
+                  rating: 5.0,
+                  reviews: 34,
+                  status: "busy"
+                },
+                {
+                  name: "Dibbendu Barua",
+                  dept: "ECE '25",
+                  avatar: avatarDibbendu,
+                  skill: "Electronics, PCB",
+                  specialty: "Lab Reports",
+                  rating: 4.8,
+                  reviews: 21,
+                  status: "online"
+                }
+              ].concat([
+                {
+                  name: "Misbah Haque",
+                  dept: "BBA '24",
+                  avatar: avatarMisbah,
+                  skill: "Business Writing",
+                  specialty: "Case Studies",
+                  rating: 4.9,
+                  reviews: 23,
+                  status: "online"
+                },
+                {
+                  name: "Sadman Karim",
+                  dept: "CE '25",
+                  avatar: avatarSadmanKarim,
+                  skill: "Structural, Math",
+                  specialty: "Calculations",
+                  rating: 4.6,
+                  reviews: 15,
+                  status: "online"
+                },
+                {
+                  name: "Sadman Sadaf",
+                  dept: "ARCH '24",
+                  avatar: avatarSadmanSadaf,
+                  skill: "Design, Visuals",
+                  specialty: "Presentations",
+                  rating: 5.0,
+                  reviews: 34,
+                  status: "busy"
+                },
+                {
+                  name: "Dibbendu Barua",
+                  dept: "ECE '25",
+                  avatar: avatarDibbendu,
+                  skill: "Electronics, PCB",
+                  specialty: "Lab Reports",
+                  rating: 4.8,
+                  reviews: 21,
+                  status: "online"
+                }
+              ]).map((person, idx) => (
+                <Card key={`row2-${idx}`} className="flex-shrink-0 w-72 p-5 bg-card/80 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-start gap-4">
-                    <img src={freelancer.avatar} alt={freelancer.name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-1">{freelancer.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{freelancer.department}</p>
-                      <Badge className="bg-success/20 text-success border-success">
-                        <div className="w-2 h-2 rounded-full bg-success mr-2" />
-                        Available
-                      </Badge>
-                      <div className="flex items-center gap-1 mt-3">
-                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-primary text-primary" />)}
-                        <span className="text-sm text-muted-foreground ml-2">{18 + idx} jobs</span>
+                    <div className="relative">
+                      <img src={person.avatar} alt={person.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-white/10" />
+                      <span className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-card ${person.status === "online" ? "bg-green-500" : "bg-yellow-500"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-sm truncate">{person.name}</h4>
+                      <p className="text-xs text-muted-foreground">{person.dept}</p>
+                      <div className="flex items-center gap-1 mt-1.5">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-semibold">{person.rating}</span>
+                        <span className="text-xs text-muted-foreground">({person.reviews})</span>
                       </div>
                     </div>
                   </div>
-                </Card>
-              ))}
-              {/* Duplicate set for seamless loop */}
-              {[{
-                name: "Misbah Ul Haque",
-                department: "Business Administration",
-                avatar: avatarMisbah
-              }, {
-                name: "Sadman Karim",
-                department: "Civil Engineering",
-                avatar: avatarSadmanKarim
-              }, {
-                name: "Sadman Sadaf",
-                department: "Architecture",
-                avatar: avatarSadmanSadaf
-              }, {
-                name: "Dibbendu Barua",
-                department: "Electronics Engineering",
-                avatar: avatarDibbendu
-              }].map((freelancer, idx) => (
-                <Card key={`row2-second-${idx}`} className="flex-shrink-0 w-80 p-6 bg-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)] hover:z-10">
-                  <div className="flex items-start gap-4">
-                    <img src={freelancer.avatar} alt={freelancer.name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-1">{freelancer.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{freelancer.department}</p>
-                      <Badge className="bg-success/20 text-success border-success">
-                        <div className="w-2 h-2 rounded-full bg-success mr-2" />
-                        Available
-                      </Badge>
-                      <div className="flex items-center gap-1 mt-3">
-                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-primary text-primary" />)}
-                        <span className="text-sm text-muted-foreground ml-2">{18 + idx} jobs</span>
-                      </div>
-                    </div>
+                  <div className="mt-4 pt-4 border-t border-white/5">
+                    <p className="text-xs text-muted-foreground mb-2">{person.skill}</p>
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5">{person.specialty}</Badge>
                   </div>
                 </Card>
               ))}
             </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-10">
+            <Button variant="outline" size="lg" className="border-white/10" onClick={() => navigate("/signup")}>
+              Join & Browse All Peers
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
         </div>
       </div>
