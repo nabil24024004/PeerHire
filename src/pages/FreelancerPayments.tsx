@@ -95,7 +95,8 @@ export default function FreelancerPayments() {
 
           // Find payment record for this job
           // For backward compatibility: if no payment found, default to "pay_later"
-          const { data: payment } = await supabase
+          // Using 'as any' because payments table may not be in generated types yet
+          const { data: payment } = await (supabase as any)
             .from("payments")
             .select("payment_method")
             .eq("user_id", job.hirer_id)

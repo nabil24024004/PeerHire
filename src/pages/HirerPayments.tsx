@@ -61,7 +61,8 @@ export default function HirerPayments() {
 
       try {
         // Fetch payments from the new payments table
-        const { data: paymentsData, error: paymentsError } = await supabase
+        // Using 'as any' because payments table may not be in generated types yet
+        const { data: paymentsData, error: paymentsError } = await (supabase as any)
           .from("payments")
           .select("*")
           .eq("user_id", user.id)
@@ -69,7 +70,7 @@ export default function HirerPayments() {
 
         if (paymentsError) throw paymentsError;
 
-        const paymentsList = paymentsData || [];
+        const paymentsList = (paymentsData || []) as Payment[];
         setPayments(paymentsList);
 
         // Calculate stats
