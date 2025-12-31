@@ -245,20 +245,32 @@ export default function HirerTasks() {
 
   return (
     <DashboardLayout role="hirer">
-      <div className="space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold gradient-text">My Tasks</h1>
-          <Button onClick={() => navigate("/hirer/dashboard")}>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-900/30 to-card/80 backdrop-blur border border-white/10">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black">
+              My{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-primary to-violet-400 bg-clip-text text-transparent">
+                Tasks
+              </span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage and track all your posted tasks</p>
+          </div>
+          <Button
+            className="bg-gradient-to-r from-purple-600 to-primary hover:from-purple-700 hover:to-primary/90 shadow-lg shadow-primary/25 border-0 font-bold"
+            onClick={() => navigate("/hirer/dashboard")}
+          >
             Post New Task
           </Button>
         </div>
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search by title or subject..."
-            className="pl-10"
+            className="pl-11 bg-card/60 border-white/10 focus:border-primary/30"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -266,21 +278,23 @@ export default function HirerTasks() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="flex w-full overflow-x-auto gap-1 h-auto p-1">
-            <TabsTrigger value="all" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">All</TabsTrigger>
-            <TabsTrigger value="open" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">Open</TabsTrigger>
-            <TabsTrigger value="in_progress" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">In Progress</TabsTrigger>
-            <TabsTrigger value="completed" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">Completed</TabsTrigger>
-            <TabsTrigger value="submitted" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">Submitted</TabsTrigger>
-            <TabsTrigger value="cancelled" className="flex-shrink-0 px-3 py-1.5 text-xs sm:text-sm">Cancelled</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto gap-1 h-auto p-1 bg-card/60 border border-white/5">
+            <TabsTrigger value="all" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">All</TabsTrigger>
+            <TabsTrigger value="open" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">Open</TabsTrigger>
+            <TabsTrigger value="in_progress" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-yellow-500/20 data-[state=active]:text-yellow-400">In Progress</TabsTrigger>
+            <TabsTrigger value="completed" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">Completed</TabsTrigger>
+            <TabsTrigger value="submitted" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">Submitted</TabsTrigger>
+            <TabsTrigger value="cancelled" className="flex-shrink-0 px-4 py-2 text-xs data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400">Cancelled</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
             {filteredTasks.length === 0 ? (
-              <Card className="border-border">
+              <Card className="bg-card/60 backdrop-blur border-white/5">
                 <CardContent className="py-12 text-center">
-                  <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-lg text-muted-foreground">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <FileText className="w-8 h-8 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground">
                     {searchQuery
                       ? "No tasks found matching your search"
                       : activeTab === "all"
@@ -290,90 +304,77 @@ export default function HirerTasks() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {filteredTasks.map((task) => (
-                  <Card key={task.id} className="card-hover border-border">
-                    <CardHeader className="pb-3">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg sm:text-xl mb-2 break-words">{task.title}</CardTitle>
-                          <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                              {task.category || 'General'}
-                            </span>
+                  <Card key={task.id} className="p-4 bg-card/60 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 group">
+                    <div className="flex flex-col gap-4">
+                      {/* Header Row */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-primary/20 flex items-center justify-center flex-shrink-0">
+                            <FileText className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg truncate group-hover:text-primary transition-colors">{task.title}</h3>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                              <span>{task.category || 'General'}</span>
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline'}
+                              </span>
+                              <span className="text-primary font-semibold">৳{task.budget}</span>
+                            </div>
                           </div>
                         </div>
-                        <Badge className={`${getStatusColor(task.status as JobStatus)} flex-shrink-0 text-xs`}>
+                        <Badge className={`${getStatusColor(task.status as JobStatus)} flex-shrink-0`}>
                           {getStatusLabel(task.status as JobStatus)}
                         </Badge>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+
+                      {/* Description */}
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {task.description}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-sm">
-                        <div className="flex items-center gap-1 text-primary">
-                          <DollarSign className="w-4 h-4" />
-                          <span className="font-semibold">{task.budget}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          <span>Due: {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline'}</span>
-                        </div>
+                      {/* Footer */}
+                      <div className="flex flex-wrap items-center justify-between gap-3">
                         {task.status === "open" && task.applications_count !== undefined && (
-                          <Badge variant="secondary">
+                          <Badge variant="secondary" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
                             {task.applications_count} {task.applications_count === 1 ? "offer" : "offers"}
                           </Badge>
                         )}
-                      </div>
 
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => navigate(`/hirer/task/${task.id}/offers`)}
-                          className="text-xs sm:text-sm"
-                        >
-                          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                          View Details
-                        </Button>
-                        {(task.status === 'assigned' || task.status === 'in_progress' || task.status === 'submitted') && (
+                        <div className="flex flex-wrap gap-2 ml-auto">
                           <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleMarkAsDone(task)}
-                            className="bg-success hover:bg-success/90 text-xs sm:text-sm"
-                          >
-                            <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                            Mark as Done
-                          </Button>
-                        )}
-                        {task.status === "open" && task.applications_count && task.applications_count > 0 && (
-                          <Button
-                            variant="outline"
                             size="sm"
                             onClick={() => navigate(`/hirer/task/${task.id}/offers`)}
-                            className="text-xs sm:text-sm"
                           >
-                            View Offers
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
                           </Button>
-                        )}
-                        {task.status === "in_progress" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate("/messages")}
-                            className="text-xs sm:text-sm"
-                          >
-                            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
-                            Open Chat
-                          </Button>
-                        )}
+                          {(task.status === 'assigned' || task.status === 'in_progress' || task.status === 'submitted') && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleMarkAsDone(task)}
+                              className="bg-green-500 hover:bg-green-600"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              Done
+                            </Button>
+                          )}
+                          {task.status === "in_progress" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate("/messages")}
+                              className="border-white/10"
+                            >
+                              <MessageSquare className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>

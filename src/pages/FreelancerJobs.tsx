@@ -184,23 +184,34 @@ export default function FreelancerJobs() {
 
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-6 animate-fade-in">
-        <h1 className="text-2xl md:text-3xl font-bold gradient-text">My Jobs</h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-green-900/30 to-card/80 backdrop-blur border border-white/10">
+          <h1 className="text-2xl md:text-3xl font-black">
+            My{" "}
+            <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+              Jobs
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Track your active and completed work</p>
+        </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-full md:max-w-md">
-            <TabsTrigger value="active" className="text-xs md:text-sm">Active</TabsTrigger>
-            <TabsTrigger value="pending" className="text-xs md:text-sm">Pending</TabsTrigger>
-            <TabsTrigger value="completed" className="text-xs md:text-sm">Completed</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 max-w-full md:max-w-md bg-card/60 border border-white/5">
+            <TabsTrigger value="active" className="text-xs data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">Active</TabsTrigger>
+            <TabsTrigger value="pending" className="text-xs data-[state=active]:bg-yellow-500/20 data-[state=active]:text-yellow-400">Pending</TabsTrigger>
+            <TabsTrigger value="completed" className="text-xs data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">Completed</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
             {filteredJobs.length === 0 ? (
-              <Card className="border-border">
+              <Card className="bg-card/60 backdrop-blur border-white/5">
                 <CardContent className="py-12 text-center">
-                  <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-lg text-muted-foreground">
+                  <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+                    <FileText className="w-8 h-8 text-green-400" />
+                  </div>
+                  <p className="text-muted-foreground">
                     {activeTab === "active"
                       ? "No active jobs right now"
                       : activeTab === "pending"
@@ -210,72 +221,68 @@ export default function FreelancerJobs() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {filteredJobs.map((job) => (
-                  <Card key={job.id} className="card-hover border-border">
-                    <CardHeader className="p-4 md:p-6">
-                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg md:text-xl mb-2 break-words">{job.title}</CardTitle>
-                          <button
-                            onClick={() => navigate(`/hirer/profile/${job.hirer.id}`)}
-                            className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-primary transition-colors mb-2"
-                          >
-                            <User className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{job.hirer.full_name}</span>
-                          </button>
-                          <div className="flex flex-wrap gap-2 text-xs md:text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <FileText className="w-4 h-4 flex-shrink-0" />
-                              <span className="truncate">{job.category || 'General'}</span>
-                            </span>
+                  <Card key={job.id} className="p-4 bg-card/60 backdrop-blur border-white/5 hover:border-green-500/20 transition-all duration-300 group">
+                    <div className="flex flex-col gap-4">
+                      {/* Header Row */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                            <FileText className="w-6 h-6 text-green-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg truncate group-hover:text-green-400 transition-colors">{job.title}</h3>
+                            <button
+                              onClick={() => navigate(`/hirer/profile/${job.hirer.id}`)}
+                              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-green-400 transition-colors mt-1"
+                            >
+                              <User className="w-3 h-3" />
+                              {job.hirer.full_name}
+                            </button>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                              <span>{job.category || 'General'}</span>
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {new Date(job.deadline).toLocaleDateString()}
+                              </span>
+                              <span className="text-green-400 font-semibold">৳{job.budget}</span>
+                            </div>
                           </div>
                         </div>
                         <Badge className={getStatusColor(job.application_status || job.status)}>
                           {(job.application_status || job.status).replace("_", " ").toUpperCase()}
                         </Badge>
                       </div>
-                    </CardHeader>
-                    <CardContent className="p-4 md:p-6 pt-0">
-                      <p className="text-xs md:text-sm text-muted-foreground mb-4 line-clamp-2">
+
+                      {/* Description */}
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {job.description}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 text-xs md:text-sm">
-                        <div className="flex items-center gap-1 text-primary">
-                          <DollarSign className="w-4 h-4" />
-                          <span className="font-semibold">{job.budget}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          <span className="truncate">Due: {new Date(job.deadline).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row gap-2">
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-2">
                         <Button
-                          variant="default"
                           size="sm"
-                          className="w-full sm:w-auto"
+                          className="bg-gradient-to-r from-green-500 to-emerald-500"
                           onClick={() => navigate(`/freelancer/job/${job.id}`)}
                         >
                           <Eye className="w-4 h-4 mr-1" />
-                          Open Job
+                          View
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="w-full sm:w-auto"
+                          className="border-white/10"
                           onClick={() => navigate(`/messages?chat=${job.hirer.id}`)}
                         >
-                          <MessageSquare className="w-4 h-4 mr-1" />
-                          Message Hirer
+                          <MessageSquare className="w-4 h-4" />
                         </Button>
                         {activeTab === "pending" && (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full sm:w-auto border-destructive/50 text-destructive hover:bg-destructive/20"
+                            className="border-red-500/30 text-red-400 hover:bg-red-500/10"
                             onClick={() => handleWithdrawApplication(job.id)}
                           >
                             <XCircle className="w-4 h-4 mr-1" />
@@ -283,7 +290,7 @@ export default function FreelancerJobs() {
                           </Button>
                         )}
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
