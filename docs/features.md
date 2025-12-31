@@ -92,9 +92,19 @@ Price = ৳10/page × page_count × quality_multiplier × deadline_multiplier
 
 ### Payments (`/app/hirer/payments`)
 - Total spent overview
-- Payment history list
-- Transaction status tracking
-- Messenger payment instructions
+- Payment history list with status badges (Paid/Pending)
+- Transaction details (amount, site fee, job title)
+- Filter by All/Paid/Pending
+
+### Payment Options (Job Posting Flow)
+After creating a job, hirers choose a payment method:
+
+| Option | Description | Fee |
+|--------|-------------|-----|
+| **Pay Now** | Full payment upfront. Freelancer payment is secured. | Budget + 20% site fee |
+| **Pay Later** | Pay site fee only. Pay freelancer offline after completion. | 20% site fee only |
+
+Payment is processed via **RupantorPay** payment gateway.
 
 ---
 
@@ -110,6 +120,10 @@ Price = ৳10/page × page_count × quality_multiplier × deadline_multiplier
 - Search by keyword
 - Filter by subject, work type, budget range
 - Save jobs for later (bookmark)
+- **Payment status badges:**
+  - 🟢 **Payment Secured** - Hirer paid full amount
+  - 🔵 **Payment Verified** - Hirer paid site fee
+  - ⚪ **Payment Pending** - No payment confirmed yet
 - Apply to jobs
 
 ### Job Application

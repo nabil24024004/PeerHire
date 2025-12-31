@@ -1,11 +1,58 @@
 # PeerHire Changelog
 
-## December 26-30, 2024 - Payment System, RLS Fixes & Features
+## December 31, 2024 - Payment System Integration & Bug Fixes
 
 ### Overview
-Major payment/pricing system overhaul, database performance optimizations, and new handwriting samples feature.
+RupantorPay payment gateway integration, payment status visibility for freelancers, and code cleanup.
 
 ---
+
+### Payment System (RupantorPay Integration)
+
+| Feature | Details |
+|---------|---------|
+| **Pay Now** | Full payment upfront (budget + 20% site fee). Freelancer payment is secured. |
+| **Pay Later** | Site fee only (20%). Pay freelancer offline after job completion. |
+| **Payment Gateway** | RupantorPay integration via Supabase Edge Functions |
+| **Status Tracking** | Pending → Processing → Paid/Failed |
+
+---
+
+### Payment Status Badges on Job Cards
+
+Freelancers can now see payment status on job cards:
+
+| Badge | Meaning |
+|-------|---------|
+| 🟢 **Payment Secured** | Hirer paid full amount (Pay Now) |
+| 🔵 **Payment Verified** | Hirer paid site fee (Pay Later) |
+| ⚪ **Payment Pending** | No payment confirmed yet |
+
+---
+
+### Database Changes
+
+**New Table: `payments`**
+- Stores all payment records
+- Links to `profiles` (user_id) and `jobs` (job_id)
+- Tracks amount, site_fee, freelancer_amount, status
+
+**New RLS Policy (Migration 022):**
+- `payments_view_paid_public` - Allows authenticated users to view paid payments
+
+---
+
+### Code Cleanup
+
+| File | Change |
+|------|--------|
+| `FreelancerBrowseJobs.tsx` | Removed unused `FileText` import |
+| `PaymentMethod.tsx` | Removed unused `CheckCircle` import |
+| `021_update_payments_rls.sql` | **Deleted** (superseded by 022) |
+
+---
+
+## December 26-30, 2024 - Payment System, RLS Fixes & Features
 
 ### Payment & Pricing System Updates
 

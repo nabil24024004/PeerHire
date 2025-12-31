@@ -188,16 +188,31 @@ Job dispute records.
 | status | text | Yes | 'open' | 'open', 'resolved', 'closed' |
 | resolution | text | Yes | null | Resolution notes |
 | created_at | timestamptz | Yes | now() | Creation time |
-| resolved_at | timestamptz | Yes | null | Resolution time |
-
 ---
 
-## Database Triggers
+### payments
+Payment records for job transactions.
 
-### handle_new_user()
-Trigger that runs after user signup:
-1. Creates `profiles` entry with `is_hirer = true` and `is_freelancer = true`
-2. Copies `full_name` from auth metadata if provided
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | No | gen_random_uuid() | Primary key |
+| user_id | uuid | No | - | FK to profiles.id (hirer) |
+| job_id | uuid | Yes | null | FK to jobs.id |
+| amount | numeric | No | - | Total amount paid |
+| site_fee | numeric | No | - | 20% site charge |
+| freelancer_amount | numeric | Yes | 0 | Amount for freelancer (0 for pay_later) |
+| currency | text | Yes | 'BDT' | Currency code |
+| payment_method | text | No | - | 'pay_now' or 'pay_later' |
+| status | text | No | 'pending' | 'pending', 'processing', 'paid', 'failed', 'refunded' |
+| transaction_id | text | Yes | null | RupantorPay transaction ID |
+| metadata | jsonb | Yes | null | Extra data (job details, etc.) |
+| created_at | timestamptz | Yes | now() | Creation time |
+| updated_at | timestamptz | Yes | now() | Last update |
+
+**RLS Policies:**
+- Users can view their own payments
+- Authenticated users can view paid payments (for job card badges)
+- Users can create payments for themselves
 
 ---
 
@@ -210,7 +225,6 @@ The following tables from old documentation **DO NOT EXIST** in the current sche
 - ❌ `hirer_profiles` - Merged into `profiles`
 - ❌ `conversations` - Messages use direct `sender_id`/`receiver_id`
 - ❌ `saved_jobs` - Now stored in localStorage
-- ❌ `payments` - Stats calculated from completed jobs
 - ❌ `notification_preferences` - Stored in localStorage
 
 ### Removed Columns
