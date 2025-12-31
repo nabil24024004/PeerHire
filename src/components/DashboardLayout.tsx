@@ -256,25 +256,30 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
               if (inDrawer) setIsMobileMenuOpen(false);
             }}
             aria-current={isActive ? "page" : undefined}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative ${isActive
+              ? role === "freelancer"
+                ? "bg-gradient-to-r from-green-500/20 to-emerald-500/10 text-green-400 border border-green-500/20"
+                : "bg-gradient-to-r from-purple-500/20 to-primary/10 text-primary border border-primary/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
               }`}
           >
-            {isActive && !inDrawer && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
-            )}
-
-            <item.icon className="w-5 h-5 flex-shrink-0" />
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isActive
+              ? role === "freelancer"
+                ? "bg-green-500/20"
+                : "bg-primary/20"
+              : "bg-white/5 group-hover:bg-white/10"
+              }`}>
+              <item.icon className="w-4 h-4 flex-shrink-0" />
+            </div>
 
             {(sidebarExpanded || inDrawer) && (
-              <span className="font-semibold flex-1 text-left whitespace-nowrap">
+              <span className="font-medium text-sm flex-1 text-left whitespace-nowrap">
                 {item.label}
               </span>
             )}
 
             {(sidebarExpanded || inDrawer) && item.badge && (
-              <Badge className="bg-primary text-primary-foreground ml-auto">
+              <Badge className={`text-xs px-2 py-0.5 ${role === "freelancer" ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-primary/20 text-primary border-primary/30"}`}>
                 {item.badge}
               </Badge>
             )}
@@ -285,7 +290,7 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           return (
             <Tooltip key={idx}>
               <TooltipTrigger asChild>{navButton}</TooltipTrigger>
-              <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
+              <TooltipContent side="right" className="bg-card text-foreground border-white/10">
                 <p>{item.label}</p>
               </TooltipContent>
             </Tooltip>
@@ -303,81 +308,90 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         {/* Desktop Sidebar - Hidden on mobile */}
         {!isMobile && (
           <aside
-            className={`bg-card border-r border-border flex-shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out ${sidebarExpanded ? "w-64" : "w-20"
+            className={`bg-card/80 backdrop-blur-xl border-r border-white/5 flex-shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out ${sidebarExpanded ? "w-64" : "w-20"
               }`}
             onMouseEnter={handleSidebarMouseEnter}
             onMouseLeave={handleSidebarMouseLeave}
             style={{ pointerEvents: 'auto' }}
           >
             <div className="flex flex-col h-full p-4">
-              <div className="mb-8 flex items-center justify-center">
+              {/* Logo */}
+              <div className="mb-6 flex items-center justify-center">
                 <button
                   onClick={() => navigate("/")}
-                  className="cursor-pointer transition-all duration-200"
+                  className="cursor-pointer transition-all duration-200 hover:scale-105"
                 >
                   {sidebarExpanded ? (
-                    <h1 className="text-2xl font-bold gradient-text whitespace-nowrap">
+                    <h1 className={`text-2xl font-black whitespace-nowrap ${role === "freelancer" ? "bg-gradient-to-r from-green-400 to-emerald-400" : "bg-gradient-to-r from-purple-400 to-primary"} bg-clip-text text-transparent`}>
                       PeerHire
                     </h1>
                   ) : (
-                    <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-primary/20 border border-white/10">
                       <img src="/logo.png" alt="P" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </button>
               </div>
 
-              <nav className="space-y-2 flex-1">
+              {/* Nav Items */}
+              <nav className="space-y-1 flex-1">
                 {renderNavItems(false)}
               </nav>
 
-              <div className="border-t border-border pt-4 mb-4">
+              {/* Pin & Logout Section */}
+              <div className="border-t border-white/5 pt-4 space-y-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={togglePin}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${isPinned
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${isPinned
+                        ? role === "freelancer"
+                          ? "bg-green-500/10 text-green-400"
+                          : "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                         }`}
                     >
-                      {isPinned ? (
-                        <Pin className="w-5 h-5 flex-shrink-0" />
-                      ) : (
-                        <PinOff className="w-5 h-5 flex-shrink-0" />
-                      )}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isPinned ? "bg-primary/20" : "bg-white/5"}`}>
+                        {isPinned ? (
+                          <Pin className="w-4 h-4 flex-shrink-0" />
+                        ) : (
+                          <PinOff className="w-4 h-4 flex-shrink-0" />
+                        )}
+                      </div>
                       {sidebarExpanded && (
-                        <span className="font-semibold text-left whitespace-nowrap">
+                        <span className="font-medium text-sm text-left whitespace-nowrap">
                           {isPinned ? "Unpin" : "Pin Sidebar"}
                         </span>
                       )}
                     </button>
                   </TooltipTrigger>
                   {!sidebarExpanded && (
-                    <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
+                    <TooltipContent side="right" className="bg-card text-foreground border-white/10">
                       <p>{isPinned ? "Unpin Sidebar" : "Pin Sidebar"}</p>
                     </TooltipContent>
                   )}
                 </Tooltip>
-              </div>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full ${sidebarExpanded ? "justify-start" : "justify-center px-0"}`}
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="w-5 h-5 flex-shrink-0" />
-                    {sidebarExpanded && <span className="ml-2">Logout</span>}
-                  </Button>
-                </TooltipTrigger>
-                {!sidebarExpanded && (
-                  <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
-                    <p>Logout</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`w-full ${sidebarExpanded ? "justify-start" : "justify-center px-0"} hover:bg-red-500/10 hover:text-red-400 text-muted-foreground`}
+                      onClick={handleLogout}
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5">
+                        <LogOut className="w-4 h-4 flex-shrink-0" />
+                      </div>
+                      {sidebarExpanded && <span className="ml-3 text-sm font-medium">Logout</span>}
+                    </Button>
+                  </TooltipTrigger>
+                  {!sidebarExpanded && (
+                    <TooltipContent side="right" className="bg-card text-foreground border-white/10">
+                      <p>Logout</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </div>
             </div>
           </aside>
         )}
