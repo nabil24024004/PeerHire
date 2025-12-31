@@ -114,11 +114,19 @@ export default function FreelancerJobs() {
   const getFilteredJobs = () => {
     switch (activeTab) {
       case "active":
-        return jobs.filter((job) => job.status === "in_progress" || job.status === "assigned");
+        // Active = accepted applications with in_progress or assigned jobs
+        return jobs.filter((job) =>
+          job.application_status === "accepted" &&
+          (job.status === "in_progress" || job.status === "assigned")
+        );
       case "pending":
         return jobs.filter((job) => job.application_status === "pending");
       case "completed":
-        return jobs.filter((job) => job.status === "completed");
+        // Completed = accepted applications with completed jobs
+        return jobs.filter((job) =>
+          job.application_status === "accepted" &&
+          job.status === "completed"
+        );
       default:
         return jobs;
     }
