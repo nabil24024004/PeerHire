@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { JobApplicationModal } from "@/components/JobApplicationModal";
 import {
-  Search, Filter, Briefcase, Clock, DollarSign, FileText, User, MessageSquare, Bookmark, BookmarkCheck, Sparkles
+  Search, Filter, Briefcase, Clock, DollarSign, FileText, User, MessageSquare, Bookmark, BookmarkCheck, Sparkles, CheckCircle2
 } from "lucide-react";
 import {
   Select,
@@ -129,15 +129,17 @@ const FreelancerBrowseJobs = () => {
 
       // Fetch payment info for these jobs
       const jobIds = availableJobs.map(j => j.id);
+
+      // Using 'any' cast to bypass missing type definition for 'payments' table
       const { data: paymentsData } = await supabase
-        .from('payments')
+        .from('payments' as any)
         .select('job_id, payment_method, status')
         .in('job_id', jobIds)
         .eq('status', 'paid');
 
       // Create map of job_id -> payment_info
       const paymentMap = new Map();
-      paymentsData?.forEach(p => {
+      (paymentsData as any[])?.forEach(p => {
         paymentMap.set(p.job_id, p);
       });
 
