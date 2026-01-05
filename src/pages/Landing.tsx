@@ -618,9 +618,9 @@ const Landing = () => {
               {[
                 {
                   name: "Samin Mridul",
-                  dept: "CSE '24",
+                  dept: "AVE '24",
                   avatar: avatarSamin,
-                  skill: "Python, Web Dev",
+                  skill: "Assignment Writing",
                   specialty: "Lab Reports",
                   rating: 4.9,
                   reviews: 31,
@@ -628,7 +628,7 @@ const Landing = () => {
                 },
                 {
                   name: "Azwad Abrar",
-                  dept: "AVE '25",
+                  dept: "AVE '23",
                   avatar: avatarAzwad,
                   skill: "UI/UX, Research",
                   specialty: "Assignments",
@@ -638,7 +638,7 @@ const Landing = () => {
                 },
                 {
                   name: "Shahrier Ehsan",
-                  dept: "EEE '24",
+                  dept: "AVE '23",
                   avatar: avatarShahrier,
                   skill: "Circuit Design, Docs",
                   specialty: "Project Work",
@@ -648,7 +648,7 @@ const Landing = () => {
                 },
                 {
                   name: "Yearid Jim",
-                  dept: "ME '25",
+                  dept: "AVE '23",
                   avatar: avatarYearid,
                   skill: "AutoCAD, Technical",
                   specialty: "Documentation",
@@ -659,7 +659,7 @@ const Landing = () => {
               ].concat([
                 {
                   name: "Samin Mridul",
-                  dept: "CSE '24",
+                  dept: "AVE '24",
                   avatar: avatarSamin,
                   skill: "Python, Web Dev",
                   specialty: "Lab Reports",
@@ -1026,51 +1026,7 @@ const Landing = () => {
                     <p className="text-sm text-muted-foreground">Support</p>
                   </div>
                 </div>
-
-                {/* The Founding Team */}
-                <div className="p-4 rounded-xl bg-background/50 border border-white/10">
-                  <p className="text-sm font-semibold mb-4">Four Minds. One Vision.</p>
-                  <div className="grid grid-cols-4 gap-3">
-                    {/* Azwad */}
-                    <div className="text-center">
-                      <img
-                        src={avatarAzwad}
-                        alt="Azwad Abrar"
-                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
-                      />
-                      <p className="text-xs font-semibold truncate">Azwad</p>
-                    </div>
-                    {/* Mehedi */}
-                    <div className="text-center">
-                      <img
-                        src={avatarMehedi}
-                        alt="Ahmed Mehedi"
-                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
-                      />
-                      <p className="text-xs font-semibold truncate">Mehedi</p>
-                    </div>
-                    {/* Jim */}
-                    <div className="text-center">
-                      <img
-                        src={avatarJim}
-                        alt="Jamil Jim"
-                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
-                      />
-                      <p className="text-xs font-semibold truncate">Jim</p>
-                    </div>
-                    {/* Rezwan */}
-                    <div className="text-center">
-                      <img
-                        src={avatarRezwan}
-                        alt="Rezwan Shajib"
-                        className="w-12 h-12 rounded-full border-2 border-primary/50 object-cover mx-auto mb-1"
-                      />
-                      <p className="text-xs font-semibold truncate">Rezwan</p>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
           </Card>
         </div>
       </div>
