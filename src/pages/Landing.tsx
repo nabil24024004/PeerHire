@@ -669,7 +669,7 @@ const Landing = () => {
                 },
                 {
                   name: "Azwad Abrar",
-                  dept: "AVE '25",
+                  dept: "AVE '23",
                   avatar: avatarAzwad,
                   skill: "UI/UX, Research",
                   specialty: "Assignments",
@@ -679,7 +679,7 @@ const Landing = () => {
                 },
                 {
                   name: "Shahrier Ehsan",
-                  dept: "EEE '24",
+                  dept: "AVE '23",
                   avatar: avatarShahrier,
                   skill: "Circuit Design, Docs",
                   specialty: "Project Work",
@@ -689,7 +689,7 @@ const Landing = () => {
                 },
                 {
                   name: "Yearid Jim",
-                  dept: "ME '25",
+                  dept: "AVEE '23",
                   avatar: avatarYearid,
                   skill: "AutoCAD, Technical",
                   specialty: "Documentation",
@@ -1010,11 +1010,11 @@ const Landing = () => {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
-                    <p className="text-3xl font-black text-primary">5+</p>
+                    <p className="text-3xl font-black text-primary">10+</p>
                     <p className="text-sm text-muted-foreground">Projects Built</p>
                   </div>
                   <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
-                    <p className="text-3xl font-black text-primary">500+</p>
+                    <p className="text-3xl font-black text-primary">200+</p>
                     <p className="text-sm text-muted-foreground">Users Served</p>
                   </div>
                   <div className="p-4 rounded-xl bg-background/50 border border-white/10 text-center">
