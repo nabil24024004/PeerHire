@@ -47,10 +47,9 @@ CREATE POLICY "applications_select_policy" ON public.applications
 DROP POLICY IF EXISTS "payments_select_own" ON public.payments;
 DROP POLICY IF EXISTS "payments_view_paid_public" ON public.payments;
 
--- Create single consolidated policy
+-- Create single consolidated policy (payments uses user_id column)
 CREATE POLICY "payments_select_policy" ON public.payments
   FOR SELECT TO authenticated
   USING (
-    hirer_id = (SELECT auth.uid())
-    OR freelancer_id = (SELECT auth.uid())
+    user_id = (SELECT auth.uid())
   );
