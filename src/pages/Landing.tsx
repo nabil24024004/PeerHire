@@ -1027,6 +1027,7 @@ const Landing = () => {
                   </div>
                 </div>
               </div>
+            </div>
           </Card>
         </div>
       </div>
