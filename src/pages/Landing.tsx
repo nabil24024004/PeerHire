@@ -248,10 +248,10 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           {/* Role Toggle */}
           <div className="flex justify-center mb-8 animate-fade-in-up">
-            <div className="relative inline-flex items-center gap-1 bg-card/50 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-2xl">
+            <div className="relative inline-flex items-center gap-1 bg-card/50 backdrop-blur-xl p-1 rounded-full border border-white/10 shadow-2xl">
               <button
                 onClick={() => setSelectedRole("hirer")}
-                className={`relative px-8 py-3 rounded-full text-sm font-bold transition-all duration-500 ${selectedRole === "hirer"
+                className={`relative px-5 py-2 rounded-full text-xs font-bold transition-all duration-500 ${selectedRole === "hirer"
                   ? "text-white"
                   : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -259,14 +259,14 @@ const Landing = () => {
                 {selectedRole === "hirer" && (
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary rounded-full shadow-lg shadow-primary/25" />
                 )}
-                <span className="relative flex items-center gap-2">
-                  <User className="w-4 h-4" />
+                <span className="relative flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5" />
                   I need work done
                 </span>
               </button>
               <button
                 onClick={() => setSelectedRole("freelancer")}
-                className={`relative px-8 py-3 rounded-full text-sm font-bold transition-all duration-500 ${selectedRole === "freelancer"
+                className={`relative px-5 py-2 rounded-full text-xs font-bold transition-all duration-500 ${selectedRole === "freelancer"
                   ? "text-white"
                   : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -274,8 +274,8 @@ const Landing = () => {
                 {selectedRole === "freelancer" && (
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary rounded-full shadow-lg shadow-primary/25" />
                 )}
-                <span className="relative flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4" />
+                <span className="relative flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5" />
                   I want to earn
                 </span>
               </button>
