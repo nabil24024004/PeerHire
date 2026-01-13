@@ -206,7 +206,7 @@ export default function HirerDashboard() {
             <div>
               <p className="text-primary text-sm font-medium mb-1">{getGreeting()}</p>
               <h1 className="text-3xl font-bold mb-2">
-                Welcome back, <span className="text-secondary">{userName || "there"}</span>
+                Welcome back, <span className="text-primary">{userName || "there"}</span>
               </h1>
               <p className="text-muted-foreground">Manage your tasks and hire talented peers</p>
             </div>
@@ -291,7 +291,7 @@ export default function HirerDashboard() {
               recentJobs.map((job) => (
                 <div
                   key={job.id}
-                  className="bg-card rounded-2xl p-5 border border-border flex items-center justify-between hover:bg-accent transition-colors group"
+                  className="bg-card rounded-2xl p-5 border border-border flex items-center justify-between hover:border-primary/30 hover:bg-card/80 transition-all group"
                 >
                   <div className="flex items-center gap-5">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
