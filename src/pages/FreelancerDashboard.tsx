@@ -2,10 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
   Briefcase, CheckCircle2, Star,
-  Clock, MessageSquare, Eye, ChevronRight
+  Clock, MessageSquare, Eye, ChevronRight, Search, Calendar, ImageIcon
 } from "lucide-react";
 import { TakaIcon } from "@/components/icons/TakaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -37,7 +36,7 @@ const FreelancerDashboard = () => {
     activeJobs: 0,
     completed: 0,
     rating: 0,
-    thisMonth: 0,
+    earnings: 0,
   });
   const [activeJobs, setActiveJobs] = useState<Job[]>([]);
   const { toast } = useToast();
@@ -66,7 +65,7 @@ const FreelancerDashboard = () => {
         .single();
 
       if (profileData?.full_name) {
-        setUserName(profileData.full_name);
+        setUserName(profileData.full_name.split(' ')[0]);
       }
 
       // If user doesn't have freelancer role at all, redirect to hirer
@@ -191,19 +190,15 @@ const FreelancerDashboard = () => {
       const completedJobs = (completedApps || [])
         .filter(app => (app.jobs as any)?.status === 'completed');
 
-      // Calculate monthly earnings
-      const now = new Date();
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-      const monthlyEarnings = completedJobs
-        .filter(app => new Date((app.jobs as any).updated_at) >= firstDayOfMonth)
+      // Calculate total earnings
+      const totalEarnings = completedJobs
         .reduce((sum, app) => sum + ((app.jobs as any).budget || 0), 0);
 
       setStats({
         activeJobs: activeJobs.length,
         completed: completedJobs.length,
         rating: rating || 0,
-        thisMonth: monthlyEarnings,
+        earnings: totalEarnings,
       });
     } catch (error: any) {
       toast({
@@ -243,11 +238,12 @@ const FreelancerDashboard = () => {
   if (isLoading) {
     return (
       <DashboardLayout role="freelancer">
-        <div className="space-y-8">
-          <Skeleton className="h-24 w-full" />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 w-full" />)}
+        <div className="space-y-8 p-6">
+          <Skeleton className="h-32 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
           </div>
+          <Skeleton className="h-64 w-full rounded-2xl" />
         </div>
       </DashboardLayout>
     );
@@ -261,90 +257,142 @@ const FreelancerDashboard = () => {
     return "Good evening";
   };
 
-  const statsArray = [
-    { icon: TakaIcon, label: "This Month", value: `৳${stats.thisMonth.toFixed(0)}`, color: "from-green-500 to-emerald-400", featured: true },
-    { icon: Briefcase, label: "Active Jobs", value: stats.activeJobs.toString(), color: "from-purple-500 to-primary" },
-    { icon: CheckCircle2, label: "Completed", value: stats.completed.toString(), color: "from-blue-500 to-cyan-400" },
-    { icon: Star, label: "Rating", value: stats.rating > 0 ? stats.rating.toFixed(1) : "New", color: "from-yellow-500 to-orange-400" },
-  ];
-
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-6">
-        {/* Header - Premium Style */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-green-900/30 to-card/80 backdrop-blur border border-white/10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-6 p-6">
+        {/* Welcome Banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-6">
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
+
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <p className="text-sm text-green-400 font-medium mb-1">{getGreeting()}</p>
-              <h1 className="text-2xl md:text-3xl font-black">
-                Welcome back,{" "}
-                <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                  {userName}
-                </span>
+              <p className="text-sm text-emerald-500 font-medium mb-1 flex items-center gap-1">
+                <span className="text-emerald-500">✦</span> {getGreeting()}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Welcome back, <span className="text-emerald-500">{userName}</span>
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">Here's your freelance overview</p>
+              <p className="text-muted-foreground text-sm mt-1">
+                Here's what's happening with your projects today.
+              </p>
             </div>
 
-            {/* Status Toggle - Premium */}
-            <div className="flex items-center gap-4 p-3 rounded-xl bg-card/50 border border-white/10">
-              <Label htmlFor="status" className="text-sm font-medium">Status</Label>
-              <Switch id="status" checked={isAvailable} onCheckedChange={handleStatusToggle} />
-              <Badge className={
-                isAvailable
-                  ? "bg-green-500/20 text-green-400 border-green-500/30"
-                  : "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
-              }>
-                <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-green-400 animate-pulse' : 'bg-zinc-400'} mr-2`} />
-                {isAvailable ? "Available" : "Offline"}
+            {/* Status Toggle */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Status</span>
+              <Switch
+                checked={isAvailable}
+                onCheckedChange={handleStatusToggle}
+                className="data-[state=checked]:bg-emerald-500"
+              />
+              <Badge
+                className={`px-3 py-1 text-xs font-semibold ${isAvailable
+                  ? "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
+                  : "bg-muted text-muted-foreground border-border"
+                  }`}
+              >
+                {isAvailable ? "ONLINE" : "OFFLINE"}
               </Badge>
             </div>
           </div>
         </div>
 
-        {/* Bento Stats Grid */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {statsArray.map((stat, idx) => (
-            <Card
-              key={idx}
-              className={`p-5 bg-card/60 backdrop-blur border-white/5 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 ${stat.featured ? "md:col-span-2 lg:col-span-1" : ""
-                }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
-                  <stat.icon className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-black">{stat.value}</p>
-                </div>
+          {/* Earnings */}
+          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <TakaIcon className="w-6 h-6 text-emerald-500" />
               </div>
-            </Card>
-          ))}
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Earnings</p>
+                <p className="text-2xl font-bold">৳{stats.earnings}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Active Jobs */}
+          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Active Jobs</p>
+                <p className="text-2xl font-bold">{stats.activeJobs}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Completed */}
+          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Completed</p>
+                <p className="text-2xl font-bold">{stats.completed}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Rating */}
+          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <Star className="w-6 h-6 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Rating</p>
+                <p className="text-2xl font-bold">{stats.rating > 0 ? stats.rating.toFixed(1) : "New"}</p>
+              </div>
+            </div>
+          </Card>
         </div>
 
-        {/* Active Jobs */}
+        {/* Active Jobs Section */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Active Jobs</h2>
-            <Button variant="ghost" size="sm" className="text-primary" onClick={() => navigate("/freelancer/browse-jobs")}>
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-bold">Active Jobs</h2>
+              <Badge variant="outline" className="text-xs">
+                {activeJobs.length}
+              </Badge>
+            </div>
+            <Button
+              variant="link"
+              className="text-emerald-500 p-0 h-auto font-medium"
+              onClick={() => navigate("/freelancer/browse-jobs")}
+            >
               Find Work
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
 
           {activeJobs.length === 0 ? (
-            <Card className="p-10 text-center bg-card/60 backdrop-blur border-white/5">
-              <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-                <Briefcase className="w-8 h-8 text-green-400" />
+            <Card className="p-12 bg-card border-border text-center">
+              {/* Empty State Icon */}
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                </div>
+                {/* Green dot indicator */}
+                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-card" />
               </div>
-              <h3 className="text-lg font-bold mb-2">No active jobs</h3>
-              <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                Browse available jobs and submit proposals to start earning
+
+              <h3 className="text-lg font-bold mb-2">No active jobs right now</h3>
+              <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+                Ready to start earning? Browse available projects and submit your proposals to hirers.
               </p>
               <Button
-                className="bg-gradient-to-r from-green-500 to-emerald-500"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6"
                 onClick={() => navigate("/freelancer/browse-jobs")}
               >
+                <Search className="w-4 h-4 mr-2" />
                 Find Work
               </Button>
             </Card>
@@ -353,15 +401,15 @@ const FreelancerDashboard = () => {
               {activeJobs.map((job) => (
                 <Card
                   key={job.id}
-                  className="p-4 bg-card/60 backdrop-blur border-white/5 hover:border-green-500/20 transition-all duration-300 group"
+                  className="p-4 bg-card border-border hover:border-emerald-500/30 transition-all group"
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                        <Briefcase className="w-6 h-6 text-green-400" />
+                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <Briefcase className="w-6 h-6 text-emerald-500" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold truncate group-hover:text-green-400 transition-colors">{job.title}</h3>
+                        <h3 className="font-bold truncate group-hover:text-emerald-500 transition-colors">{job.title}</h3>
                         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
                           <span>{job.subject || "General"}</span>
                           <span>{job.page_count} pages</span>
@@ -377,16 +425,15 @@ const FreelancerDashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30">
                         In Progress
                       </Badge>
 
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-white/10" onClick={() => navigate("/messages")}>
+                        <Button variant="outline" size="sm" className="border-border" onClick={() => navigate("/messages")}>
                           <MessageSquare className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" className="bg-gradient-to-r from-green-500 to-emerald-500" onClick={() => navigate(`/freelancer/job/${job.id}`)}>
-                          <Eye className="w-4 h-4 mr-1" />
+                        <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate(`/freelancer/job/${job.id}`)}>                          <Eye className="w-4 h-4 mr-1" />
                           View
                         </Button>
                       </div>
