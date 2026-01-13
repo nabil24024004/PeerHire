@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* PeerHire Dark Futuristic Theme */
+    --background: 220 13% 6%;  /* #0E0E0F */
+    --foreground: 0 0% 100%;    /* #FFFFFF */
+
+    --card: 220 7% 9%;          /* #161618 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 220 7% 9%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 258 90% 66%;     /* Violet accent */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 7% 12%;    
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 7% 15%;
+    --muted-foreground: 240 5% 67%; /* #A1A1AA */
+
+    --accent: 258 90% 66%;      
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 350 89% 60%; /* #F43F5E */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;     /* #10B981 */
+    
+    --border: 240 6% 15%;       /* #27272A */
+    --input: 240 6% 15%;
+    --ring: 258 90% 66%;
+
+    --radius: 1rem;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(258, 90%, 66%), hsl(217, 91%, 60%));
+    --gradient-hero: linear-gradient(180deg, hsl(220, 13%, 6%) 0%, hsl(258, 40%, 10%) 100%);
+    
+    /* Shadows & Glows */
+    --glow-primary: 0 0 30px hsla(258, 90%, 66%, 0.3);
+    --glow-accent: 0 0 40px hsla(258, 90%, 66%, 0.2);
+    --shadow-card: 0 8px 32px hsla(0, 0%, 0%, 0.4);
+    
+    /* Sidebar */
+    --sidebar-background: 220 7% 9%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 7% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 6% 15%;
+    --sidebar-ring: 258 90% 66%;
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Button variants */
+  .btn-glow {
+    @apply relative transition-all duration-300;
+    box-shadow: var(--glow-primary);
+  }
+
+  .btn-glow:hover {
+    @apply scale-105;
+    box-shadow: var(--glow-accent);
+  }
+
+  /* Card with hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-105;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--glow-primary);
+  }
+
+  /* Animated gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  /* Dot pattern background */
+  .dot-pattern {
+    background-image: radial-gradient(circle, hsla(258, 90%, 66%, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+@layer utilities {
+  /* Animation keyframes */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes slide-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes slide-right {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  .animate-slide-left {
+    animation: slide-left 40s linear infinite;
+  }
+
+  .animate-slide-right {
+    animation: slide-right 40s linear infinite;
+  }
+
+  .animate-infinite-scroll {
+    animation: infinite-scroll 25s linear infinite;
+  }
+
+  .animate-infinite-scroll-reverse {
+    animation: infinite-scroll-reverse 25s linear infinite;
+  }
+
+  @keyframes infinite-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes infinite-scroll-reverse {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+}
