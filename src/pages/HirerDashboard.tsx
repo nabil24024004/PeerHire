@@ -108,14 +108,14 @@ export default function HirerDashboard() {
       const openTasks = jobsData?.filter(j => j.status === "open").length || 0;
       const completedTasks = jobsData?.filter(j => j.status === "completed").length || 0;
 
-      // Get total spent from payments
-      const { data: paymentsData } = await supabase
+      // Get total spent from payments (with type assertion as payments table isn't in generated types)
+      const { data: paymentsData } = await (supabase as any)
         .from("payments")
         .select("amount")
         .eq("user_id", user.id)
         .eq("status", "paid");
 
-      const totalSpent = paymentsData?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+      const totalSpent = paymentsData?.reduce((sum: number, p: any) => sum + Number(p.amount), 0) || 0;
 
       // Get avg rating
       const { data: reviewsData } = await supabase
