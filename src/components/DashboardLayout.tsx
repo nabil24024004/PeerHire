@@ -62,13 +62,15 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           .from('messages')
           .select('*', { count: 'exact', head: true })
           .eq('receiver_id', userId)
-          .eq('read', false),
+          .eq('read', false)
+          .then(res => res),
         supabase
           .from('notifications')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', userId)
           .eq('read', false)
-      ]);
+          .then(res => res)
+      ] as any);
 
       setUnreadCount(messagesResult.count || 0);
       setNotificationCount(notificationsResult.count || 0);

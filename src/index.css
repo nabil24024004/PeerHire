@@ -9,33 +9,41 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* PeerHire Dark Futuristic Theme */
-    --background: 220 13% 6%;  /* #0E0E0F */
-    --foreground: 0 0% 100%;    /* #FFFFFF */
+    --background: 220 13% 6%;
+    /* #0E0E0F */
+    --foreground: 0 0% 100%;
+    /* #FFFFFF */
 
-    --card: 220 7% 9%;          /* #161618 */
+    --card: 220 7% 9%;
+    /* #161618 */
     --card-foreground: 0 0% 100%;
 
     --popover: 220 7% 9%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 258 90% 66%;     /* Violet accent */
+    --primary: 258 90% 66%;
+    /* Violet accent */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 7% 12%;    
+    --secondary: 220 7% 12%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 7% 15%;
-    --muted-foreground: 240 5% 67%; /* #A1A1AA */
+    --muted-foreground: 240 5% 67%;
+    /* #A1A1AA */
 
-    --accent: 258 90% 66%;      
+    --accent: 258 90% 66%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 350 89% 60%; /* #F43F5E */
+    --destructive: 350 89% 60%;
+    /* #F43F5E */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;     /* #10B981 */
-    
-    --border: 240 6% 15%;       /* #27272A */
+    --success: 142 71% 45%;
+    /* #10B981 */
+
+    --border: 240 6% 15%;
+    /* #27272A */
     --input: 240 6% 15%;
     --ring: 258 90% 66%;
 
@@ -44,12 +52,12 @@ All colors MUST be HSL.
     /* Custom gradients */
     --gradient-primary: linear-gradient(135deg, hsl(258, 90%, 66%), hsl(217, 91%, 60%));
     --gradient-hero: linear-gradient(180deg, hsl(220, 13%, 6%) 0%, hsl(258, 40%, 10%) 100%);
-    
+
     /* Shadows & Glows */
     --glow-primary: 0 0 30px hsla(258, 90%, 66%, 0.3);
     --glow-accent: 0 0 40px hsla(258, 90%, 66%, 0.2);
     --shadow-card: 0 8px 32px hsla(0, 0%, 0%, 0.4);
-    
+
     /* Sidebar */
     --sidebar-background: 220 7% 9%;
     --sidebar-foreground: 0 0% 100%;
@@ -78,24 +86,10 @@ All colors MUST be HSL.
   html {
     scroll-behavior: smooth;
   }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent; 
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #2D2D35; 
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #4B4B55; 
-  }
 }
 
 @layer components {
+
   /* Button variants */
   .btn-glow {
     @apply relative transition-all duration-300;
@@ -131,25 +125,50 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+
   /* Animation keyframes */
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
   }
 
   @keyframes glow-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
   }
 
   @keyframes slide-left {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   @keyframes slide-right {
-    from { transform: translateX(-50%); }
-    to { transform: translateX(0); }
+    from {
+      transform: translateX(-50%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
   }
 
   @keyframes fade-in-up {
@@ -157,6 +176,7 @@ All colors MUST be HSL.
       opacity: 0;
       transform: translateY(30px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -191,6 +211,7 @@ All colors MUST be HSL.
     0% {
       transform: translateX(0);
     }
+
     100% {
       transform: translateX(-50%);
     }
@@ -200,6 +221,7 @@ All colors MUST be HSL.
     0% {
       transform: translateX(-50%);
     }
+
     100% {
       transform: translateX(0);
     }
