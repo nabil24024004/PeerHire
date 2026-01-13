@@ -15,7 +15,7 @@ export const RoleSwitcher = () => {
     if (role === newRole) return;
 
     await switchRole(newRole);
-    
+
     toast({
       title: "Role switched",
       description: `You are now in ${newRole} mode`,
@@ -37,10 +37,10 @@ export const RoleSwitcher = () => {
         <span className="hidden sm:inline">Hirer</span>
       </Button>
       <Button
-        variant={role === "freelancer" ? "default" : "ghost"}
+        variant={role === "freelancer" ? "ghost" : "ghost"}
         size="sm"
         onClick={() => handleRoleSwitch("freelancer")}
-        className="gap-2"
+        className={`gap-2 ${role === "freelancer" ? "bg-emerald-500 hover:bg-emerald-600 text-white" : ""}`}
       >
         <Search className="w-4 h-4" />
         <span className="hidden sm:inline">Freelancer</span>
