@@ -58,19 +58,17 @@ export const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   const fetchCounts = useCallback(async (userId: string) => {
     try {
       const [messagesResult, notificationsResult] = await Promise.all([
-        supabase
+        (supabase as any)
           .from('messages')
           .select('*', { count: 'exact', head: true })
           .eq('receiver_id', userId)
-          .eq('read', false)
-          .then(res => res),
-        supabase
+          .eq('read', false),
+        (supabase as any)
           .from('notifications')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', userId)
           .eq('read', false)
-          .then(res => res)
-      ] as any);
+      ]);
 
       setUnreadCount(messagesResult.count || 0);
       setNotificationCount(notificationsResult.count || 0);
