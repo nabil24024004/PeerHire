@@ -259,18 +259,18 @@ const FreelancerDashboard = () => {
 
   return (
     <DashboardLayout role="freelancer">
-      <div className="space-y-6 p-6">
+      <div className="space-y-5 p-4 md:p-6">
         {/* Welcome Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-6">
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-4 md:p-6">
           {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
 
-          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm text-emerald-500 font-medium mb-1 flex items-center gap-1">
                 <span className="text-emerald-500">✦</span> {getGreeting()}
               </p>
-              <h1 className="text-2xl md:text-3xl font-bold">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
                 Welcome back, <span className="text-emerald-500">{userName}</span>
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
@@ -299,55 +299,55 @@ const FreelancerDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {/* Earnings */}
-          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <TakaIcon className="w-6 h-6 text-emerald-500" />
+          <Card className="p-3 md:p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <TakaIcon className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Earnings</p>
-                <p className="text-2xl font-bold">৳{stats.earnings}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide">Earnings</p>
+                <p className="text-lg md:text-2xl font-bold">৳{stats.earnings}</p>
               </div>
             </div>
           </Card>
 
           {/* Active Jobs */}
-          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-emerald-500" />
+          <Card className="p-3 md:p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Active Jobs</p>
-                <p className="text-2xl font-bold">{stats.activeJobs}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide">Active Jobs</p>
+                <p className="text-lg md:text-2xl font-bold">{stats.activeJobs}</p>
               </div>
             </div>
           </Card>
 
           {/* Completed */}
-          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+          <Card className="p-3 md:p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Completed</p>
-                <p className="text-2xl font-bold">{stats.completed}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide">Completed</p>
+                <p className="text-lg md:text-2xl font-bold">{stats.completed}</p>
               </div>
             </div>
           </Card>
 
           {/* Rating */}
-          <Card className="p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Star className="w-6 h-6 text-emerald-500" />
+          <Card className="p-3 md:p-5 bg-card border-border hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <Star className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Rating</p>
-                <p className="text-2xl font-bold">{stats.rating > 0 ? stats.rating.toFixed(1) : "New"}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide">Rating</p>
+                <p className="text-lg md:text-2xl font-bold">{stats.rating > 0 ? stats.rating.toFixed(1) : "New"}</p>
               </div>
             </div>
           </Card>
@@ -355,9 +355,9 @@ const FreelancerDashboard = () => {
 
         {/* Active Jobs Section */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold">Active Jobs</h2>
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              <h2 className="text-lg md:text-xl font-bold">Active Jobs</h2>
               <Badge variant="outline" className="text-xs">
                 {activeJobs.length}
               </Badge>
@@ -373,23 +373,23 @@ const FreelancerDashboard = () => {
           </div>
 
           {activeJobs.length === 0 ? (
-            <Card className="p-12 bg-card border-border text-center">
+            <Card className="p-8 md:p-12 bg-card border-border text-center">
               {/* Empty State Icon */}
-              <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6">
                 <div className="absolute inset-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/20" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                  <ImageIcon className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground" />
                 </div>
                 {/* Green dot indicator */}
-                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-card" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full bg-emerald-500 border-2 border-card" />
               </div>
 
-              <h3 className="text-lg font-bold mb-2">No active jobs right now</h3>
-              <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+              <h3 className="text-base md:text-lg font-bold mb-2">No active jobs right now</h3>
+              <p className="text-muted-foreground text-xs md:text-sm mb-4 md:mb-6 max-w-sm mx-auto">
                 Ready to start earning? Browse available projects and submit your proposals to hirers.
               </p>
               <Button
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 md:px-6 w-full sm:w-auto"
                 onClick={() => navigate("/freelancer/browse-jobs")}
               >
                 <Search className="w-4 h-4 mr-2" />
@@ -401,40 +401,41 @@ const FreelancerDashboard = () => {
               {activeJobs.map((job) => (
                 <Card
                   key={job.id}
-                  className="p-4 bg-card border-border hover:border-emerald-500/30 transition-all group"
+                  className="p-3 md:p-4 bg-card border-border hover:border-emerald-500/30 transition-all group"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                        <Briefcase className="w-6 h-6 text-emerald-500" />
+                  <div className="flex flex-col gap-3 md:gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <Briefcase className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold truncate group-hover:text-emerald-500 transition-colors">{job.title}</h3>
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                        <h3 className="text-sm md:text-base font-bold truncate group-hover:text-emerald-500 transition-colors">{job.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-1">
                           <span>{job.subject || "General"}</span>
-                          <span>{job.page_count} pages</span>
+                          <span className="hidden sm:inline">{job.page_count} pages</span>
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {new Date(job.deadline).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
                           Hirer: {job.profiles?.full_name || "Unknown"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30">
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30 text-xs">
                         In Progress
                       </Badge>
 
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-border" onClick={() => navigate("/messages")}>
+                        <Button variant="outline" size="sm" className="border-border h-8 w-8 p-0" onClick={() => navigate("/messages")}>
                           <MessageSquare className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600" onClick={() => navigate(`/freelancer/job/${job.id}`)}>                          <Eye className="w-4 h-4 mr-1" />
-                          View
+                        <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 h-8" onClick={() => navigate(`/freelancer/job/${job.id}`)}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          <span className="hidden sm:inline">View</span>
                         </Button>
                       </div>
                     </div>

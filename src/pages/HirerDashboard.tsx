@@ -197,23 +197,23 @@ export default function HirerDashboard() {
 
   return (
     <DashboardLayout role="hirer">
-      <div className="p-8 space-y-8">
+      <div className="p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-card to-card relative overflow-hidden rounded-2xl p-8 border border-border shadow-sm">
+        <div className="bg-gradient-to-r from-card to-card relative overflow-hidden rounded-2xl p-5 md:p-8 border border-border shadow-sm">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-          <div className="relative z-10 flex justify-between items-center">
+          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
             <div>
               <p className="text-primary text-sm font-medium mb-1">{getGreeting()}</p>
-              <h1 className="text-3xl font-bold mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 Welcome back, <span className="text-primary">{userName || "there"}</span>
               </h1>
-              <p className="text-muted-foreground">Manage your tasks and hire talented peers</p>
+              <p className="text-muted-foreground text-sm">Manage your tasks and hire talented peers</p>
             </div>
 
             <button
               onClick={() => setIsPostJobModalOpen(true)}
-              className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2 font-medium hover:shadow-primary/30"
+              className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 md:px-6 md:py-3 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 font-medium hover:shadow-primary/30 w-full md:w-auto"
             >
               <Plus className="w-5 h-5" />
               Post New Job
@@ -222,48 +222,48 @@ export default function HirerDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {/* Open Tasks */}
-          <div className="bg-card p-5 rounded-2xl border border-border flex items-center gap-4 hover:border-primary/50 transition-colors cursor-default">
-            <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-              <Briefcase className="w-6 h-6" />
+          <div className="bg-card p-4 md:p-5 rounded-2xl border border-border flex items-center gap-3 md:gap-4 hover:border-primary/50 transition-colors cursor-default">
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+              <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground font-medium">Open Tasks</p>
-              <p className="text-2xl font-bold">{stats.openTasks}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium truncate">Open Tasks</p>
+              <p className="text-xl md:text-2xl font-bold">{stats.openTasks}</p>
             </div>
           </div>
 
           {/* Completed */}
-          <div className="bg-card p-5 rounded-2xl border border-border flex items-center gap-4 hover:border-green-500/50 transition-colors cursor-default">
-            <div className="h-12 w-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500">
-              <CheckCircle2 className="w-6 h-6" />
+          <div className="bg-card p-4 md:p-5 rounded-2xl border border-border flex items-center gap-3 md:gap-4 hover:border-green-500/50 transition-colors cursor-default">
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground font-medium">Completed</p>
-              <p className="text-2xl font-bold">{stats.completedTasks}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium truncate">Completed</p>
+              <p className="text-xl md:text-2xl font-bold">{stats.completedTasks}</p>
             </div>
           </div>
 
           {/* Total Spent */}
-          <div className="bg-card p-5 rounded-2xl border border-border flex items-center gap-4 hover:border-blue-500/50 transition-colors cursor-default">
-            <div className="h-12 w-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-500">
-              <DollarSign className="w-6 h-6" />
+          <div className="bg-card p-4 md:p-5 rounded-2xl border border-border flex items-center gap-3 md:gap-4 hover:border-blue-500/50 transition-colors cursor-default">
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-500 flex-shrink-0">
+              <DollarSign className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground font-medium">Total Spent</p>
-              <p className="text-2xl font-bold">৳{stats.totalSpent.toFixed(0)}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium truncate">Total Spent</p>
+              <p className="text-xl md:text-2xl font-bold">৳{stats.totalSpent.toFixed(0)}</p>
             </div>
           </div>
 
           {/* Avg Rating */}
-          <div className="bg-card p-5 rounded-2xl border border-border flex items-center gap-4 hover:border-orange-500/50 transition-colors cursor-default">
-            <div className="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500">
-              <Star className="w-6 h-6" />
+          <div className="bg-card p-4 md:p-5 rounded-2xl border border-border flex items-center gap-3 md:gap-4 hover:border-orange-500/50 transition-colors cursor-default">
+            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 flex-shrink-0">
+              <Star className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground font-medium">Avg. Rating</p>
-              <p className="text-2xl font-bold">{stats.avgRating.toFixed(1)}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium truncate">Avg. Rating</p>
+              <p className="text-xl md:text-2xl font-bold">{stats.avgRating.toFixed(1)}</p>
             </div>
           </div>
         </div>
@@ -291,38 +291,40 @@ export default function HirerDashboard() {
               recentJobs.map((job) => (
                 <div
                   key={job.id}
-                  className="bg-card rounded-2xl p-5 border border-border flex items-center justify-between hover:border-primary/30 hover:bg-card/80 transition-all group"
+                  className="bg-card rounded-2xl p-4 md:p-5 border border-border hover:border-primary/30 hover:bg-card/80 transition-all group"
                 >
-                  <div className="flex items-center gap-5">
-                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                      {getCategoryIcon(job.category)}
-                    </div>
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-3 md:gap-5">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 flex-shrink-0">
+                        {getCategoryIcon(job.category)}
+                      </div>
 
-                    <div>
-                      <h3 className="text-base font-bold mb-1">{job.title}</h3>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>{job.category || "General"}</span>
-                        <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          {formatDate(job.deadline)}
-                        </span>
-                        <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                        <span className="text-primary font-semibold">৳{job.budget}</span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm md:text-base font-bold mb-1 truncate">{job.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-muted-foreground">
+                          <span className="truncate max-w-[80px] md:max-w-none">{job.category || "General"}</span>
+                          <span className="hidden md:inline w-1 h-1 bg-muted-foreground rounded-full"></span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {formatDate(job.deadline)}
+                          </span>
+                          <span className="hidden md:inline w-1 h-1 bg-muted-foreground rounded-full"></span>
+                          <span className="text-primary font-semibold">৳{job.budget}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-4">
-                    {getStatusBadge(job)}
+                    <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4">
+                      {getStatusBadge(job)}
 
-                    <button
-                      onClick={() => navigate(`/hirer/task/${job.id}/offers`)}
-                      className="bg-primary/10 hover:bg-primary text-primary hover:text-white px-5 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 group-hover:shadow-lg group-hover:shadow-primary/20"
-                    >
-                      <Eye className="w-4 h-4" />
-                      View
-                    </button>
+                      <button
+                        onClick={() => navigate(`/hirer/task/${job.id}/offers`)}
+                        className="bg-primary/10 hover:bg-primary text-primary hover:text-white px-4 py-2 md:px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 group-hover:shadow-lg group-hover:shadow-primary/20"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span className="hidden sm:inline">View</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -331,16 +333,16 @@ export default function HirerDashboard() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-10 text-center border border-gray-800 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 md:p-10 text-center border border-gray-800 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-primary/5"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="relative z-10">
-            <h3 className="text-2xl font-bold text-white mb-3">Need help with another assignment?</h3>
-            <p className="text-gray-400 mb-8">Get matched with qualified freelancers in minutes</p>
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">Need help with another assignment?</h3>
+            <p className="text-gray-400 mb-6 md:mb-8 text-sm md:text-base">Get matched with qualified freelancers in minutes</p>
             <button
               onClick={() => setIsPostJobModalOpen(true)}
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all inline-flex items-center gap-2 hover:shadow-primary/30"
+              className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all inline-flex items-center gap-2 hover:shadow-primary/30 w-full md:w-auto justify-center"
             >
               <Plus className="w-5 h-5" />
               Create New Job
